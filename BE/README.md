@@ -5,7 +5,7 @@
 1.  Make sure that you have Node.js >=v18 and npm v8 or above installed.
 2.  Clone this repo using `git@github.com:duyanh4788/ecommerece.git`
 3.  Move to the appropriate directory: `cd <YOUR_PROJECT_NAME>`.<br />
-4.  checkout branch develop and development
+4.  checkout branch develop and development, There are 2 source BE && FE
 5.  Copy file `example.env.dev` to `.env` or contact with team
 6.  Run `npm run install & yarn install` in order to install dependencies.<br />
 7.  Run `npm run env-dev for develop or using pm2 with config into package.json` in order to install dependencies.<br />

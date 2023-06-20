@@ -36,13 +36,6 @@ export class MulterMiddleware {
           message: err?.message || 'No files were uploaded.'
         }).send(res);
       }
-      if (req.files && req.files.length > 5) {
-        return new SendRespone({
-          status: 'error',
-          code: 404,
-          message: err?.message || 'you can upload maximum 5 images.'
-        }).send(res);
-      }
       if (err instanceof multer.MulterError) {
         return new SendRespone({ status: 'error', code: 400, message: err.message }).send(res);
       } else if (err) {
@@ -51,13 +44,6 @@ export class MulterMiddleware {
       if (req.file) {
         this.configFile(req.file);
       }
-
-      if (!req.file) {
-        for (let i = 0; i < req.files.length; i++) {
-          const file = req.files[i];
-          await this.configFile(file);
-        }
-      }
       next();
     });
   };
@@ -65,7 +51,7 @@ export class MulterMiddleware {
   private async configFile(file: Express.Multer.File) {
     if (!isDevelopment) {
       const fileName = `${Date.now()}.${file.mimetype.split('/')[1]}`;
-      const filePath = this.filepath(`${_pathFile}/${fileName}`);
+      const filePath = this.filepath(`${_pathFileImages}/${fileName}`);
       await sharp(file.buffer)
         .resize({
           width: 800,

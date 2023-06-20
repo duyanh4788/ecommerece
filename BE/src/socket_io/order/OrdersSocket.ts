@@ -1,17 +1,9 @@
-import { Socket } from "socket.io";
-import * as JWT from "jsonwebtoken";
-import Filter from "bad-words";
-import { SocketInterface } from "../interface/SocketInterface";
-import {
-  createUser,
-  getUserById,
-  removeUserList,
-} from "../../utils/createUsers";
-import {
-  changeStatusIsNewMsg,
-  changeStatusLogin,
-  renderMessages,
-} from "../../utils/createMessages";
+import { Socket } from 'socket.io';
+import * as JWT from 'jsonwebtoken';
+import Filter from 'bad-words';
+import { SocketInterface } from '../interface/SocketInterface';
+import { createUser, getUserById, removeUserList } from '../../utils/createUsers';
+import { changeStatusIsNewMsg, changeStatusLogin, renderMessages } from '../../utils/createMessages';
 
 const userSockets = new Map();
 export class OrdersSocket implements SocketInterface {
@@ -66,7 +58,7 @@ export class OrdersSocket implements SocketInterface {
     // if (!Authorization) {
     //   return next(new Error('AUTHORIZATION_INVALID'));
     // }
-    // const deCode: any = JWT.verify(Authorization, SECRETKEY);
+    // const deCode: any = JWT.verify(Authorization, SECRETKEY_SESSION);
     // const getTime = Math.round(new Date().getTime() / 1000);
     // if (deCode || deCode.exp > getTime) {
     //   const previousSocket = userSockets.get(deCode._id);

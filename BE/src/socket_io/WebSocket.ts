@@ -1,19 +1,17 @@
-import * as JWT from "jsonwebtoken";
-import Filter from "bad-words";
-import { Server, Socket } from "socket.io";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import * as JWT from 'jsonwebtoken';
+import Filter from 'bad-words';
+import { Server, Socket } from 'socket.io';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 const userSockets = new Map();
 export class WebSocket {
   constructor() {}
 
-  public socketIO(
-    socket_io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>
-  ) {
+  public socketIO(socket_io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {
     // socket_io.use((socket: Socket, next) => {
     //   try {
     //     const { Authorization } = socket.handshake.auth;
-    //     const deCode: any = JWT.verify(Authorization, SECRETKEY);
+    //     const deCode: any = JWT.verify(Authorization, SECRETKEY_SESSION);
     //     const getTime = Math.round(new Date().getTime() / 1000);
     //     if (deCode || deCode.exp > getTime) {
     //       const previousSocket = userSockets.get(deCode._id);
