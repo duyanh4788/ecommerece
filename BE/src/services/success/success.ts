@@ -19,6 +19,7 @@ interface Success {
   data?: any;
   message?: string;
   option?: any;
+  success?: boolean;
 }
 
 class SuccessResponse {
@@ -27,19 +28,15 @@ class SuccessResponse {
   public data: any;
   public message: string;
   public option: any;
+  public success: boolean;
 
-  constructor({
-    status = TypeResponse.SUCCESS as string,
-    code = StatusCode.SUCCESS,
-    data = null,
-    message = '',
-    option = null
-  }) {
+  constructor({ status = TypeResponse.SUCCESS as string, code = StatusCode.SUCCESS, data = null, message = '', option = null }) {
     this.status = status;
     this.code = code || 200;
     this.data = data || null;
     this.message = message || '';
     this.option = option || null;
+    this.success = true;
   }
 
   send(res: Response) {

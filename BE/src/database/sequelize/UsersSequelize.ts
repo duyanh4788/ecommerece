@@ -1,4 +1,4 @@
-import { Transaction } from 'sequelize';
+import { Transaction, where } from 'sequelize';
 import { UserAttributes, UserRole } from '../../interface/UserInterface';
 import { IUserRepository } from '../../repository/IUserRepository';
 import { UsersModel } from '../model/UsersModel';
@@ -24,6 +24,11 @@ export class UserSequelize implements IUserRepository {
     return this.transformModelToEntity(user);
   }
 
+  async updatePasswordByUserId(userId: string, password: string, transactionDb: Transaction): Promise<void> {
+    await UsersModel.update({ password }, { where: { id: deCryptFakeId(userId) }, transaction: transactionDb });
+    return;
+  }
+
   /**
    * Transforms database model into domain entity
    * @param model
@@ -33,12 +38,9 @@ export class UserSequelize implements IUserRepository {
     const entity: any = {};
     const keysObj = Object.keys(model.dataValues);
     for (let key of keysObj) {
-      if (key === 'id') {
-        entity[key] = enCryptFakeId(model[key]);
-      } else {
-        entity[key] = model[key];
-      }
+      entity[key] = model[key];
     }
+    entity.id = enCryptFakeId(entity.id);
     return entity;
   }
 }

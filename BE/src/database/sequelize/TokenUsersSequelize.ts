@@ -36,11 +36,7 @@ export class TokenUsersSequelize implements ITokenUsersRepository {
     const entity: TokenUserInterface = {};
     const keysObj = Object.keys(model.dataValues);
     for (let key of keysObj) {
-      if (key === 'id' || key === 'userId') {
-        entity[key] = enCryptFakeId(model[key]);
-      } else {
-        entity[key] = model[key];
-      }
+      entity[key] = model[key];
     }
     entity.id = enCryptFakeId(entity.id);
     entity.userId = enCryptFakeId(entity.userId);

@@ -11,7 +11,7 @@ export const isDevelopment = process.env.APP_ENV === 'develop' ? true : false;
 sequelize.sync({ force: false, alter: false });
 
 // ********************* Config Server *********************//
-const APP_PORT: string | number = process.env.APP_PORT || 8000;
+const APP_PORT: string | number | any = process.env.APP_PORT || 8000;
 const httpServer: http.Server = http.createServer(App);
 
 if (isDevelopment) {

@@ -8,7 +8,6 @@ export const enCryptFakeId = (value: number) => {
     encryptedBuffer[i] = valueBuffer[i] ^ keyBuffer[i % keyBuffer.length];
   }
   const encryptedValue = Buffer.concat([keyBuffer, encryptedBuffer]).toString('base64').replace(/\//g, '_').replace(/==/g, '');
-  console.log('Encrypted value:', encryptedValue);
   return encryptedValue;
 };
 
@@ -21,6 +20,5 @@ export const deCryptFakeId = (id: string) => {
     decryptedBuffer[i] = encryptedBuffer[i + keyBuffer.length] ^ keyBuffer[i % keyBuffer.length];
   }
   const decryptedValue = parseInt(decryptedBuffer.toString(), 10);
-  console.log('Decrypted user ID:', decryptedValue);
   return decryptedValue;
 };

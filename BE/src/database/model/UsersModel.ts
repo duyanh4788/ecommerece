@@ -1,5 +1,6 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, Unique, HasMany } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, Unique, HasMany, HasOne } from 'sequelize-typescript';
 import { TokenUserModel } from './TokenUserModel';
+import { AuthenticatesCodesModel } from './AuthenticatesCodesModel';
 
 @Table({
   tableName: 'users'
@@ -43,4 +44,7 @@ export class UsersModel extends Model<UsersModel> {
 
   @HasMany(() => TokenUserModel)
   tokenUsers: TokenUserModel;
+
+  @HasOne(() => AuthenticatesCodesModel)
+  authenticatesCodes: AuthenticatesCodesModel;
 }

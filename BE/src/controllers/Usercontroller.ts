@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import { SendRespone } from '../services/success/success';
 import { RestError } from '../services/error/error';
 import { UserUseCase } from '../usecase/UserUseCase';
+import { nodeMailerServices } from '../services/nodemailer/MailServices';
+import { TypeOfValue, isCheckedTypeValues } from '../utils/validate';
+import { sequelize } from '../database/sequelize';
 
 export class UsersController {
   constructor(private userUseCase: UserUseCase) {}
@@ -35,23 +38,68 @@ export class UsersController {
     }
   };
 
-  public registerOwnerShop = async (req: Request, res: Response) => {
+  public getUserById = async (req: Request, res: Response) => {
     try {
-      await this.userUseCase.userSginUpUseCase(req.body);
-      return new SendRespone({ message: 'signup successfully!' }).send(res);
+      const { user } = req;
+      const userModel = await this.userUseCase.getUserByIdUseCase(user.userId);
+      return new SendRespone({ data: userModel }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
   };
 
-  public getUserById = async (req: Request, res: Response) => {
+  public forgotPassword = async (req: Request, res: Response) => {
     try {
-      const { userId } = req.params;
-      if (!userId) {
-        throw new RestError('user id not available!', 404);
+      const { email } = req.body;
+      if (!isCheckedTypeValues(email, TypeOfValue.STRING)) {
+        throw new RestError('invalid request!', 404);
       }
-      const user = await this.userUseCase.getUserByIdUseCase(userId);
-      return new SendRespone({ data: user }).send(res);
+      const user = await this.userUseCase.getUserByEmailUseCase(email);
+      const authenticates = await this.userUseCase.forgotPasswordUseCase(user.id);
+      nodeMailerServices.sendAuthCodeResetPassWord(user, authenticates.authCode);
+      return new SendRespone({ message: 'we have send authenticator code to email!' }).send(res);
+    } catch (error) {
+      return RestError.manageServerError(res, error, false);
+    }
+  };
+
+  public resendForgotPassword = async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+      if (!isCheckedTypeValues(email, TypeOfValue.STRING)) {
+        throw new RestError('invalid request!', 404);
+      }
+      const user = await this.userUseCase.getUserByEmailUseCase(email);
+      const authenticates = await this.userUseCase.resendForgotPasswordUseCase(user.id);
+      nodeMailerServices.sendAuthCodeResetPassWord(user, authenticates.authCode);
+      return new SendRespone({ message: 'we have send authenticator code to email!' }).send(res);
+    } catch (error) {
+      return RestError.manageServerError(res, error, false);
+    }
+  };
+
+  public resetForgotPassword = async (req: Request, res: Response) => {
+    const transactionDb = await sequelize.transaction();
+    try {
+      const { authCode, newPassWord, email } = req.body;
+      if (!isCheckedTypeValues(email, TypeOfValue.STRING) || !isCheckedTypeValues(authCode, TypeOfValue.STRING) || !isCheckedTypeValues(newPassWord, TypeOfValue.STRING)) {
+        throw new RestError('invalid request!', 404);
+      }
+      const user = await this.userUseCase.getUserByEmailUseCase(email);
+      await this.userUseCase.resetForgotPasswordUseCase(user.id, transactionDb);
+      await this.userUseCase.updatePasswordUseCase(email, newPassWord, transactionDb);
+      await transactionDb.commit();
+      return new SendRespone({ message: 'upadte password successfully!' }).send(res);
+    } catch (error) {
+      await transactionDb.rollback();
+      return RestError.manageServerError(res, error, false);
+    }
+  };
+
+  public registerOwnerShop = async (req: Request, res: Response) => {
+    try {
+      await this.userUseCase.userSginUpUseCase(req.body);
+      return new SendRespone({ message: 'signup successfully!' }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
