@@ -1,0 +1,94 @@
+@import "../variable/variables.scss";
+
+@mixin bg_from_edit {
+    width: 100%;
+    min-height: 500px;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+@mixin warp_form {
+    width: 100%;
+    padding: 20px;
+    background-color: $background-3;
+    border-radius: $boderR5;
+    overflow: hidden;
+    backdrop-filter: blur(6px);
+    border: $border;
+    box-shadow: $box-shadow;
+}
+
+@mixin button_form {
+    font-size: $fs15;
+    padding: 10px 15px;
+    color: $color-black-2;
+    background-color: $color-white-2;
+    border: $border;
+    border-radius: $boderR5;
+    outline: none;
+    cursor: pointer;
+}
+
+@mixin input_form {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px 5px;
+    border-radius: $boderR5;
+    background-color: $color-white-2;
+    outline: none;
+    border: 1px solid #cdcdcd5c;
+}
+
+@mixin placehoder_form {
+    color: $color-gray-2;
+    opacity: 0.5;
+    text-align: right;
+}
+
+@mixin select_form {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px 5px;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    color: $color-gray-2;
+    background-color: $color-white-2;
+}
+
+@mixin span_valid {
+    color: $color-red;
+    font-size: 10px;
+    font-weight: $fw-bold;
+}
+
+@mixin label_form {
+    font-size: 12px;
+    color: $color-black;
+    font-weight: $fw-bold;
+    margin-left: 5px;
+}
+@mixin tag_p {
+    font-size: 12px;
+    color: $color-black;
+    font-weight: $fw-bold;
+}
+
+@mixin date_timer {
+    input {
+        font-size: 13px;
+        color: $color-black-2;
+    }
+    .MuiInput-underline:after {
+        border-bottom: 1px solid black !important;
+    }
+}
+
+@mixin h5_title {
+    text-align: center;
+    font-size: 20px;
+    color: $color-black;
+    font-weight: $fw-bold;
+}

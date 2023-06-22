@@ -1,0 +1,49 @@
+@import "../extend/index.scss";
+
+.sign_in {
+    width: 100%;
+    max-width: 500px;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    .wrap_login {
+        background: none !important;
+        backdrop-filter: blur(5px);
+        @include warp_form;
+        h5 {
+            @include h5_title;
+        }
+        input {
+            @include input_form;
+        }
+        input::placeholder {
+            @include placehoder_form;
+        }
+        .input_show {
+            width: 100%;
+            .show_pw {
+                position: absolute;
+                right: 2%;
+                cursor: pointer;
+                .MuiSvgIcon-root {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+        }
+        button {
+            margin-top: 10px;
+            @include button_form;
+        }
+        .msg_error {
+            font-size: $fs13;
+            color: $color-red;
+            margin-left: 10px;
+        }
+        a {
+            font-size: 13px;
+        }
+    }
+}

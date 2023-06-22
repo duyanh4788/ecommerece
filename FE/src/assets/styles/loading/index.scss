@@ -1,0 +1,17 @@
+@import "../../../assets/styles/variable/variables.scss";
+
+.loading {
+    z-index: 9;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100%);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: $background-5;
+    svg {
+        color: $color-green;
+    }
+}

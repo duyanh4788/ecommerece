@@ -5,151 +5,76 @@ export interface AuthState {
   loading: boolean;
   success: any;
   error: any;
-  userById: Users;
+  userInfor: Users | null;
 }
 
 export const initialState: AuthState = {
   loading: false,
-  success: {},
-  error: {},
-  userById: {},
+  success: false,
+  error: false,
+  userInfor: null,
 };
 
 const AuthSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    sigInUser(state, action) {
+    signIn(state, action) {
       state.loading = true;
     },
-    sigInUserSuccess(state, action) {
+    signInSuccess(state, action) {
       state.loading = false;
-      state.userById = action.payload.data;
+      state.userInfor = action.payload.data;
     },
-    sigInUserFail(state, action) {
+    signInFail(state, action) {
       state.loading = false;
+      state.error = action.payload.data;
     },
 
-    sigInUserWithCode(state, action) {
+    signUp(state, action) {
       state.loading = true;
     },
-    sigInUserWithCodeSuccess(state, action) {
+    signUpSuccess(state, action) {
       state.loading = false;
-      state.userById = action.payload.data;
+      state.success = action.payload.data;
     },
-    sigInUserWithCodeFail(state, action) {
+    signUpFail(state, action) {
       state.loading = false;
+      state.error = action.payload.data;
     },
 
-    signUpUser(state, action) {
+    signOut(state) {
       state.loading = true;
     },
-    signUpUserSuccess(state, action) {
+    signOutSuccess(state, action) {
       state.loading = false;
-      state.success = action.payload;
+      state.success = action.payload.data;
     },
-    signUpUserFail(state, action) {
+    signOutFail(state, action) {
       state.loading = false;
+      state.error = action.payload.data;
     },
 
-    activeAuthCode(state, action) {
-      state.loading = true;
-    },
-    activeAuthCodeSuccess(state, action) {
-      state.loading = false;
-      state.success = action.payload;
-    },
-    activeAuthCodeFail(state, action) {
-      state.loading = false;
-    },
-
-    forgotPassword(state, action) {
-      state.loading = true;
-    },
-    forgotPasswordSuccess(state, action) {
-      state.loading = false;
-      state.success = action.payload;
-    },
-    forgotPasswordFail(state, action) {
-      state.loading = false;
-    },
-
-    resetPassword(state, action) {
-      state.loading = true;
-    },
-    resetPasswordSuccess(state, action) {
-      state.loading = false;
-      state.success = action.payload;
-    },
-    resetPasswordFail(state, action) {
-      state.loading = false;
-    },
-
-    resendOrderForgotPassword(state, action) {
-      state.loading = true;
-    },
-    resendOrderForgotPasswordSuccess(state, action) {
-      state.loading = false;
-      state.success = action.payload;
-    },
-    resendOrderForgotPasswordFail(state, action) {
-      state.loading = false;
-    },
-
-    signUpWithFB(state, action) {
-      state.loading = true;
-    },
-    signUpWithFBSuccess(state, action) {
-      state.loading = false;
-    },
-    signUpWithFBFail(state, action) {
-      state.loading = false;
-    },
-
-    signUpWithGG(state, action) {
-      state.loading = true;
-    },
-    signUpWithGGSuccess(state, action) {
-      state.loading = false;
-    },
-    signUpWithGGFail(state, action) {
-      state.loading = false;
-    },
-
-    getUserById(state, action) {
+    getUserById(state) {
       state.loading = true;
     },
     getUserByIdSuccess(state, action) {
       state.loading = false;
-      state.userById = action.payload.data;
+      state.userInfor = action.payload.data;
     },
     getUserByIdFail(state, action) {
       state.loading = false;
+      state.error = action.payload.data;
     },
 
-    changeStatusOnline(state, action) {
-      state.loading = true;
-    },
-    changeStatusOnlineSuccess(state, action) {
-      state.loading = false;
-    },
-    changeStatusOnlineFail(state, action) {
-      state.loading = false;
-    },
-
-    updateInfo(state, action) {
-      state.loading = true;
-    },
-    updateInfoSuccess(state, action) {
-      state.loading = false;
-    },
-    updateInfoFail(state, action) {
-      state.loading = false;
+    clearUserInfo(state) {
+      state.userInfor = null;
     },
 
     clearData(state) {
-      state.success = {};
-      state.error = {};
+      state.success = false;
+      state.error = false;
+      state.userInfor = null;
     },
   },
 });

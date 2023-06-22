@@ -8,4 +8,6 @@ export const selectLoading = createSelector([selectAuth], state => state.loading
 
 export const selectSuccess = createSelector([selectAuth], state => state.success);
 
-export const selectUserById = createSelector([selectAuth], state => state.userById);
+export const selectError = createSelector([selectAuth], state => state.error);
+
+export const selectUserInfor = createSelector([selectAuth], state => state.userInfor);

@@ -1,9 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Home } from './app/home/container/Home';
+import { Navbar, Footer, Home, SignIn, SignUp, Password } from 'app';
+import '../src/assets/styles/main/index.css';
 import reportWebVitals from './reportWebVitals';
-import './styles/index.css';
+import { RootStore } from 'store/configStore';
+import { createRoot } from 'react-dom/client';
+import { AuthContextProvider } from 'app/authContext/AuthContextApi';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -11,14 +14,25 @@ const MOUNT_NODE = document.getElementById('root') as HTMLElement;
 
 const ConnectedApp = () => (
   <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Home />} />
-    </Routes>
+    <Provider store={RootStore}>
+      <AuthContextProvider>
+        <Navbar />
+        <section className="home_app">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/password" element={<Password />} />
+          </Routes>
+          <Footer />
+        </section>
+      </AuthContextProvider>
+    </Provider>
   </BrowserRouter>
 );
 
 const render = () => {
-  ReactDOM.render(<ConnectedApp />, MOUNT_NODE);
+  createRoot(MOUNT_NODE).render(<ConnectedApp />);
 };
 
 if (isDevelopment && (module as any).hot) {

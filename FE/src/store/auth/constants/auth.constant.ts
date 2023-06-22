@@ -1,9 +1,11 @@
 export const AuthApi = {
-  SIGN_IN: '/users/signIn',
+  SIGN_IN: '/users/signin',
+  SIGN_UP: '/users/signup',
+  SIGN_OUT: '/users/signout',
+  GET_USER_BY_ID: '/users/get-user-by-id',
+  //
   SIGN_IN_WITH_CODE: '/users/signin-withcode',
-  SIGN_UP: '/users/signUp',
   ACTIVE_AUTH_CODE: '/users/active',
-  GET_USER_BY_ID: '/users/getUserById/',
   CHANGE_STATUS_IS_ONLINE: '/users/changeStatusOnline',
   UPDATE_INFOR: '/users/update-infor',
   LOGIN_FB: '/users/login-fb',
@@ -18,8 +20,12 @@ export const REPONSE_CONSTANT = {
   SIGN_IN_FAIL: 'SIGN_IN_FAIL',
   SIGN_UP_SUCCESS: 'SIGN_UP_SUCCESS',
   SIGN_UP_FAIL: 'SIGN_UP_FAIL',
+  SIGN_OUT_SUCCESS: 'SIGN_OUT_SUCCESS',
+  SIGN_OUT_FAIL: 'SIGN_OUT_FAIL',
   GET_USER_BY_ID_SUCCESS: 'GET_USER_BY_ID_SUCCESS',
   GET_USER_BY_ID_FAIL: 'GET_USER_BY_ID_FAIL',
+
+  //
   CHANGE_STATUS_IS_ONLINE_SUCCESS: 'CHANGE_STATUS_IS_ONLINE_SUCCESS',
   CHANGE_STATUS_IS_ONLINE_FAIL: 'CHANGE_STATUS_IS_ONLINE_FAIL',
   UPDATE_INFOR_SUCCESS: 'UPDATE_INFOR_SUCCESS',
