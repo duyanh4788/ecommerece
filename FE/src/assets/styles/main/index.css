@@ -1,6 +1,6 @@
 .footer {
   width: 100%;
-  background: #f8f7f7;
+  background: #d6cfc9;
   color: #424242;
   padding: 40px 0;
   -webkit-box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
@@ -18,7 +18,6 @@
 .sign_in {
   width: 100%;
   max-width: 500px;
-  min-height: 600px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -123,6 +122,7 @@
 
 .sign_in .wrap_login a {
   font-size: 13px;
+  cursor: pointer;
 }
 
 .loading {
@@ -147,6 +147,12 @@
   color: #56ab2f;
 }
 
+.input_profile {
+  height: 30px;
+  border: 1px solid #cdcdcd5c;
+  max-width: 180px;
+}
+
 @font-face {
   font-family: "Gotham Ultra";
   src: url("../../font/Gotham Ultra.otf") format("opentype");
@@ -166,13 +172,14 @@ body {
 
 .home_app {
   width: 100%;
-  height: 100%;
-  background: #ece9e6;
-  /* fallback for old browsers */
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#ece9e6));
-  background: linear-gradient(to bottom, #ffffff, #ece9e6);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  height: 100vh;
 }
 
 html {
@@ -183,6 +190,18 @@ html {
   -ms-text-size-adjust: none;
   text-size-adjust: none;
   scroll-behavior: smooth;
+}
+
+main {
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+}
+
+body {
+  background: #f4f4f1 !important;
+  background: -webkit-gradient(linear, left top, left bottom, from(#f4f4f1), to(#ece9e6));
+  background: linear-gradient(#f4f4f1, #ece9e6);
 }
 
 body::-webkit-scrollbar {
@@ -211,5 +230,14 @@ body::-webkit-scrollbar-thumb {
 
 .css-3bmhjh-MuiPaper-root-MuiPopover-paper {
   border-radius: 10px !important;
+}
+
+.Toastify__toast-container {
+  width: auto !important;
+}
+
+.MuiDrawer-paper {
+  background: -webkit-gradient(linear, left top, left bottom, from(#f4f4f1), to(#ece9e6)) !important;
+  background: linear-gradient(#f4f4f1, #ece9e6) !important;
 }
 /*# sourceMappingURL=index.css.map */

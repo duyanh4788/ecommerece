@@ -25,16 +25,17 @@ import { PopoverList } from './Popover';
 import { UserInforResponsive } from './UserInforResponsive';
 import { Users } from 'interface/Users.model';
 import { AuthContext } from 'app/authContext/AuthContextApi';
-import { defaultNotifi, pathParams } from 'commom/common.contants';
+import { PATH_PARAMS } from 'commom/common.contants';
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
 import * as AuthSlice from 'store/auth/shared/slice';
-import { Notification } from 'commom/notification';
 import { LocalStorageService } from 'services/localStorage';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import * as AuthSelector from 'store/auth/shared/selectors';
 import { Loading } from 'commom/loading';
+import { toast } from 'react-toastify';
+import { Notification } from 'commom/notification';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -49,7 +50,8 @@ const useStyles = makeStyles(theme => ({
     margin: '0 auto',
     width: '100%',
     display: 'flex',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
+    padding: '0 20px',
   },
   icons: {
     color: '#2e7d32',
@@ -61,7 +63,7 @@ const darkTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#f8f7f7',
+      main: '#d6cfc9',
     },
   },
 });
@@ -74,7 +76,6 @@ export const Navbar = () => {
   const dispatch = useDispatch();
   const loading = useSelector(AuthSelector.selectLoading);
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [notifi, setNotifi] = useState(defaultNotifi);
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -83,15 +84,15 @@ export const Navbar = () => {
       switch (type) {
         case AuthSlice.actions.signOutSuccess.type:
           setAnchorEl(null);
-          setNotifi({ ...defaultNotifi, status: payload.status, message: payload.message });
+          toast.success(payload.message);
           break;
         case AuthSlice.actions.signOutFail.type:
-          setNotifi({ ...defaultNotifi, status: payload.status, message: payload.message });
+          toast.error(payload.message);
           break;
         case AuthSlice.actions.getUserByIdFail.type:
-          setNotifi({ ...defaultNotifi, status: payload.status, message: payload.message });
+          toast.error(payload.message);
           local.clearLocalStorage();
-          navigate(pathParams.SIGNIN);
+          navigate(PATH_PARAMS.SIGNIN);
           break;
         default:
           break;
@@ -109,7 +110,7 @@ export const Navbar = () => {
 
   const drawer = (
     <Box sx={{ textAlign: 'center', padding: '10px' }}>
-      <Link href={pathParams.HOME}>
+      <Link href={PATH_PARAMS.HOME}>
         <img src={bannernode} alt={bannernode} width="80px" height="80px" />
       </Link>
       <Divider style={{ marginBottom: '10px' }} />
@@ -127,7 +128,7 @@ export const Navbar = () => {
   return (
     <Stack sx={{ flexGrow: 1, marginBottom: '100px' }}>
       {loading && <Loading />}
-      {notifi.status && <Notification {...notifi} onClose={() => setNotifi(defaultNotifi)} />}
+      <Notification />
       <CssBaseline />
       <ThemeProvider theme={darkTheme}>
         <AppBar className={classes.appBar} component="nav">
@@ -138,7 +139,7 @@ export const Navbar = () => {
               onClick={handleDrawerToggle}
               sx={{ mr: 2, display: { xs: 'block', md: 'none' }, cursor: 'pointer' }}
             />
-            <Link href={pathParams.HOME} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Link href={PATH_PARAMS.HOME} sx={{ display: { xs: 'none', md: 'block' } }}>
               <img src={bannernode} alt={bannernode} width="80px" height="80px" />
             </Link>
             <Paper

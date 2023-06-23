@@ -45,11 +45,66 @@ export function* getUserById(api, action) {
   }
 }
 
+export function* forgotPassword(api, action) {
+  try {
+    const resPonse = yield call(api.forgotPassword, action.payload);
+    const data = yield configResponse(resPonse);
+    yield put(actions.forgotPasswordSuccess(data));
+  } catch (error) {
+    yield put(actions.forgotPasswordFail(configResponseError(error)));
+  }
+}
+
+export function* resendForgotPassword(api, action) {
+  try {
+    const resPonse = yield call(api.resendForgotPassword, action.payload);
+    const data = yield configResponse(resPonse);
+    yield put(actions.resendForgotPasswordSuccess(data));
+  } catch (error) {
+    yield put(actions.resendForgotPasswordFail(configResponseError(error)));
+  }
+}
+
+export function* resetForgotPassword(api, action) {
+  try {
+    const resPonse = yield call(api.resetForgotPassword, action.payload);
+    const data = yield configResponse(resPonse);
+    yield put(actions.resetForgotPasswordSuccess(data));
+  } catch (error) {
+    yield put(actions.resetForgotPasswordFail(configResponseError(error)));
+  }
+}
+
+export function* updateProfile(api, action) {
+  try {
+    const resPonse = yield call(api.updateProfile, action.payload);
+    const data = yield configResponse(resPonse);
+    yield put(actions.updateProfileSuccess(data));
+  } catch (error) {
+    yield put(actions.updateProfileFail(configResponseError(error)));
+  }
+}
+
+export function* uploadFile(api, action) {
+  try {
+    const resPonse = yield call(api.uploadFile, action.payload);
+    const data = yield configResponse(resPonse);
+    yield put(actions.uploadFileSuccess(data));
+  } catch (error) {
+    yield put(actions.uploadFileFail(configResponseError(error)));
+  }
+}
+
 export function* AuthSaga() {
   yield all([
     yield takeLatest(actions.signIn.type, signIn, authRequest),
     yield takeLatest(actions.signUp.type, signUp, authRequest),
     yield takeLatest(actions.signOut.type, signOut, authRequest),
     yield takeLatest(actions.getUserById.type, getUserById, authRequest),
+    yield takeLatest(actions.forgotPassword.type, forgotPassword, authRequest),
+    yield takeLatest(actions.resendForgotPassword.type, resendForgotPassword, authRequest),
+    yield takeLatest(actions.resetForgotPassword.type, resetForgotPassword, authRequest),
+    yield takeLatest(actions.updateProfile.type, updateProfile, authRequest),
+    yield takeLatest(actions.uploadFile.type, uploadFile, authRequest),
   ]);
 }

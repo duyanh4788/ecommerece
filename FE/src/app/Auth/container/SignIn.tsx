@@ -12,10 +12,11 @@ import { Users } from 'interface/Users.model';
 import { useInjectReducer, useInjectSaga } from 'store/core/@reduxjs/redux-injectors';
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
-import { Notification } from 'commom/notification';
-import { defaultNotifi, pathParams } from 'commom/common.contants';
+import { PATH_PARAMS } from 'commom/common.contants';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-const defaultValue = {
+const defaultValue: any = {
   email: '',
   password: '',
   showPassword: false,
@@ -25,9 +26,10 @@ export const SignIn = () => {
   const local = new LocalStorageService();
   const loading = useSelector(AuthSelector.selectLoading);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [user, setUser] = useState<Users>(defaultValue);
   const [errors, setErrors] = useState<Users>(defaultValue);
-  const [notifi, setNotifi] = useState(defaultNotifi);
+
   useInjectReducer({
     key: AuthSlice.sliceKey,
     reducer: AuthSlice.reducer,
@@ -42,13 +44,15 @@ export const SignIn = () => {
       const { type, payload } = RootStore.getState().lastAction;
       switch (type) {
         case AuthSlice.actions.signInSuccess.type:
+          resetData();
           local.setItem({ key: LocalStorageKey.user, value: payload.data });
           dispatch(AuthSlice.actions.getUserById());
-          setNotifi({ status: payload.status, message: payload.message, path: pathParams.HOME });
+          toast.success(payload.message);
+          navigate(PATH_PARAMS.HOME);
           break;
         case AuthSlice.actions.signInFail.type:
         case AuthSlice.actions.getUserByIdFail.type:
-          setNotifi({ ...defaultNotifi, status: payload.status, message: payload.message });
+          toast.error(payload.message);
           break;
         default:
           break;
@@ -57,8 +61,14 @@ export const SignIn = () => {
     return () => {
       storeSub$();
       dispatch(AuthSlice.actions.clearData());
+      resetData();
     };
   }, []);
+
+  const resetData = () => {
+    setUser(defaultValue);
+    setErrors(defaultValue);
+  };
 
   const handleChange = event => {
     const { name, value } = event.target;
@@ -71,26 +81,29 @@ export const SignIn = () => {
     const newErrors: any = {};
     if (!user.email) {
       newErrors.email = 'Please enter your email';
+      newErrors.isError = true;
       setErrors(newErrors);
       return;
     }
     if (!user.password) {
       newErrors.password = 'Please enter your password';
+      newErrors.isError = true;
       setErrors(newErrors);
       return;
     }
     dispatch(AuthSlice.actions.signIn(user));
   };
 
-  const validateButton = () => {
-    if (user.email === '' || user.password === '') return false;
+  const validate = () => {
+    if (!user.email || !user.password) {
+      return false;
+    }
     return true;
   };
 
   return (
     <div className="sign_in">
       {loading && <Loading />}
-      {notifi.status && <Notification {...notifi} onClose={() => setNotifi(defaultNotifi)} />}
       <div className="wrap_login">
         <h5>Sign in</h5>
         <form noValidate onSubmit={handleSubmit}>
@@ -125,17 +138,17 @@ export const SignIn = () => {
           <div style={{ textAlign: 'center' }}>
             <button
               type="submit"
-              disabled={!validateButton()}
-              style={{ cursor: !validateButton() ? 'no-drop' : 'pointer' }}>
+              disabled={!validate()}
+              style={{ cursor: !validate() ? 'no-drop' : 'pointer' }}>
               Sign In
             </button>
           </div>
         </form>
         <Box>
-          <Link href={pathParams.SIGNUP}>Create account</Link>
+          <Link href={PATH_PARAMS.SIGNUP}>Create account</Link>
         </Box>
         <Box>
-          <Link href={pathParams.PASSW}>Forgot Password</Link>
+          <Link href={PATH_PARAMS.PASSW}>Forgot Password</Link>
         </Box>
       </div>
     </div>

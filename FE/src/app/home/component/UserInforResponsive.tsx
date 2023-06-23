@@ -9,15 +9,17 @@ import {
   createTheme,
   Link,
   List,
+  ListItem,
+  CircularProgress,
 } from '@mui/material';
-import { ExitToApp, Mail, PersonOutline, PhoneIphone, Today } from '@mui/icons-material';
+import { ExitToApp, Mail, PersonOutline, PhoneIphone, Settings, Today } from '@mui/icons-material';
 import * as AuthSlice from 'store/auth/shared/slice';
 import { AppHelper } from 'utils/app.helper';
 import { useDispatch } from 'react-redux';
 import { LocalStorageService } from 'services/localStorage';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
-import { pathParams } from 'commom/common.contants';
+import { PATH_PARAMS } from 'commom/common.contants';
 
 interface Props {
   userInfor: Users | null;
@@ -50,7 +52,7 @@ export const UserInforResponsive = (props: Props) => {
     dispatch(AuthSlice.actions.signOut());
     dispatch(AuthSlice.actions.clearUserInfo());
     local.clearLocalStorage();
-    navigate(pathParams.SIGNIN);
+    navigate(PATH_PARAMS.SIGNIN);
     return;
   };
   const renderListItemButton = (icon: any, primary: any) => (
@@ -65,8 +67,8 @@ export const UserInforResponsive = (props: Props) => {
   return (
     <Box
       sx={{
-        bgcolor: '#f9f8f7',
-        p: 2,
+        bgcolor: '#ece9e6',
+        padding: '5px',
         minHeight: '100px',
         display: 'flex',
         alignItems: 'center',
@@ -91,17 +93,35 @@ export const UserInforResponsive = (props: Props) => {
         <FireNav component="nav" disablePadding>
           {AppHelper.isEmpty(userInfor) ? (
             <React.Fragment>
+              <ListItem
+                component="div"
+                disablePadding
+                onClick={() => navigate(PATH_PARAMS.PROFILE)}>
+                <ListItemButton style={{ justifyContent: 'center' }}>
+                  <CircularProgress
+                    size={25}
+                    color="info"
+                    sx={{
+                      position: 'absolute',
+                      top: 5,
+                      right: 92,
+                      zIndex: 1,
+                    }}
+                  />
+                  <Settings color="info" />
+                </ListItemButton>
+              </ListItem>
               {renderListItemButton(<PersonOutline color="primary" />, userInfor?.fullName)}
               {renderListItemButton(<Mail color="info" />, userInfor?.email)}
               {renderListItemButton(<PhoneIphone color="secondary" />, userInfor?.phone || 'none')}
               {renderListItemButton(
                 <Today color="success" />,
-                AppHelper.formmatDateTimeChat(userInfor?.createdAt),
+                AppHelper.formmatDateTime(userInfor?.createdAt),
               )}
               {renderListItemButton(<ExitToApp color="warning" />, 'Log out')}
             </React.Fragment>
           ) : (
-            <Link href={pathParams.SIGNIN}>Please login!</Link>
+            <Link href={PATH_PARAMS.SIGNIN}>Please login!</Link>
           )}
         </FireNav>
       </ThemeProvider>

@@ -1,7 +1,6 @@
 .sign_in {
   width: 100%;
   max-width: 500px;
-  min-height: 600px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -106,5 +105,6 @@
 
 .sign_in .wrap_login a {
   font-size: 13px;
+  cursor: pointer;
 }
 /*# sourceMappingURL=index.css.map */

@@ -48,7 +48,7 @@ export class AppHelper {
     return moment(date).format('DD-MM-YYYY');
   }
 
-  static formmatDateTimeChat(dateTime) {
+  static formmatDateTime(dateTime) {
     if (!dateTime) return '-';
     if (moment(dateTime).format('DD-MM-YYYY') === AppHelper.getToDate(new Date())) {
       return 'Hôm nay' + ' ' + AppHelper.formTimer(dateTime);

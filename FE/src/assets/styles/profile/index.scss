@@ -1,0 +1,5 @@
+@import "../extend/index.scss";
+
+.input_profile {
+    @include input_form;
+}

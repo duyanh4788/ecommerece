@@ -7,6 +7,8 @@ import reportWebVitals from './reportWebVitals';
 import { RootStore } from 'store/configStore';
 import { createRoot } from 'react-dom/client';
 import { AuthContextProvider } from 'app/authContext/AuthContextApi';
+import { PATH_PARAMS } from 'commom/common.contants';
+import { NotFound, Profile } from 'router/lazyRouting';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -16,14 +18,18 @@ const ConnectedApp = () => (
   <BrowserRouter>
     <Provider store={RootStore}>
       <AuthContextProvider>
-        <Navbar />
         <section className="home_app">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/password" element={<Password />} />
-          </Routes>
+          <Navbar />
+          <main>
+            <Routes>
+              <Route path={PATH_PARAMS.HOME} element={<Home />} />
+              <Route path={PATH_PARAMS.SIGNIN} element={<SignIn />} />
+              <Route path={PATH_PARAMS.SIGNUP} element={<SignUp />} />
+              <Route path={PATH_PARAMS.PASSW} element={<Password />} />
+              <Route path={PATH_PARAMS.PROFILE} element={<Profile />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
           <Footer />
         </section>
       </AuthContextProvider>

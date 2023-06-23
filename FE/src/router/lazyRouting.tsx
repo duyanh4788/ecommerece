@@ -24,3 +24,15 @@ export const Password = lazyLoad(
   module => module.Password,
   LoaderFallBack(),
 );
+
+export const Profile = lazyLoad(
+  () => import('app'),
+  module => module.Profile,
+  LoaderFallBack(),
+);
+
+export const NotFound = lazyLoad(
+  () => import('app'),
+  module => module.NotFound,
+  LoaderFallBack(),
+);

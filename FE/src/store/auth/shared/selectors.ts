@@ -11,3 +11,5 @@ export const selectSuccess = createSelector([selectAuth], state => state.success
 export const selectError = createSelector([selectAuth], state => state.error);
 
 export const selectUserInfor = createSelector([selectAuth], state => state.userInfor);
+
+export const selectUrl = createSelector([selectAuth], state => state.url);

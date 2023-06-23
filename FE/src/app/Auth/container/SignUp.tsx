@@ -10,30 +10,26 @@ import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loading } from 'commom/loading';
-import { Notification } from 'commom/notification';
-import { defaultNotifi, pathParams } from 'commom/common.contants';
+import { PATH_PARAMS } from 'commom/common.contants';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
+const defaultValue: any = {
+  fullName: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  phone: '',
+  showPassword: false,
+};
 
 export const SignUp = () => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const loading = useSelector(AuthSelector.selectLoading);
-  const [notifi, setNotifi] = useState(defaultNotifi);
 
-  const [user, setUser] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-    showPassword: false,
-  });
-  const [errors, setErrors] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-  });
+  const [user, setUser] = useState(defaultValue);
+  const [errors, setErrors] = useState(defaultValue);
 
   useInjectReducer({
     key: AuthSlice.sliceKey,
@@ -49,10 +45,12 @@ export const SignUp = () => {
       const { type, payload } = RootStore.getState().lastAction;
       switch (type) {
         case AuthSlice.actions.signUpSuccess.type:
-          setNotifi({ status: payload.status, message: payload.message, path: '/signin' });
+          resetData();
+          toast.success(payload.message);
+          navigate(PATH_PARAMS.SIGNIN);
           break;
         case AuthSlice.actions.signUpFail.type:
-          setNotifi({ ...defaultNotifi, status: payload.status, message: payload.message });
+          toast.error(payload.message);
           break;
         default:
           break;
@@ -61,6 +59,7 @@ export const SignUp = () => {
     return () => {
       storeSub$();
       dispatch(AuthSlice.actions.clearData());
+      resetData();
     };
   }, []);
 
@@ -72,7 +71,6 @@ export const SignUp = () => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    // Thực hiện các logic xử lý khi submit form
     const newErrors: any = {};
     if (!user.email) {
       newErrors.email = 'Please enter your email';
@@ -88,15 +86,28 @@ export const SignUp = () => {
       newErrors.password = 'Password not match';
       newErrors.confirmPassword = 'Password not match';
     }
-    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
     dispatch(AuthSlice.actions.signUp(user));
+  };
+
+  const resetData = () => {
+    setUser(defaultValue);
+    setErrors(defaultValue);
+  };
+
+  const validate = () => {
+    if (!user.email || !user.password || !user.phone || !user.confirmPassword) {
+      return false;
+    }
+    return true;
   };
 
   return (
     <div className="sign_in">
       {loading && <Loading />}
-      {notifi.status && <Notification {...notifi} onClose={() => setNotifi(defaultNotifi)} />}
-
       <div className="wrap_login">
         <h5>Sign Up</h5>
         <form noValidate onSubmit={handleSubmit}>
@@ -162,10 +173,15 @@ export const SignUp = () => {
           {errors.password && <span className="msg_error">*{errors.confirmPassword}</span>}
 
           <div style={{ textAlign: 'center' }}>
-            <button type="submit">Sign Up</button>
+            <button
+              type="submit"
+              disabled={!validate()}
+              style={{ cursor: !validate() ? 'no-drop' : 'pointer' }}>
+              Sign Up
+            </button>
           </div>
         </form>
-        <Link href={pathParams.SIGNIN}>You have account</Link>
+        <Link href={PATH_PARAMS.SIGNIN}>You have account</Link>
       </div>
     </div>
   );

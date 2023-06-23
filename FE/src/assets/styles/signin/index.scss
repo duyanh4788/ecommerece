@@ -3,7 +3,6 @@
 .sign_in {
     width: 100%;
     max-width: 500px;
-    min-height: 600px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -44,6 +43,7 @@
         }
         a {
             font-size: 13px;
+            cursor: pointer;
         }
     }
 }

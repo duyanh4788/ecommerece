@@ -16,17 +16,18 @@ import bannernode from '../images/bannernode.png';
 
 export const TOKEN_EXPRIED = 'token expired, please login again.';
 
-export const defaultNotifi = {
-  status: null,
-  message: null,
-  path: '',
+export const PATH_PARAMS = {
+  HOME: '/',
+  SIGNIN: '/signin',
+  SIGNUP: '/signup',
+  PASSW: '/password',
+  PROFILE: '/profile',
 };
 
-export const pathParams = {
-  SIGNIN: '/signin',
-  SIGNUP: '/signin',
-  PASSW: '/password',
-  HOME: '/',
+export const TYPE_RESET_PW = {
+  FORGOT: 'FORGOT',
+  RESEND: 'RESEND',
+  RESET: 'RESET',
 };
 
 export const FOOTER_INFOR = {

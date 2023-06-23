@@ -6,6 +6,7 @@ export interface AuthState {
   success: any;
   error: any;
   userInfor: Users | null;
+  url: Array<any>;
 }
 
 export const initialState: AuthState = {
@@ -13,6 +14,7 @@ export const initialState: AuthState = {
   success: false,
   error: false,
   userInfor: null,
+  url: [],
 };
 
 const AuthSlice = createSlice({
@@ -67,14 +69,77 @@ const AuthSlice = createSlice({
       state.error = action.payload.data;
     },
 
+    forgotPassword(state, action) {
+      state.loading = true;
+    },
+    forgotPasswordSuccess(state, action) {
+      state.loading = false;
+      state.success = action.payload.data;
+    },
+    forgotPasswordFail(state, action) {
+      state.loading = false;
+      state.error = action.payload.data;
+    },
+
+    resendForgotPassword(state, action) {
+      state.loading = true;
+    },
+    resendForgotPasswordSuccess(state, action) {
+      state.loading = false;
+      state.success = action.payload.data;
+    },
+    resendForgotPasswordFail(state, action) {
+      state.loading = false;
+      state.error = action.payload.data;
+    },
+
+    resetForgotPassword(state, action) {
+      state.loading = true;
+    },
+    resetForgotPasswordSuccess(state, action) {
+      state.loading = false;
+      state.success = action.payload.data;
+    },
+    resetForgotPasswordFail(state, action) {
+      state.loading = false;
+      state.error = action.payload.data;
+    },
+
+    updateProfile(state, action) {
+      state.loading = true;
+    },
+    updateProfileSuccess(state, action) {
+      state.loading = false;
+      state.success = action.payload.data;
+    },
+    updateProfileFail(state, action) {
+      state.loading = false;
+      state.error = action.payload.data;
+    },
+
+    uploadFile(state, action) {
+      state.loading = true;
+    },
+    uploadFileSuccess(state, action) {
+      state.loading = false;
+      state.url = action.payload.data;
+    },
+    uploadFileFail(state, action) {
+      state.loading = false;
+      state.error = action.payload.data;
+    },
+
     clearUserInfo(state) {
       state.userInfor = null;
+    },
+
+    clearUrl(state) {
+      state.url = [];
     },
 
     clearData(state) {
       state.success = false;
       state.error = false;
-      state.userInfor = null;
     },
   },
 });

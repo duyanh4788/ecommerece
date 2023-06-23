@@ -1,18 +1,16 @@
+const userPath = (path: string): string => `/users/${path}`;
+
 export const AuthApi = {
-  SIGN_IN: '/users/signin',
-  SIGN_UP: '/users/signup',
-  SIGN_OUT: '/users/signout',
-  GET_USER_BY_ID: '/users/get-user-by-id',
-  //
-  SIGN_IN_WITH_CODE: '/users/signin-withcode',
-  ACTIVE_AUTH_CODE: '/users/active',
-  CHANGE_STATUS_IS_ONLINE: '/users/changeStatusOnline',
-  UPDATE_INFOR: '/users/update-infor',
-  LOGIN_FB: '/users/login-fb',
-  LOGIN_GG: '/users/login-gg',
-  FORGOT_PW: '/users/order-reset-password',
-  RESEND_ORDER_RESET_PASSWORD: '/users/resend-order-reset-password',
-  RESET_PASSWORD: '/users/reset-password',
+  SIGN_IN: userPath('signin'),
+  SIGN_UP: userPath('signup'),
+  SIGN_OUT: userPath('signout'),
+  GET_USER_BY_ID: userPath('get-user-by-id'),
+  FOR_GOT_PW: userPath('forgot-password'),
+  RESEND_ORDER_RESET_PASSWORD: userPath('resend-order-reset-password'),
+  RESET_PASSWORD: userPath('reset-password'),
+  REGISTER_OWNER_SHOP: userPath('register-owner-shop'),
+  UPDATE_PROFILE: userPath('update-profile'),
+  UPLOAD_FILE: userPath('upload-file'),
 };
 
 export const REPONSE_CONSTANT = {
@@ -24,31 +22,16 @@ export const REPONSE_CONSTANT = {
   SIGN_OUT_FAIL: 'SIGN_OUT_FAIL',
   GET_USER_BY_ID_SUCCESS: 'GET_USER_BY_ID_SUCCESS',
   GET_USER_BY_ID_FAIL: 'GET_USER_BY_ID_FAIL',
-
-  //
-  CHANGE_STATUS_IS_ONLINE_SUCCESS: 'CHANGE_STATUS_IS_ONLINE_SUCCESS',
-  CHANGE_STATUS_IS_ONLINE_FAIL: 'CHANGE_STATUS_IS_ONLINE_FAIL',
-  UPDATE_INFOR_SUCCESS: 'UPDATE_INFOR_SUCCESS',
-  UPDATE_INFOR_FAIL: 'UPDATE_INFOR_FAIL',
-  LOGIN_FB_SUCCESS: 'LOGIN_FB_SUCCESS',
-  LOGIN_FB_FAIL: 'LOGIN_FB_FAIL',
-  LOGIN_GG_SUCCESS: 'LOGIN_GG_SUCCESS',
-  LOGIN_GG_FAIL: 'LOGIN_GG_FAIL',
-  ACTIVE_AUTH_CODE_SUCCESS: 'ACTIVE_AUTH_CODE_SUCCESS',
-  ACTIVE_AUTH_CODE_FAIL: 'ACTIVE_AUTH_CODE_FAIL',
-  FORGOT_PW_SUCCESS: 'FORGOT_PW_SUCCESS',
-  FORGOT_PW_FAIL: 'FORGOT_PW_FAIL',
+  FOR_GOT_PW_SUCCESS: 'FOR_GOT_PW_SUCCESS',
+  FOR_GOT_PW_FAIL: 'FOR_GOT_PW_FAIL',
   RESEND_ORDER_RESET_PASSWORD_SUCCESS: 'RESEND_ORDER_RESET_PASSWORD_SUCCESS',
   RESEND_ORDER_RESET_PASSWORD_FAIL: 'RESEND_ORDER_RESET_PASSWORD_FAIL',
   RESET_PASSWORD_SUCCESS: 'RESET_PASSWORD_SUCCESS',
   RESET_PASSWORD_FAIL: 'RESET_PASSWORD_FAIL',
+  REGISTER_OWNER_SHOP_SUCCESS: 'REGISTER_OWNER_SHOP_SUCCESS',
+  REGISTER_OWNER_SHOP_FAIL: 'REGISTER_OWNER_SHOP_FAIL',
+  UPDATE_PROFILE_SUCCESS: 'UPDATE_PROFILE_SUCCESS',
+  UPDATE_PROFILE_FAIL: 'UPDATE_PROFILE_FAIL',
+  UPLOAD_FILE_SUCCESS: 'UPLOAD_FILE_SUCCESS',
+  UPLOAD_FILE_FAIL: 'UPLOAD_FILE_FAIL',
 };
-
-export const REPONSE_MESSAGE = {
-  SIGN_IN_SUCCESS: 'Đăng nhập thành công',
-  SIGN_IN_FAIL: 'Đăng nhập thất bại',
-  SIGN_UP_SUCCESS: 'Đăng ký thành công',
-  SIGN_UP_FAIL: 'Đăng ký thất bại',
-};
-
-export const JOIN_ROOM = 'JOIN_ROOM';

@@ -8,7 +8,7 @@ import { AuthSaga } from 'store/auth/shared/saga';
 import { useInjectReducer, useInjectSaga } from 'store/core/@reduxjs/redux-injectors';
 import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
 import { useNavigate } from 'react-router-dom';
-import { pathParams } from 'commom/common.contants';
+import { PATH_PARAMS } from 'commom/common.contants';
 
 export const AuthContext = React.createContext({});
 export const AuthContextProvider = ({ children }) => {
@@ -29,7 +29,9 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     function handleUser(user) {
-      if (!user) return;
+      if (!user) {
+        navigate(PATH_PARAMS.HOME);
+      }
       dispatch(AuthSlice.actions.getUserById());
       return;
     }
@@ -39,8 +41,6 @@ export const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     function handleUser(user) {
       if (!user) return;
-      navigate(pathParams.HOME);
-      return;
     }
     handleUser(userInfor);
   }, [userInfor]);
