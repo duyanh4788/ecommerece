@@ -33,11 +33,11 @@ export class UsersRoutes {
   public routes(app: Router): void {
     app.post(BASE_ROUTE + Routes.SIGNIN, this.authUserMiddleware.validateSignIn, this.usersController.userSignin);
     app.post(BASE_ROUTE + Routes.SIGNUP, this.authUserMiddleware.validateSignUp, this.usersController.userSignUp);
+    app.post(BASE_ROUTE + Routes.FOR_GOT_PW, this.usersController.forgotPassword);
+    app.post(BASE_ROUTE + Routes.RESEND_ORDER_RESET_PASSWORD, this.usersController.resendForgotPassword);
+    app.post(BASE_ROUTE + Routes.RESET_PASSWORD, this.usersController.resetForgotPassword);
     app.post(BASE_ROUTE + Routes.SIGNOUT, this.verifyTokenMiddleware.auThenticate, this.usersController.userSignOut);
     app.get(BASE_ROUTE + Routes.GET_USER_BY_ID, this.verifyTokenMiddleware.auThenticate, this.usersController.getUserById);
-    app.get(BASE_ROUTE + Routes.FOR_GOT_PW, this.usersController.forgotPassword);
-    app.get(BASE_ROUTE + Routes.RESEND_ORDER_RESET_PASSWORD, this.usersController.resendForgotPassword);
-    app.get(BASE_ROUTE + Routes.RESET_PASSWORD, this.usersController.resetForgotPassword);
     app.post(BASE_ROUTE + Routes.REGISTER_OWNER_SHOP, this.verifyTokenMiddleware.auThenticate, this.usersController.registerOwnerShop);
   }
 }

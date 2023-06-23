@@ -3,7 +3,7 @@ import { RestError } from '../services/error/error';
 import { hashTokenPasswordInput, encryptTokenPasswordOutput, genarateKeyPairSync, compareSyncPasswordInput } from '../utils/handlerTokenPassword';
 import { UserAttributes, UserRole } from '../interface/UserInterface';
 import { ITokenUsersRepository } from '../repository/ITokenUsersRepository';
-import { RedisUsers } from '../redis/users/RedisUsers';
+import { MainkeysRedis, RedisUsers } from '../redis/users/RedisUsers';
 import { IAuthenticatesCodesRepository } from '../repository/IAuthenticatesCodesRepository';
 import { ramdomAuthCode } from '../utils/ramdomAuthCode';
 import { checkTimerAuthenticator } from '../utils/timer';
@@ -20,7 +20,7 @@ export class UserUseCase {
     if (!isPassWord) throw new RestError('Password is wrong!', 400);
     const { privateKey, publicKey } = genarateKeyPairSync();
     const keyStores = await this.tokenUsersRepository.createTokenUsers(user.id, publicKey, privateKey);
-    await this.redisUsers.handlerUpdateTokenUserByUserId(user.id, keyStores);
+    await this.redisUsers.handlerUpdateKeys(MainkeysRedis.TOKEN, user.id, keyStores);
     return encryptTokenPasswordOutput(user, keyStores);
   }
 
@@ -36,7 +36,7 @@ export class UserUseCase {
 
   async userSginOutUseCase(userId: string) {
     await this.tokenUsersRepository.deleteTokenUserByUserId(userId);
-    await this.redisUsers.handlerDelTokenUserByUserId(userId);
+    await this.redisUsers.handlerDelKeys(MainkeysRedis.TOKEN, userId); // del token
     return;
   }
 
@@ -86,11 +86,13 @@ export class UserUseCase {
     return authCode;
   }
 
-  async resetForgotPasswordUseCase(userId: string, transactionDb: Transaction) {
-    return await this.authenticatesCodesRepository.deleteAuthCodeByUserId(userId, transactionDb);
+  async resetForgotPasswordUseCase(userId: string, authCode: string, transactionDb: Transaction) {
+    return await this.authenticatesCodesRepository.deleteAuthCodeByUserId(userId, authCode, transactionDb);
   }
 
-  async updatePasswordUseCase(userId: string, password: string, transactionDb: Transaction) {
-    await this.userRepository.updatePasswordByUserId(userId, hashTokenPasswordInput(password), transactionDb);
+  async updatePasswordUseCase(userId: string, newPassWord: string, email: string, transactionDb: Transaction) {
+    await this.userRepository.updatePasswordByUserId(userId, hashTokenPasswordInput(newPassWord), transactionDb);
+    await this.redisUsers.handlerDelKeysEmail(email);
+    return;
   }
 }

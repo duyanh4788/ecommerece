@@ -8,7 +8,7 @@ export interface IUserRepository {
 
   findByEmail(email: string): Promise<UserAttributes>;
 
-  updatePasswordByUserId(userId: string, password: string, transactionDb: Transaction): Promise<void>;
+  updatePasswordByUserId(userId: string, newPassWord: string, transactionDb: Transaction): Promise<void>;
 
   createUser(fullName: string, email: string, password: string, phone: number, roleId: UserRole, transactionDb?: Transaction): Promise<UserAttributes>;
 }

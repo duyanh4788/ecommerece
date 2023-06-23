@@ -86,8 +86,8 @@ export class UsersController {
         throw new RestError('invalid request!', 404);
       }
       const user = await this.userUseCase.getUserByEmailUseCase(email);
-      await this.userUseCase.resetForgotPasswordUseCase(user.id, transactionDb);
-      await this.userUseCase.updatePasswordUseCase(email, newPassWord, transactionDb);
+      await this.userUseCase.resetForgotPasswordUseCase(user.id, authCode, transactionDb);
+      await this.userUseCase.updatePasswordUseCase(user.id, newPassWord, email, transactionDb);
       await transactionDb.commit();
       return new SendRespone({ message: 'upadte password successfully!' }).send(res);
     } catch (error) {

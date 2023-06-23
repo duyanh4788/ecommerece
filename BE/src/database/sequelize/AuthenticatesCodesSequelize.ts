@@ -4,6 +4,7 @@ import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
 import { IAuthenticatesCodesRepository } from '../../repository/IAuthenticatesCodesRepository';
 import { AuthenticatesCodesInterface } from '../../interface/AuthenticatesCodesInterface';
 import { AuthenticatesCodesModel } from '../model/AuthenticatesCodesModel';
+import { RestError } from '../../services/error/error';
 
 export class AuthenticatesCodesSequelize implements IAuthenticatesCodesRepository {
   async createAuthCode(userId: string, authCode: string, transactionDb?: Transaction): Promise<AuthenticatesCodesInterface> {
@@ -29,8 +30,10 @@ export class AuthenticatesCodesSequelize implements IAuthenticatesCodesRepositor
     return this.transformModelToEntity(auths);
   }
 
-  async deleteAuthCodeByUserId(userId: string, transactionDb: Transaction): Promise<void> {
-    await AuthenticatesCodesModel.destroy({ where: { userId: deCryptFakeId(userId) }, transaction: transactionDb });
+  async deleteAuthCodeByUserId(userId: string, authCode: string, transactionDb: Transaction): Promise<void> {
+    const auths = await AuthenticatesCodesModel.findOne({ where: { userId: deCryptFakeId(userId) } });
+    if (!auths || auths.authCode !== authCode) throw new RestError('code invalid!', 404);
+    await auths.destroy({ transaction: transactionDb });
     return;
   }
   /**

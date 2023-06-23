@@ -8,5 +8,5 @@ export interface IAuthenticatesCodesRepository {
 
   createAuthCode(userId: string, authCode: string, transactionDb?: Transaction): Promise<AuthenticatesCodesInterface>;
 
-  deleteAuthCodeByUserId(userId: string, transactionDb: Transaction): Promise<void>;
+  deleteAuthCodeByUserId(userId: string, authCode: string, transactionDb: Transaction): Promise<void>;
 }

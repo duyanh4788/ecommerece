@@ -2,7 +2,7 @@ import * as JWT from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { SendRespone } from '../../services/success/success';
 import { UserRole } from '../../interface/UserInterface';
-import { RedisUsers } from '../../redis/users/RedisUsers';
+import { MainkeysRedis, RedisUsers } from '../../redis/users/RedisUsers';
 import { RestError } from '../../services/error/error';
 
 export class VerifyTokenMiddleware {
@@ -17,7 +17,7 @@ export class VerifyTokenMiddleware {
       if (!userId) {
         throw new RestError('invalid request!', 401);
       }
-      const tokenUser = await redisUsers.handlerGetTokenUserByUserId(userId);
+      const tokenUser = await redisUsers.handlerGetTokenUserByUserId(MainkeysRedis.TOKEN, userId);
       if (!tokenUser) {
         throw new RestError('invalid request!', 401);
       }
@@ -26,6 +26,10 @@ export class VerifyTokenMiddleware {
       req.user = deCodePublicKey;
       return next();
     } catch (error) {
+      if (error.name === 'JsonWebTokenError') {
+        const restError = new RestError(error.message, 401);
+        return RestError.manageServerError(res, restError, false);
+      }
       return RestError.manageServerError(res, error, false);
     }
   }

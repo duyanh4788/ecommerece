@@ -4,6 +4,11 @@ import { TokenUserInterface } from '../../interface/TokenUserInterface';
 import { RestError } from '../../services/error/error';
 import { redisController } from '../RedisController';
 
+export enum MainkeysRedis {
+  TOKEN = 'token_users:',
+  USER_ID = 'user:'
+}
+
 export class RedisUsers {
   private tokenUsersRepository: TokenUsersSequelize = new TokenUsersSequelize();
   private usersRepository: UserSequelize = new UserSequelize();
@@ -18,31 +23,35 @@ export class RedisUsers {
     return userRedis;
   }
 
-  public async handlerGetUserById(id: string) {
-    let userRedis = await redisController.getRedis(`user:${id}`);
+  public async handlerDelKeysEmail(email: string) {
+    await redisController.delRedis(email);
+  }
+
+  public async handlerGetUserById(mainKeys: string, userId: string) {
+    let userRedis = await redisController.getRedis(`${mainKeys}${userId}`);
     if (!userRedis) {
-      const user = await this.usersRepository.findById(id);
+      const user = await this.usersRepository.findById(userId);
       if (!user) throw new RestError('user not found!', 404);
-      userRedis = await redisController.setRedis({ keyValue: `user:${id}`, value: user });
+      userRedis = await redisController.setRedis({ keyValue: `${mainKeys}${userId}`, value: user });
     }
     return userRedis;
   }
 
-  public async handlerGetTokenUserByUserId(userId: string) {
-    let userRedis = await redisController.getRedis(`token_users:${userId}`);
+  public async handlerGetTokenUserByUserId(mainKeys: string, userId: string) {
+    let userRedis = await redisController.getRedis(`${mainKeys}${userId}`);
     if (!userRedis) {
       const tokenUser = await this.tokenUsersRepository.findByUserId(userId);
       if (!tokenUser) throw new RestError('token not found!', 404);
-      userRedis = await redisController.setRedis({ keyValue: `token_users:${userId}`, value: tokenUser });
+      userRedis = await redisController.setRedis({ keyValue: `${mainKeys}${userId}`, value: tokenUser });
     }
     return userRedis;
   }
 
-  public async handlerUpdateTokenUserByUserId(userId: string, tokenUser: TokenUserInterface) {
-    await redisController.setRedis({ keyValue: `token_users:${userId}`, value: tokenUser });
+  public async handlerUpdateKeys(mainKeys: string, userId: string, tokenUser: TokenUserInterface) {
+    await redisController.setRedis({ keyValue: `${mainKeys}${userId}`, value: tokenUser });
   }
 
-  public async handlerDelTokenUserByUserId(userId: string) {
-    await redisController.delRedis(`token_users:${userId}`);
+  public async handlerDelKeys(mainKeys: string, userId: string) {
+    await redisController.delRedis(`${mainKeys}${userId}`);
   }
 }
