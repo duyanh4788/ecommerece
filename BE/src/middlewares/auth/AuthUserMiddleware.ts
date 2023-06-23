@@ -36,4 +36,18 @@ export class AuthUserMiddleware {
     }
     next();
   }
+
+  public async validateUpdate(req: Request, res: Response, next: NextFunction) {
+    const { fullName, phone, password, avatar } = req.body;
+    if (
+      (!fullName && !phone && !password && !avatar) ||
+      (fullName && !isCheckedTypeValues(fullName, TypeOfValue.STRING)) ||
+      (phone && !isCheckedTypeValues(phone, TypeOfValue.NUMBER)) ||
+      (avatar && !isCheckedTypeValues(avatar, TypeOfValue.STRING)) ||
+      (password && !isCheckedTypeValues(password, TypeOfValue.STRING))
+    ) {
+      return new SendRespone({ status: 'error', code: 404, message: 'Please input full information!' }).send(res);
+    }
+    next();
+  }
 }

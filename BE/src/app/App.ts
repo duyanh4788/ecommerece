@@ -27,8 +27,9 @@ class App {
     this.App = express();
     this.configCors();
     this.configJson();
-    this.validateRequestLimits();
-    this.App.use('/api/v1', this.ApiRouter);
+    this.initStaticFile();
+    this.interValQueue();
+    this.App.use('/api/v1', this.requestLimitMiddleware.validateRequestLimits, this.requestLimitMiddleware.queueRequestLimits, this.ApiRouter);
     this.routers.routes(this.ApiRouter);
   }
 
@@ -75,8 +76,7 @@ class App {
     this.App.use(cookieParser());
     this.App.use(logger('dev'));
   }
-  public validateRequestLimits() {
-    this.App.use(this.requestLimitMiddleware.validateRequestLimit);
+  public interValQueue() {
     setInterval(this.requestLimitMiddleware.processQueue, 1000);
   }
 }

@@ -9,6 +9,7 @@ export interface UserAttributes {
   fullName?: string;
   email?: string;
   password?: string;
+  avatar?: string;
   roleId: UserRole;
   phone?: number;
   activate?: boolean;

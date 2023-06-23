@@ -25,9 +25,26 @@ export class UserSequelize implements IUserRepository {
   }
 
   async updatePasswordByUserId(userId: string, newPassWord: string, transactionDb: Transaction): Promise<void> {
-    console.log(deCryptFakeId(userId));
     await UsersModel.update({ password: newPassWord }, { where: { id: deCryptFakeId(userId) }, transaction: transactionDb });
-    return;
+  }
+
+  async updateProfile(reqBody: UserAttributes, userId: string): Promise<UserAttributes> {
+    const { fullName, phone, password, avatar } = reqBody;
+    const user = await UsersModel.findByPk(deCryptFakeId(userId));
+    if (fullName) {
+      user.fullName = fullName;
+    }
+    if (phone) {
+      user.phone = phone;
+    }
+    if (password) {
+      user.password = password;
+    }
+    if (avatar) {
+      user.avatar = avatar;
+    }
+    await user.save();
+    return this.transformModelToEntity(user);
   }
 
   /**

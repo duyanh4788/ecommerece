@@ -38,16 +38,6 @@ export class UsersController {
     }
   };
 
-  public getUserById = async (req: Request, res: Response) => {
-    try {
-      const { user } = req;
-      const userModel = await this.userUseCase.getUserByIdUseCase(user.userId);
-      return new SendRespone({ data: userModel }).send(res);
-    } catch (error) {
-      return RestError.manageServerError(res, error, false);
-    }
-  };
-
   public forgotPassword = async (req: Request, res: Response) => {
     try {
       const { email } = req.body;
@@ -89,9 +79,52 @@ export class UsersController {
       await this.userUseCase.resetForgotPasswordUseCase(user.id, authCode, transactionDb);
       await this.userUseCase.updatePasswordUseCase(user.id, newPassWord, email, transactionDb);
       await transactionDb.commit();
-      return new SendRespone({ message: 'upadte password successfully!' }).send(res);
+      return new SendRespone({ message: 'update password successfully!' }).send(res);
     } catch (error) {
       await transactionDb.rollback();
+      return RestError.manageServerError(res, error, false);
+    }
+  };
+
+  public getUserById = async (req: Request, res: Response) => {
+    try {
+      const { user } = req;
+      const userModel = await this.userUseCase.getUserByIdUseCase(user.userId);
+      return new SendRespone({ data: userModel }).send(res);
+    } catch (error) {
+      return RestError.manageServerError(res, error, false);
+    }
+  };
+
+  public updateProfile = async (req: Request, res: Response) => {
+    try {
+      const { user } = req;
+      await this.userUseCase.updateProfileUseCase(req.body, user.userId);
+      return new SendRespone({ message: 'update successfully!' }).send(res);
+    } catch (error) {
+      return RestError.manageServerError(res, error, false);
+    }
+  };
+
+  public uploadFile = async (req: Request, res: Response) => {
+    try {
+      if (!req.files.length) {
+        throw new RestError('upload failed.', 404);
+      }
+      const fileList = req.files as Express.Multer.File[];
+      let url: string[] = [];
+      await Promise.all(
+        fileList.map(async (item) => {
+          if (item.path.includes('.mp4')) {
+            url.push(process.env.END_POINT_VIDEOS_PATH + item.path);
+          }
+          if (!item.path.includes('.mp4')) {
+            url.push(process.env.END_POINT_IMAGES_PATH + item.path);
+          }
+        })
+      );
+      return new SendRespone({ data: url, message: 'upload successfullly.' }).send(res);
+    } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
   };

@@ -31,6 +31,9 @@ export class UsersModel extends Model<UsersModel> {
   @Column
   public phone: number;
 
+  @Column
+  public avatar: string;
+
   @Column({ defaultValue: true })
   public activate: boolean;
 

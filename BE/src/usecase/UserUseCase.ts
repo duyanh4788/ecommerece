@@ -95,4 +95,15 @@ export class UserUseCase {
     await this.redisUsers.handlerDelKeysEmail(email);
     return;
   }
+
+  async updateProfileUseCase(reqBody: UserAttributes, userId: string) {
+    const { password } = reqBody;
+    if (password) {
+      const newPassWord = hashTokenPasswordInput(password);
+      reqBody = { ...reqBody, password: newPassWord };
+    }
+    const user = await this.userRepository.updateProfile(reqBody, userId);
+    await this.redisUsers.handlerDelKeysEmail(user.email);
+    return;
+  }
 }
