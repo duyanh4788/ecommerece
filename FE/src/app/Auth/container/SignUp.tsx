@@ -65,6 +65,9 @@ export const SignUp = () => {
 
   const handleChange = event => {
     const { name, value } = event.target;
+    if (name === 'phone' && value.length > 10) {
+      return;
+    }
     setUser(prevUser => ({ ...prevUser, [name]: value }));
     setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
   };
@@ -99,7 +102,13 @@ export const SignUp = () => {
   };
 
   const validate = () => {
-    if (!user.email || !user.password || !user.phone || !user.confirmPassword) {
+    if (
+      !user.email ||
+      !user.password ||
+      !user.phone ||
+      !user.confirmPassword ||
+      !(Math.ceil(Math.log10(Number(user?.phone) + 1)) >= 10)
+    ) {
       return false;
     }
     return true;
@@ -131,6 +140,8 @@ export const SignUp = () => {
             type="number"
             placeholder="Phone"
             name="phone"
+            pattern={'[0-9]{10}'}
+            maxLength={10}
             value={user.phone}
             onChange={handleChange}
           />

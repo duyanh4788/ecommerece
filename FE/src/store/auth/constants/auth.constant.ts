@@ -1,4 +1,5 @@
 const userPath = (path: string): string => `/users/${path}`;
+const uploadPath = (path: string): string => `/upload/${path}`;
 
 export const AuthApi = {
   SIGN_IN: userPath('signin'),
@@ -10,7 +11,7 @@ export const AuthApi = {
   RESET_PASSWORD: userPath('reset-password'),
   REGISTER_OWNER_SHOP: userPath('register-owner-shop'),
   UPDATE_PROFILE: userPath('update-profile'),
-  UPLOAD_FILE: userPath('upload-file'),
+  UPLOAD_FILE: uploadPath('upload-file'),
 };
 
 export const REPONSE_CONSTANT = {

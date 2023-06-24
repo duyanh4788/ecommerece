@@ -1,4 +1,4 @@
-import { NotFound } from './Auth/component/NotFound';
+import { NotFound } from './404/NotFound';
 import { Password } from './Auth/container/Password';
 import { Profile } from './Auth/container/Profile';
 import { SignIn } from './Auth/container/SignIn';

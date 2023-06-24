@@ -50,9 +50,6 @@ export class AppHelper {
 
   static formmatDateTime(dateTime) {
     if (!dateTime) return '-';
-    if (moment(dateTime).format('DD-MM-YYYY') === AppHelper.getToDate(new Date())) {
-      return 'Hôm nay' + ' ' + AppHelper.formTimer(dateTime);
-    }
     return moment(dateTime).format('DD-MM-YYYY - HH:mm');
   }
 
