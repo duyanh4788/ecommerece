@@ -6,7 +6,7 @@ import '../src/assets/styles/main/index.css';
 import reportWebVitals from './reportWebVitals';
 import { RootStore } from 'store/configStore';
 import { createRoot } from 'react-dom/client';
-import { AuthContextProvider } from 'app/authContext/AuthContextApi';
+import { AuthContextProvider } from 'app/AuthContext/AuthContextApi';
 import { PATH_PARAMS } from 'commom/common.contants';
 import { NotFound, Profile } from 'router/lazyRouting';
 

@@ -16,7 +16,7 @@ import { ExitToApp, Mail, PersonOutline, PhoneIphone, Settings, Today } from '@m
 import * as AuthSlice from 'store/auth/shared/slice';
 import { AppHelper } from 'utils/app.helper';
 import { useDispatch } from 'react-redux';
-import { LocalStorageService } from 'services/localStorage';
+import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { PATH_PARAMS } from 'commom/common.contants';
@@ -47,6 +47,7 @@ export const UserInforResponsive = (props: Props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const local = new LocalStorageService();
+  const userStore = local.getItem(LocalStorageKey.user);
   const handleLogout = (primary: string) => {
     if (primary !== 'Log out') return;
     dispatch(AuthSlice.actions.signOut());
@@ -120,6 +121,11 @@ export const UserInforResponsive = (props: Props) => {
               )}
               {renderListItemButton(<ExitToApp color="warning" />, 'Log out')}
             </React.Fragment>
+          ) : userStore ? (
+            <ListItemText
+              primary="you are limited request, please try again after some minutes!"
+              primaryTypographyProps={{ fontSize: 12, color: '#ff0000', fontWeight: 'bold' }}
+            />
           ) : (
             <Link href={PATH_PARAMS.SIGNIN}>Please login!</Link>
           )}

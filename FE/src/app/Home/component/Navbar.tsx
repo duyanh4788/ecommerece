@@ -24,12 +24,12 @@ import { AppHelper } from 'utils/app.helper';
 import { PopoverList } from './Popover';
 import { UserInforResponsive } from './UserInforResponsive';
 import { Users } from 'interface/Users.model';
-import { AuthContext } from 'app/authContext/AuthContextApi';
+import { AuthContext } from 'app/AuthContext/AuthContextApi';
 import { PATH_PARAMS } from 'commom/common.contants';
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
 import * as AuthSlice from 'store/auth/shared/slice';
-import { LocalStorageService } from 'services/localStorage';
+import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import * as AuthSelector from 'store/auth/shared/selectors';
@@ -71,6 +71,7 @@ const darkTheme = createTheme({
 export const Navbar = () => {
   const userInfor: Users = useContext(AuthContext);
   const local = new LocalStorageService();
+  const userStore = local.getItem(LocalStorageKey.user);
   const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -81,6 +82,12 @@ export const Navbar = () => {
   useEffect(() => {
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
       const { type, payload } = RootStore.getState().lastAction;
+      if (payload && payload.code === 401) {
+        toast.error(payload.message);
+        local.clearLocalStorage();
+        navigate(PATH_PARAMS.SIGNIN);
+        return;
+      }
       switch (type) {
         case AuthSlice.actions.signOutSuccess.type:
           setAnchorEl(null);
@@ -91,8 +98,6 @@ export const Navbar = () => {
           break;
         case AuthSlice.actions.getUserByIdFail.type:
           toast.error(payload.message);
-          local.clearLocalStorage();
-          navigate(PATH_PARAMS.SIGNIN);
           break;
         default:
           break;
@@ -165,7 +170,7 @@ export const Navbar = () => {
             <Box sx={{ display: { xs: 'none', md: 'block' }, cursor: 'pointer' }}>
               <span onClick={handleClick}>
                 <Avatar sx={{ bgcolor: '#56ab2f' }} src={userInfor?.avatar}>
-                  {AppHelper.convertFullName(userInfor?.fullName)}
+                  {AppHelper.convertFullName(userInfor?.fullName || userStore?.fullName)}
                 </Avatar>
               </span>
             </Box>
