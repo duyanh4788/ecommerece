@@ -55,13 +55,13 @@ export class MulterMiddleware {
           return new SendRespone({ status: 'error', code: 500, message: 'Internal error!' }).send(res);
         }
         if (req.file) {
-          this.configFileImages(req.file, res);
+          this.configFileImages(req.file, req);
         }
 
         if (!req.file) {
           for (let i = 0; i < files.length; i++) {
             const file = req.files[i];
-            await this.configFileImages(file, res);
+            await this.configFileImages(file, req);
           }
         }
         next();
@@ -71,56 +71,56 @@ export class MulterMiddleware {
     });
   };
 
-  private async configFileImages(file: Express.Multer.File, res: Response) {
-    if (true) {
-      const fileName = `${Date.now()}.${file.mimetype.split('/')[1]}`;
-      const filePath = this.filepath(`${file.mimetype === 'video/mp4' ? _pathFileVideo : _pathFileImages}/${fileName}`);
-      if (file.mimetype === 'video/mp4') {
-        ffmpeg.setFfmpegPath(ffmpegPath.path);
-        const tempFilePath = `${Date.now()}.mp4`;
-        fs.writeFileSync(tempFilePath, file.buffer);
-        await new Promise<void>((resolve, reject) => {
-          ffmpeg(tempFilePath)
-            .size('640x480')
-            .on('end', () => {
-              fs.unlinkSync(tempFilePath);
-              resolve();
-            })
-            .on('error', (err) => {
-              fs.unlinkSync(tempFilePath);
-              reject('can not upload video!');
-            })
-            .saveToFile(filePath);
-        });
-        file.path = fileName;
-      } else {
-        await sharp(file.buffer)
-          .resize({
-            width: 800,
-            height: 800,
-            fit: sharp.fit.inside,
-            withoutEnlargement: true
+  private async configFileImages(file: Express.Multer.File, req: Request) {
+    const pathFolderUser = await this.createFloder(file.mimetype, req.user.userId);
+    const fileName = `${Date.now()}.${file.mimetype.split('/')[1]}`;
+    const filePath = this.filepath(`${pathFolderUser}/${fileName}`);
+    const fileCut = this.cutNameFile(filePath, req.user.userId);
+    if (file.mimetype === 'video/mp4') {
+      ffmpeg.setFfmpegPath(ffmpegPath.path);
+      const tempFilePath = `${Date.now()}.mp4`;
+      fs.writeFileSync(tempFilePath, file.buffer);
+      await new Promise<void>((resolve, reject) => {
+        ffmpeg(tempFilePath)
+          .size('640x480')
+          .on('end', () => {
+            fs.unlinkSync(tempFilePath);
+            resolve();
           })
-          .toFile(filePath);
-        file.path = fileName;
-      }
+          .on('error', (err) => {
+            fs.unlinkSync(tempFilePath);
+            reject('can not upload video!');
+          })
+          .saveToFile(filePath);
+      });
+      file.path = fileCut;
     } else {
-      if (file.mimetype === 'video/mp4') {
-        throw new RestError('can not upload video to AWS!', 404);
-      }
-      const resize = await sharp(file.buffer)
+      await sharp(file.buffer)
         .resize({
           width: 800,
           height: 800,
           fit: sharp.fit.inside,
           withoutEnlargement: true
         })
-        .toBuffer();
-      file.buffer = resize;
+        .toFile(filePath);
+      file.path = fileCut;
     }
   }
 
   private filepath(fileName: string) {
     return path.resolve(fileName);
+  }
+
+  private async createFloder(fileStyle: string, userId: string) {
+    const pathFolderUser = path.join(`${fileStyle === 'video/mp4' ? _pathFileVideo : _pathFileImages}/${userId}`);
+    if (!fs.existsSync(pathFolderUser)) {
+      fs.mkdirSync(pathFolderUser, { recursive: true });
+    }
+    return pathFolderUser;
+  }
+
+  private cutNameFile(filePath: string, userId: string) {
+    const startIndex = filePath.indexOf(userId);
+    return filePath.slice(startIndex);
   }
 }
