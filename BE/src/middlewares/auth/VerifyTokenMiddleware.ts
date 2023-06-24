@@ -41,4 +41,12 @@ export class VerifyTokenMiddleware {
     }
     return new SendRespone({ code: 401, message: 'you are does not permissions admin!' }).send(res);
   }
+
+  public permissionsRoleOwnerShop(req: Request, res: Response, next: NextFunction) {
+    const { user }: any = req;
+    if (user && user.roleId === UserRole.OWNER_SHOP) {
+      return next();
+    }
+    return new SendRespone({ code: 401, message: 'you are does not permissions owner!' }).send(res);
+  }
 }

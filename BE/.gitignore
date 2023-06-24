@@ -9,6 +9,7 @@ webconfig
 stats.json
 data_publish/images
 data_publish/videos
+data_publish/products
 .env
 .pnp
 .pnp.js

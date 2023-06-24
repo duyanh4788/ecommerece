@@ -10,4 +10,5 @@ declare global {
   var _pathFileImages: string;
   var _pathFileVideo: string;
   var _pathFileImgTest: string;
+  var _pathProducts: string;
 }

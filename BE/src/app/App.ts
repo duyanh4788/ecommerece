@@ -37,6 +37,7 @@ class App {
     const publics = path.join(__dirname, '../../data_publish');
     const images = path.join(__dirname, '../../data_publish/images');
     const videos = path.join(__dirname, '../../data_publish/videos');
+    const products = path.join(__dirname, '../../data_publish/products');
 
     if (!fs.existsSync(publics)) {
       fs.mkdirSync(publics, { recursive: true });
@@ -51,11 +52,17 @@ class App {
       fs.mkdirSync(videos, { recursive: true });
       console.log(`${videos} created successfully!`);
     }
+    if (!fs.existsSync(products)) {
+      fs.mkdirSync(products, { recursive: true });
+      console.log(`${products} created successfully!`);
+    }
 
     global._pathFileImages = path.join(__dirname, '../../data_publish/images');
     global._pathFileVideo = path.join(__dirname, '../../data_publish/videos');
+    global._pathProducts = path.join(__dirname, '../../data_publish/products');
     this.App.use('/data_publish/images', express.static(_pathFileImages));
     this.App.use('/data_publish/videos', express.static(_pathFileVideo));
+    this.App.use('/data_publish/products', express.static(_pathProducts));
   }
 
   public configCors(): void {
