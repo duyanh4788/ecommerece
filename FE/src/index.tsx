@@ -9,6 +9,7 @@ import { createRoot } from 'react-dom/client';
 import { AuthContextProvider } from 'app/AuthContext/AuthContextApi';
 import { PATH_PARAMS } from 'commom/common.contants';
 import { NotFound, Profile } from 'router/lazyRouting';
+import 'swiper/css';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 

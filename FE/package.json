@@ -37,6 +37,7 @@
 		"redux-injectors": "2.1.0",
 		"redux-saga": "1.2.3",
 		"sass-loader": "13.3.2",
+		"swiper": "9.4.1",
 		"typescript": "^4.9.5",
 		"vite": "^4.3.9",
 		"vite-plugin-react": "^4.0.1",

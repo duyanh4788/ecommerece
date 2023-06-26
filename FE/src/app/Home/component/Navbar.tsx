@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   AppBar,
@@ -105,7 +105,6 @@ export const Navbar = () => {
     });
     return () => {
       storeSub$();
-      dispatch(AuthSlice.actions.clearData());
     };
   }, []);
 

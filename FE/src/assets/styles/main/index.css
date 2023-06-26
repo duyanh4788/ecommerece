@@ -149,6 +149,7 @@
 
 .card_profile {
   width: 100%;
+  min-height: 470px;
 }
 
 .card_profile input {
