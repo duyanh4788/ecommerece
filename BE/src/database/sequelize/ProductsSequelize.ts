@@ -33,7 +33,7 @@ export class ProductsSequelize implements IProductsRepository {
   }
 
   async getLists(): Promise<ProductsInterface[]> {
-    const products = await ProductsModel.findAll();
+    const products = await ProductsModel.findAll({ attributes: ['id', 'nameProduct', 'avatar'] });
     return products.map((item) => this.transformModelToEntity(item));
   }
 

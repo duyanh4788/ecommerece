@@ -52,8 +52,7 @@ export class ShopSequelize implements IShopRepository {
       where:
         !roleId || roleId !== UserRole.ADMIN
           ? {
-              userId: deCryptFakeId(userId),
-              status: true
+              userId: deCryptFakeId(userId)
             }
           : null,
       include: {

@@ -8,7 +8,9 @@ export class ShopUseCase {
   constructor(private userRepository: IUserRepository, private shopUsersRepository: IShopRepository) {}
 
   async registedShopUseCase(reqBody: ShopInterface, userId: string) {
-    return await this.shopUsersRepository.registed(reqBody, userId);
+    await this.shopUsersRepository.registed(reqBody, userId);
+    await this.redisUsers.handlerDelKeys(MainkeysRedis.SHOPS_USERID, userId);
+    return;
   }
 
   async updatedShopUseCase(reqBody: ShopInterface, userId: string) {
