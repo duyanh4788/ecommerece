@@ -2,8 +2,9 @@ import * as JWT from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { SendRespone } from '../../services/success/success';
 import { UserRole } from '../../interface/UserInterface';
-import { MainkeysRedis, RedisUsers } from '../../redis/users/RedisUsers';
+import { RedisUsers } from '../../redis/users/RedisUsers';
 import { RestError } from '../../services/error/error';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class VerifyTokenMiddleware {
   public async auThenticate(req: Request, res: Response, next: NextFunction) {

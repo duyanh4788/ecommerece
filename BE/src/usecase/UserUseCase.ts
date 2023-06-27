@@ -3,11 +3,12 @@ import { RestError } from '../services/error/error';
 import { hashTokenPasswordInput, encryptTokenPasswordOutput, genarateKeyPairSync, compareSyncPasswordInput } from '../utils/handlerTokenPassword';
 import { UserAttributes, UserRole } from '../interface/UserInterface';
 import { ITokenUsersRepository } from '../repository/ITokenUsersRepository';
-import { MainkeysRedis, RedisUsers } from '../redis/users/RedisUsers';
+import { RedisUsers } from '../redis/users/RedisUsers';
 import { IAuthenticatesCodesRepository } from '../repository/IAuthenticatesCodesRepository';
 import { ramdomAuthCode } from '../utils/ramdomAuthCode';
 import { checkTimerAuthenticator } from '../utils/timer';
 import { Transaction } from 'sequelize';
+import { MainkeysRedis } from '../interface/KeyRedisInterface';
 export class UserUseCase {
   private redisUsers: RedisUsers = new RedisUsers();
   constructor(private userRepository: IUserRepository, private tokenUsersRepository: ITokenUsersRepository, private authenticatesCodesRepository: IAuthenticatesCodesRepository) {}

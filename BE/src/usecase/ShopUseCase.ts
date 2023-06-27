@@ -1,8 +1,9 @@
 import { IUserRepository } from '../repository/IUserRepository';
-import { MainkeysRedis, RedisUsers } from '../redis/users/RedisUsers';
+import { RedisUsers } from '../redis/users/RedisUsers';
 import { ShopInterface } from '../interface/ShopInterface';
 import { IShopRepository } from '../repository/IShopRepository';
 import { UserRole } from '../interface/UserInterface';
+import { MainkeysRedis } from '../interface/KeyRedisInterface';
 export class ShopUseCase {
   private redisUsers: RedisUsers = new RedisUsers();
   constructor(private userRepository: IUserRepository, private shopUsersRepository: IShopRepository) {}

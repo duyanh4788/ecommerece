@@ -69,7 +69,7 @@ class App {
     this.App.use(seesion(sessionOptions));
     this.App.use(
       cors({
-        origin: process.env.APP_URL,
+        origin: process.env.FE_URL,
         credentials: true
       })
     );

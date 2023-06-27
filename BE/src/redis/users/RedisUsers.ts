@@ -2,20 +2,8 @@ import { ShopSequelize } from '../../database/sequelize/ShopSequelize';
 import { TokenUsersSequelize } from '../../database/sequelize/TokenUsersSequelize';
 import { UserSequelize } from '../../database/sequelize/UsersSequelize';
 import { TokenUserInterface } from '../../interface/TokenUserInterface';
-import { IShopRepository } from '../../repository/IShopRepository';
 import { RestError } from '../../services/error/error';
 import { redisController } from '../RedisController';
-
-export enum MainkeysRedis {
-  TOKEN = 'token_users:',
-  USER_ID = 'user:',
-  SHOPS_USERID = 'shops_userid:',
-  SHOP_ID = 'shop_id:',
-  ADMIN_SHOP_ID = 'admin_shop_id:',
-  ADMIN_SHOPS = 'admin_shops:',
-  PRODUCTS = 'products:'
-}
-
 export class RedisUsers {
   private tokenUsersRepository: TokenUsersSequelize = new TokenUsersSequelize();
   private usersRepository: UserSequelize = new UserSequelize();
