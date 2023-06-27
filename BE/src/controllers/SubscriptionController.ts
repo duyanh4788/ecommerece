@@ -4,6 +4,7 @@ import { RestError } from '../services/error/error';
 import { SubscriptionUseCase } from '../usecase/SubscriptionUseCase';
 import { TypeOfValue, isCheckedTypeValues } from '../utils/validate';
 import { sequelize } from '../database/sequelize';
+import { Tier } from '../interface/SubscriptionInterface';
 
 export class SubscriptionController {
   constructor(private subscriptionUseCase: SubscriptionUseCase) {}

@@ -17,3 +17,8 @@ export const removeAccentsVN = (text: string): string => {
   text = text.replace(/Đ/g, 'D');
   return text.toLocaleLowerCase();
 };
+
+export const capitalizeFirstLetter = (str: string) => {
+  const split = str.split('_')[0] || str;
+  return split.charAt(0).toUpperCase() + split.slice(1);
+};

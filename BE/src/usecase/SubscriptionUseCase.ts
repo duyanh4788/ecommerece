@@ -9,6 +9,7 @@ import { RestError } from '../services/error/error';
 import { IUserRepository } from '../repository/IUserRepository';
 import { nodeMailerServices } from '../services/nodemailer/MailServices';
 import { RedisPlans } from '../redis/Plans/RedisPlans';
+import { capitalizeFirstLetter } from '../utils/accents';
 
 export class SubscriptionUseCase {
   private redisPlans: RedisPlans = new RedisPlans();
@@ -194,7 +195,7 @@ export class SubscriptionUseCase {
       invoiceStatus: transactionPaypal.state,
       paymentTerms: invoices.paymentProcessor,
       paymentCurrent: invoices.currency,
-      plantType: invoices.planType,
+      plantType: capitalizeFirstLetter(invoices.planType),
       totalAmount: invoices.totalAmount,
       gst: invoices.gst,
       taxRate,
