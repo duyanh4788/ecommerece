@@ -93,15 +93,14 @@ export const CardProfile = ({ resetDataRef }: Props) => {
   };
 
   const handleResetData = () => {
-    console.log(1);
     setEditProfile(false);
     setUser(userInfor);
     setErrors(userInfor);
   };
 
   return (
-    <Grid item xs={12} sm={6} md={4}>
-      <Box height={'100%'} bgcolor={'#d6cfc9'} padding={'10px'} borderRadius={'5px'}>
+    <Grid container columns={{ xs: 6, sm: 12, md: 12 }} spacing={2}>
+      <Grid item xs={12} sm={6} md={5}>
         <Card className="card_profile">
           <CardHeader
             avatar={
@@ -144,7 +143,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
             subheader={AppHelper.formmatDateTime(userInfor?.createdAt)}
           />
           <CardMedia component="img" height="194" image={renderAvatar()} alt={renderAvatar()} />
-          <FileUpload {...fileUploadProp} />
+          {!editProfile && <FileUpload {...fileUploadProp} />}
           <CardContent sx={{ fontWeight: 'bold' }}>
             <Typography variant="inherit">Email: {userInfor?.email}</Typography>
             {editProfile ? (
@@ -157,19 +156,20 @@ export const CardProfile = ({ resetDataRef }: Props) => {
             ) : (
               <Box>Phone: {userInfor?.phone}</Box>
             )}
-            {editProfile ? (
+            {editProfile && (
               <CardListItem
                 title={'Password'}
                 name={'password'}
                 value={user?.password}
                 handleOnChange={handleChange}
               />
-            ) : (
-              <Box>Password: {userInfor?.password}</Box>
             )}
           </CardContent>
         </Card>
-      </Box>
+      </Grid>
+      <Grid item xs={12} sm={6} md={7}>
+        <Card className="card_profile">Subsiption</Card>
+      </Grid>
     </Grid>
   );
 };

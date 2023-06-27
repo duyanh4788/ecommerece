@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef } from 'react';
-import { Container, Grid } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import { BottomNavigation, BottomNavigationAction, Box, Paper } from '@mui/material';
 import { useInjectReducer, useInjectSaga } from 'store/core/@reduxjs/redux-injectors';
 import { AuthSaga } from 'store/auth/shared/saga';
 import { ShopSaga } from 'store/shops/shared/saga';
@@ -15,10 +15,18 @@ import { Loading } from 'commom/loading';
 import { CardProfile } from '../component/CardProfile';
 import { CardShops } from '../component/CardShops';
 import { CardHistory } from '../component/CardHistory';
+import { AccountBox, Bookmark, Store } from '@mui/icons-material';
+
+const PAGE = {
+  PROFILLE: 'PROFILLE',
+  SHOP: 'SHOP',
+  HISTORY: 'HISTORY',
+};
 
 export const Profile = () => {
   const dispatch = useDispatch();
   const loading = useSelector(AuthSelector.selectLoading);
+  const [selectedTab, setSelectedTab] = useState(PAGE.PROFILLE);
 
   useInjectReducer({
     key: AuthSlice.sliceKey,
@@ -89,13 +97,22 @@ export const Profile = () => {
   };
 
   return (
-    <Container sx={{ margin: '20px auto' }}>
-      <Grid container spacing={2} columns={{ xs: 6, sm: 12, md: 12 }}>
-        {loading && <Loading />}
-        <CardProfile resetDataRef={resetDataRef} />
-        <CardHistory resetDataRef={resetDataRef} />
-        <CardShops resetDataRef={resetDataRef} />
-      </Grid>
-    </Container>
+    <Paper sx={{ background: 'none', margin: '20px' }}>
+      {loading && <Loading />}
+      <BottomNavigation
+        sx={{ background: '#d6cfc9', marginBottom: '5px' }}
+        showLabels
+        value={selectedTab}
+        onChange={(e, newValue) => setSelectedTab(newValue)}>
+        <BottomNavigationAction value={PAGE.PROFILLE} label="Profile" icon={<AccountBox />} />
+        <BottomNavigationAction value={PAGE.SHOP} label="Shops" icon={<Store />} />
+        <BottomNavigationAction value={PAGE.HISTORY} label="History" icon={<Bookmark />} />
+      </BottomNavigation>
+      <Box height={'100%'} bgcolor={'#d6cfc9'} padding={'10px'} borderRadius={'5px'}>
+        {selectedTab === PAGE.PROFILLE && <CardProfile resetDataRef={resetDataRef} />}
+        {selectedTab === PAGE.SHOP && <CardShops resetDataRef={resetDataRef} />}
+        {selectedTab === PAGE.HISTORY && <CardHistory resetDataRef={resetDataRef} />}
+      </Box>
+    </Paper>
   );
 };

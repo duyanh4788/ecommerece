@@ -20,7 +20,7 @@ body {
     font-family: roboto;
 }
 
-.home_app {
+section {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -77,4 +77,8 @@ body::-webkit-scrollbar-thumb {
 
 .MuiDrawer-paper {
     background: linear-gradient(#f4f4f1, #ece9e6) !important;
+}
+
+.css-1bjk3jo-MuiButtonBase-root-MuiBottomNavigationAction-root.Mui-selected {
+    color: $color-green !important;
 }

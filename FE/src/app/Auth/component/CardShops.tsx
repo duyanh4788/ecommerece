@@ -26,7 +26,7 @@ import { CardListItem } from './CardListItem';
 import { Products, Shops } from 'interface/Shops.model';
 
 const useStyles = makeStyles(theme => ({
-  card: {
+  registed: {
     width: '100%',
     height: '100%',
     display: 'flex',
@@ -181,7 +181,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
               }
             />
             {editShop && shopInfor?.id === item.id ? <FileUpload {...fileUploadProp} /> : null}
-            <CardContent sx={{ fontWeight: 'bold' }}>
+            <CardContent sx={{ fontWeight: 'bold', fontSize: '14px', lineHeight: '30px' }}>
               <Box>
                 Status:{' '}
                 {item?.status ? (
@@ -217,6 +217,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
                         key={item.id}
                         sx={{ marginLeft: '2px' }}
                         size="small"
+                        avatar={<Avatar src={item.avatar} alt={item.avatar} />}
                       />
                     ))}
                   </Box>
@@ -259,9 +260,9 @@ export const CardShops = ({ resetDataRef }: Props) => {
           <CardMedia component="img" height="194" src={url.length ? url[0] : baner_shop} />
           {register ? <FileUpload {...fileUploadProp} /> : null}
           <CardContent sx={{ fontWeight: 'bold' }}>
-            <Typography variant="inherit">
+            <Box>
               Status: <Chip label="waiting admin approved" size="small" color="warning" />
-            </Typography>
+            </Box>
             <CardListItem
               title={'Name Shop'}
               value={shopInfor?.nameShop}
@@ -300,33 +301,29 @@ export const CardShops = ({ resetDataRef }: Props) => {
   };
 
   return (
-    <Grid item xs={12} sm={12} md={12}>
-      <Box height={'100%'} bgcolor={'#d6cfc9'} padding={'10px'} borderRadius={'5px'}>
-        <Grid container columns={{ xs: 6, sm: 12, md: 12 }} columnSpacing={3}>
-          {renderShops()}
-          {register && renderRegisted()}
-          <Grid item xs={12} sm={6} md={4}>
-            <Card className={classes.card} sx={{ display: 'flex', flexDirection: 'column' }}>
-              <IconButton disabled={shops.length >= 2} onClick={() => handleCancel()}>
-                <CircularProgress
-                  size={24}
-                  color="success"
-                  sx={{
-                    position: 'absolute',
-                    top: 8,
-                    right: 8,
-                    zIndex: 1,
-                  }}
-                />
-                <AddCircle color="success" sx={{ cursor: 'pointer' }} />
-              </IconButton>
-              <Typography variant="inherit" fontWeight={'bold'}>
-                you have registed free {!shops.length ? 2 + 'more' : 2 - shops.length} Shop
-              </Typography>
-            </Card>
-          </Grid>
-        </Grid>
-      </Box>
+    <Grid container columns={{ xs: 6, sm: 12, md: 12 }} spacing={2}>
+      {renderShops()}
+      {register && renderRegisted()}
+      <Grid item xs={12} sm={6} md={4}>
+        <Card className={classes.registed} sx={{ display: 'flex', flexDirection: 'column' }}>
+          <IconButton disabled={shops.length >= 2} onClick={() => handleCancel()}>
+            <CircularProgress
+              size={24}
+              color="success"
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                zIndex: 1,
+              }}
+            />
+            <AddCircle color="success" sx={{ cursor: 'pointer' }} />
+          </IconButton>
+          <Typography variant="inherit" fontWeight={'bold'}>
+            you have registed free {!shops.length ? 2 + 'more' : 2 - shops.length} Shop
+          </Typography>
+        </Card>
+      </Grid>
     </Grid>
   );
 };

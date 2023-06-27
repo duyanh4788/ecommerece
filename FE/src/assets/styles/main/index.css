@@ -149,7 +149,6 @@
 
 .card_profile {
   width: 100%;
-  min-height: 470px;
 }
 
 .card_profile input {
@@ -186,7 +185,7 @@ body {
   font-family: roboto;
 }
 
-.home_app {
+section {
   width: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -255,5 +254,9 @@ body::-webkit-scrollbar-thumb {
 .MuiDrawer-paper {
   background: -webkit-gradient(linear, left top, left bottom, from(#f4f4f1), to(#ece9e6)) !important;
   background: linear-gradient(#f4f4f1, #ece9e6) !important;
+}
+
+.css-1bjk3jo-MuiButtonBase-root-MuiBottomNavigationAction-root.Mui-selected {
+  color: #56ab2f !important;
 }
 /*# sourceMappingURL=index.css.map */
