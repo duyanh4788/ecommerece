@@ -4,11 +4,14 @@ import {
   Avatar,
   Box,
   Card,
+  CardActions,
   CardContent,
   CardHeader,
   CardMedia,
+  Chip,
   Grid,
   IconButton,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { Done, Edit } from '@mui/icons-material';
@@ -16,9 +19,18 @@ import { AppHelper } from 'utils/app.helper';
 import { useDispatch, useSelector } from 'react-redux';
 import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
+import * as SubscriptionSlice from 'store/subscription/shared/slice';
+import * as SubscriptionSelector from 'store/subscription/shared/selectors';
 import profile from '../../../images/profile.png';
 import { FileUpload, FileUploadProps } from './FileUpload';
 import { CardListItem } from './CardListItem';
+import { SubscriptionStatus, TypeSubscriber } from 'interface/Subscriptions.model';
+import { FREE_TRIAL, PAYPAL_LOGO } from 'commom/common.contants';
+import { handleColorStatus, handleColorTier } from 'utils/color';
+import { ModalPlans } from './ModalPlans';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { ModalInvoices } from './ModalInvoices';
 
 interface Props {
   resetDataRef: RefObject<boolean | null>;
@@ -26,27 +38,53 @@ interface Props {
 
 export const CardProfile = ({ resetDataRef }: Props) => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
   const userInfor = useSelector(AuthSelector.selectUserInfor);
   const url = useSelector(AuthSelector.selectUrl);
+  const plans = useSelector(SubscriptionSelector.selectPlans);
+  const invoices = useSelector(SubscriptionSelector.selectInvoices);
+  const subscriptions = useSelector(SubscriptionSelector.selectSubscription);
   const [user, setUser] = useState(userInfor);
   const [errors, setErrors] = useState(userInfor);
   const [editProfile, setEditProfile] = useState<boolean>(false);
+  const [modalPlans, setModalPlans] = useState<boolean>(false);
+  const [modalInvoice, setModalInvoice] = useState<boolean>(false);
+  const [typeSubscriber, setTypeSubscriber] = useState<string>(TypeSubscriber.SUBSCRIBER);
+
+  useEffect(() => {
+    const { pathname, search } = location;
+
+    if (search.includes('ba_token')) {
+      toast.success('please waiting system sync with Paypal!');
+    }
+    navigate(pathname, { replace: true });
+  }, [location, navigate]);
+
+  useEffect(() => {
+    function initSubscription(data) {
+      if (!data) {
+        dispatch(SubscriptionSlice.actions.userGetSubscription());
+        dispatch(SubscriptionSlice.actions.getPlans());
+        return;
+      }
+      dispatch(SubscriptionSlice.actions.userGetInvoices());
+      return;
+    }
+    initSubscription(subscriptions);
+  }, [subscriptions]);
 
   useEffect(() => {
     if (resetDataRef.current) {
-      handleResetData();
+      handleResetUserProfile();
+      handleResetSubscription();
       const newResetData = false;
       Object.assign(resetDataRef, { current: newResetData });
     }
   }, [resetDataRef.current]);
 
   const validate = () => {
-    if (
-      !user?.email ||
-      !user.phone ||
-      !user.fullName ||
-      !(Math.ceil(Math.log10(Number(user?.phone) + 1)) >= 10)
-    ) {
+    if (!user?.email || !user.phone || !user.fullName) {
       return false;
     }
     return true;
@@ -92,10 +130,16 @@ export const CardProfile = ({ resetDataRef }: Props) => {
     },
   };
 
-  const handleResetData = () => {
+  const handleResetUserProfile = () => {
     setEditProfile(false);
     setUser(userInfor);
     setErrors(userInfor);
+  };
+
+  const handleResetSubscription = () => {
+    setModalPlans(false);
+    setModalInvoice(false);
+    setTypeSubscriber(TypeSubscriber.SUBSCRIBER);
   };
 
   return (
@@ -123,7 +167,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
                   aria-label="settings"
                   onClick={() => {
                     if (!editProfile) {
-                      handleResetData();
+                      handleResetUserProfile();
                     }
                     setEditProfile(!editProfile);
                   }}>
@@ -168,8 +212,139 @@ export const CardProfile = ({ resetDataRef }: Props) => {
         </Card>
       </Grid>
       <Grid item xs={12} sm={6} md={7}>
-        <Card className="card_profile">Subsiption</Card>
+        {subscriptions ? (
+          <Card className="card_profile" style={{ height: '100%' }}>
+            <CardHeader
+              title={
+                <Typography sx={{ fontWeight: 'bold' }} variant="inherit">
+                  Tier:{' '}
+                  <span
+                    style={{
+                      color: handleColorTier(subscriptions.paypalBillingPlans?.tier as string),
+                    }}>
+                    {AppHelper.capitalizeFirstLetter(
+                      subscriptions.paypalBillingPlans?.tier as string,
+                    )}
+                  </span>
+                </Typography>
+              }
+              action={
+                subscriptions.isTrial ? (
+                  <Tooltip title="You are on a free trial in 30 days">
+                    <img width={'50px'} src={FREE_TRIAL} alt={FREE_TRIAL} />
+                  </Tooltip>
+                ) : null
+              }
+              subheader={AppHelper.formmatDateTime(subscriptions.lastPaymentsFetch)}
+            />
+            <Box sx={{ background: '#f4f4f1', textAlign: 'center', padding: '0 10px' }}>
+              <img style={{ maxHeight: '100px' }} src={PAYPAL_LOGO} alt={PAYPAL_LOGO} />
+            </Box>
+            <CardContent sx={{ lineHeight: '35px', color: '#00000099' }}>
+              <Typography variant="inherit">
+                Status:{' '}
+                <span
+                  className="status"
+                  style={{ color: handleColorStatus(subscriptions.status as string) }}>
+                  {subscriptions.status?.split('_').join(' ')}
+                </span>
+              </Typography>
+              <Typography variant="inherit">
+                Resouce Product: {subscriptions.paypalBillingPlans?.numberProduct}
+              </Typography>
+              <Typography variant="inherit">
+                Resouce Index: {subscriptions.paypalBillingPlans?.numberIndex}
+              </Typography>
+              <Chip
+                label="Invoices"
+                color="success"
+                variant="outlined"
+                size="small"
+                sx={{ cursor: 'pointer' }}
+                onClick={() => setModalInvoice(true)}
+              />
+            </CardContent>
+            {Object.values(SubscriptionStatus).includes(
+              subscriptions?.status as SubscriptionStatus,
+            ) ? (
+              <div className="subs">
+                <button
+                  onClick={() =>
+                    dispatch(
+                      SubscriptionSlice.actions.userSubscriber({
+                        tier: subscriptions.paypalBillingPlans?.tier?.split('_')[0],
+                      }),
+                    )
+                  }>
+                  Subscribe
+                </button>
+                {subscriptions.status === SubscriptionStatus.APPROVAL_PENDING && (
+                  <button
+                    onClick={() => {
+                      setModalPlans(true);
+                      setTypeSubscriber(TypeSubscriber.CHANGED);
+                    }}>
+                    Changed
+                  </button>
+                )}
+              </div>
+            ) : (
+              <CardActions className="subs">
+                <button
+                  className="btn_unsub"
+                  onClick={() =>
+                    dispatch(
+                      SubscriptionSlice.actions.userCanceled({
+                        subscriptionId: subscriptions.subscriptionId,
+                        reason: `${userInfor?.email} canceled`,
+                      }),
+                    )
+                  }>
+                  UnSubscribe
+                </button>
+                <button
+                  onClick={() => {
+                    setModalPlans(true);
+                    setTypeSubscriber(TypeSubscriber.CHANGED);
+                  }}>
+                  Changed
+                </button>
+              </CardActions>
+            )}
+          </Card>
+        ) : (
+          <div className="box_unsbs">
+            <Box>
+              <Typography>30 DAYS ACCESS TO ALL FEATURES on your selected subscription.</Typography>
+              <Typography>Change and/or cancel your subscription at any time</Typography>
+              <button
+                onClick={() => {
+                  setModalPlans(true);
+                  setTypeSubscriber(TypeSubscriber.SUBSCRIBER);
+                }}>
+                Subscribe
+              </button>
+            </Box>
+          </div>
+        )}
       </Grid>
+      {modalPlans && (
+        <ModalPlans
+          plans={plans}
+          subscriptions={subscriptions}
+          modalPlans={modalPlans}
+          handleClose={setModalPlans}
+          typeSubscriber={typeSubscriber}
+        />
+      )}
+      {modalInvoice && (
+        <ModalInvoices
+          modalInvoice={modalInvoice}
+          handleClose={setModalInvoice}
+          invoices={invoices}
+          userInfor={userInfor}
+        />
+      )}
     </Grid>
   );
 };

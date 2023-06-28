@@ -92,3 +92,18 @@
     color: $color-black;
     font-weight: $fw-bold;
 }
+
+@mixin buttonSubs {
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 30px;
+    background: #94c448;
+    outline: none;
+    border: none;
+    color: $color-white;
+    margin-left: 5px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.178);
+    transform: translateY(-2px);
+    transition: box-shadow 0.3s, transform 0.3s;
+}

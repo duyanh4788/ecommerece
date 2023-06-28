@@ -13,6 +13,7 @@ import rabitmq from '../images/rabitmq.png';
 import redis from '../images/redis.png';
 import mysql from '../images/mysql.png';
 import bannernode from '../images/bannernode.png';
+import free_trial from '../images/free.png';
 
 export const TOKEN_EXPRIED = 'token expired, please login again.';
 
@@ -34,6 +35,14 @@ export const FOOTER_INFOR = {
   nodejs: bannernode,
   reactjs: react,
 };
+
+export const PAYPAL_LOGO =
+  'https://www.paypalobjects.com/webstatic/mktg/Logo/AM_mc_vs_ms_ae_UK.png';
+
+export const PAYPAL_BANNER =
+  'https://www.paypalobjects.com/digitalassets/c/website/marketing/apac/C2/logos-buttons/optimize/logo-center-other-options-white-shop-pp.png';
+
+export const FREE_TRIAL = free_trial;
 
 export const FOOTER = [
   {

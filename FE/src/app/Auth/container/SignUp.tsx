@@ -107,7 +107,7 @@ export const SignUp = () => {
       !user.password ||
       !user.phone ||
       !user.confirmPassword ||
-      !(Math.ceil(Math.log10(Number(user?.phone) + 1)) >= 10)
+      user?.phone.length > 10
     ) {
       return false;
     }
@@ -140,7 +140,7 @@ export const SignUp = () => {
             type="number"
             placeholder="Phone"
             name="phone"
-            pattern={'[0-9]{10}'}
+            pattern={'[0-9]'}
             maxLength={10}
             value={user.phone}
             onChange={handleChange}

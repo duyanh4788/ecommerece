@@ -168,6 +168,103 @@
   padding: 0 !important;
 }
 
+.card_profile .status {
+  border: 1px solid #ebebec;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.card_profile .subs {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.card_profile .subs .btn_img {
+  cursor: pointer;
+}
+
+.card_profile .subs .btn_unsub {
+  background: #c45648;
+}
+
+.card_profile .subs button {
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 30px;
+  background: #94c448;
+  outline: none;
+  border: none;
+  color: #fff;
+  margin-left: 5px;
+  text-transform: uppercase;
+  -webkit-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.178);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.178);
+  -webkit-transform: translateY(-2px);
+          transform: translateY(-2px);
+  -webkit-transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
+  transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
+  transition: box-shadow 0.3s, transform 0.3s;
+  transition: box-shadow 0.3s, transform 0.3s, -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
+}
+
+.box_unsbs {
+  background: #f4f4f1;
+  text-align: center;
+  height: 100%;
+  padding: 010px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.box_unsbs p {
+  font-size: 14px;
+  color: #00000099;
+}
+
+.box_unsbs button {
+  margin-top: 10px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 30px;
+  background: #94c448;
+  outline: none;
+  border: none;
+  color: #fff;
+  margin-left: 5px;
+  text-transform: uppercase;
+  -webkit-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.178);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.178);
+  -webkit-transform: translateY(-2px);
+          transform: translateY(-2px);
+  -webkit-transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
+  transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
+  transition: box-shadow 0.3s, transform 0.3s;
+  transition: box-shadow 0.3s, transform 0.3s, -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
+}
+
+.cell_tier {
+  background: #f4f4f1;
+  padding: 5px 10px;
+  font-size: 13px;
+  border: 1px solid #ebebec;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
 @font-face {
   font-family: "Gotham Ultra";
   src: url("../../font/Gotham Ultra.otf") format("opentype");
@@ -258,5 +355,10 @@ body::-webkit-scrollbar-thumb {
 
 .css-1bjk3jo-MuiButtonBase-root-MuiBottomNavigationAction-root.Mui-selected {
   color: #56ab2f !important;
+}
+
+.css-1lymaxv-MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
+.css-1lymaxv-MuiDataGrid-root .MuiDataGrid-cell:focus {
+  outline: none !important;
 }
 /*# sourceMappingURL=index.css.map */

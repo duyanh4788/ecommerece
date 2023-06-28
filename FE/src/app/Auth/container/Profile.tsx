@@ -7,6 +7,9 @@ import { ShopSaga } from 'store/shops/shared/saga';
 import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
 import * as ShopSlice from 'store/shops/shared/slice';
+import * as ShopSelector from 'store/shops/shared/selectors';
+import * as SubscriptionSlice from 'store/subscription/shared/slice';
+import * as SubscriptionSelector from 'store/subscription/shared/selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
@@ -16,6 +19,7 @@ import { CardProfile } from '../component/CardProfile';
 import { CardShops } from '../component/CardShops';
 import { CardHistory } from '../component/CardHistory';
 import { AccountBox, Bookmark, Store } from '@mui/icons-material';
+import { SubscriptionSaga } from 'store/subscription/shared/saga';
 
 const PAGE = {
   PROFILLE: 'PROFILLE',
@@ -25,7 +29,9 @@ const PAGE = {
 
 export const Profile = () => {
   const dispatch = useDispatch();
-  const loading = useSelector(AuthSelector.selectLoading);
+  const loadingAuth = useSelector(AuthSelector.selectLoading);
+  const loadingShop = useSelector(ShopSelector.selectLoading);
+  const loadingSubs = useSelector(SubscriptionSelector.selectLoading);
   const [selectedTab, setSelectedTab] = useState(PAGE.PROFILLE);
 
   useInjectReducer({
@@ -45,6 +51,16 @@ export const Profile = () => {
     key: ShopSlice.sliceKey,
     saga: ShopSaga,
   });
+
+  useInjectReducer({
+    key: SubscriptionSlice.sliceKey,
+    reducer: SubscriptionSlice.reducer,
+  });
+  useInjectSaga({
+    key: SubscriptionSlice.sliceKey,
+    saga: SubscriptionSaga,
+  });
+
   const resetDataRef = useRef<boolean | null>(false);
   useEffect(() => {
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
@@ -71,12 +87,20 @@ export const Profile = () => {
           }
           break;
         case ShopSlice.actions.uploadFileSuccess.type:
+        case SubscriptionSlice.actions.userCanceledSuccess.type:
           toast.success(payload.message);
+          break;
+        case SubscriptionSlice.actions.userSubscriberSuccess.type:
+        case SubscriptionSlice.actions.userChangedSuccess.type:
+          window.location.replace(payload.data);
           break;
         case ShopSlice.actions.registedShopFail.type:
         case ShopSlice.actions.updatedShopFail.type:
         case AuthSlice.actions.updateProfileFail.type:
         case AuthSlice.actions.uploadFileFail.type:
+        case SubscriptionSlice.actions.userSubscriberFail.type:
+        case SubscriptionSlice.actions.userChangedFail.type:
+        case SubscriptionSlice.actions.userCanceledFail.type:
           toast.error(payload.message);
           break;
         default:
@@ -86,6 +110,10 @@ export const Profile = () => {
     return () => {
       storeSub$();
       dispatch(AuthSlice.actions.clearData());
+      dispatch(SubscriptionSlice.actions.clearData());
+      dispatch(SubscriptionSlice.actions.clearSubscription());
+      dispatch(SubscriptionSlice.actions.clearLinks());
+      dispatch(SubscriptionSlice.actions.clearInvoices());
       handleResetData();
     };
   }, []);
@@ -98,7 +126,7 @@ export const Profile = () => {
 
   return (
     <Paper sx={{ background: 'none', margin: '20px' }}>
-      {loading && <Loading />}
+      {loadingAuth || loadingShop || loadingSubs ? <Loading /> : null}
       <BottomNavigation
         sx={{ background: '#d6cfc9', marginBottom: '5px' }}
         showLabels

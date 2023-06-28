@@ -11,4 +11,50 @@
         margin: 0 !important;
         padding: 0 !important;
     }
+    .status {
+        border: $border1;
+        padding: 5px;
+        border-radius: 5px;
+    }
+    .subs {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .btn_img {
+            cursor: pointer;
+        }
+        .btn_unsub {
+            background: #c45648;
+        }
+        button {
+            @include buttonSubs;
+        }
+    }
+}
+
+.box_unsbs {
+    background: #f4f4f1;
+    text-align: center;
+    height: 100%;
+    padding: 010px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    p {
+        font-size: 14px;
+        color: #00000099;
+    }
+    button {
+        margin-top: 10px;
+        @include buttonSubs;
+    }
+}
+
+.cell_tier {
+    background: #f4f4f1;
+    padding: 5px 10px;
+    font-size: 13px;
+    border: $border1;
+    border-radius: 10px;
+    cursor: pointer;
 }
