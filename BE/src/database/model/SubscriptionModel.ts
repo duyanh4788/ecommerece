@@ -1,4 +1,4 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, ForeignKey, AllowNull, BelongsTo } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, ForeignKey, AllowNull, HasOne, Index, BelongsTo } from 'sequelize-typescript';
 import { UsersModel } from './UsersModel';
 import { PaypalBillingPlansModel } from './PaypalBillingPlansModel';
 
@@ -10,6 +10,8 @@ export class SubscriptionModel extends Model<SubscriptionModel> {
   @ForeignKey(() => UsersModel)
   @Column
   public userId: number;
+  @BelongsTo(() => UsersModel)
+  user: UsersModel;
 
   @AllowNull
   @ForeignKey(() => PaypalBillingPlansModel)
@@ -18,6 +20,7 @@ export class SubscriptionModel extends Model<SubscriptionModel> {
   @BelongsTo(() => PaypalBillingPlansModel)
   paypalBillingPlans: PaypalBillingPlansModel;
 
+  @Index
   @AllowNull
   @Column
   public subscriptionId: string;

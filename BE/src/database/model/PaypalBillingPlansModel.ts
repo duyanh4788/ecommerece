@@ -1,4 +1,4 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, DataType, AllowNull, HasOne } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, DataType, BelongsTo, ForeignKey, Index, HasOne } from 'sequelize-typescript';
 import { SubscriptionFrequency, Tier } from '../../interface/SubscriptionInterface';
 import { SubscriptionModel } from './SubscriptionModel';
 
@@ -7,28 +7,28 @@ import { SubscriptionModel } from './SubscriptionModel';
 })
 export class PaypalBillingPlansModel extends Model<PaypalBillingPlansModel> {
   @PrimaryKey
+  @Index
+  @Column
+  public planId: string;
+
+  @PrimaryKey
+  @Index
   @Column(DataType.STRING)
   public tier: Tier;
 
   @Column(DataType.STRING)
   public frequency: SubscriptionFrequency;
 
-  @PrimaryKey
-  @Column
-  public planId: string;
-
   @Column
   public amount: number;
 
-  @PrimaryKey
   @Column
   public numberProduct: number;
 
-  @PrimaryKey
   @Column
   public numberIndex: number;
 
-  @PrimaryKey
+  @Index
   @Column
   public isTrial: boolean;
 
