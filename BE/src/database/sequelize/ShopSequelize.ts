@@ -6,6 +6,8 @@ import { RestError } from '../../services/error/error';
 import { ProductsSequelize } from './ProductsSequelize';
 import { UsersModel } from '../model/UsersModel';
 import { UserRole } from '../../interface/UserInterface';
+import { RedisUsers } from '../../redis/users/RedisUsers';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class ShopSequelize implements IShopRepository {
   private ATTRIBUTES_USER: string[] = ['fullName', 'email', 'phone', 'avatar'];
@@ -19,6 +21,7 @@ export class ShopSequelize implements IShopRepository {
     const { nameShop, prodcutSell, banners } = reqBody;
     const deCryptProduct = prodcutSell.map((item) => deCryptFakeId(item));
     await ShopsModel.create({ nameShop, prodcutSell: deCryptProduct, banners, userId: deCryptFakeId(userId) });
+    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, userId);
     return;
   }
   async updated(reqBody: ShopInterface, userId: string): Promise<void> {
@@ -35,6 +38,8 @@ export class ShopSequelize implements IShopRepository {
     if (banners) {
       find.banners = banners;
     }
+    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, userId);
+    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOP_ID, id);
     await find.save();
     return;
   }
@@ -44,6 +49,8 @@ export class ShopSequelize implements IShopRepository {
     if (!find) throw new RestError('shop not availabe!', 404);
     if (find.userId !== deCryptFakeId(userId)) throw new RestError('shop not availabe!', 404);
     await find.destroy();
+    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, userId);
+    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOP_ID, id);
     return;
   }
 
@@ -95,13 +102,16 @@ export class ShopSequelize implements IShopRepository {
     shop.prodcutSell = products;
     return this.transformModelToEntity(shop);
   }
-  async adminApprovedShop(shopId: string): Promise<ShopInterface> {
+  async adminApprovedShop(shopId: string): Promise<void> {
     const shop = await ShopsModel.findByPk(deCryptFakeId(shopId));
     if (!shop) throw new RestError('shop not availabe!', 404);
     if (shop.status) throw new RestError('shop has approved!', 404);
     shop.status = true;
     await shop.save();
-    return this.transformModelToEntity(shop);
+    const result = this.transformModelToEntity(shop);
+    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, result.userId);
+    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOP_ID, shopId);
+    return;
   }
 
   /**

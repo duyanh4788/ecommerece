@@ -11,5 +11,5 @@ export interface IShopRepository {
 
   getShopById(shopId: string, userId?: string, roleId?: string): Promise<ShopInterface>;
 
-  adminApprovedShop(shopId: string): Promise<ShopInterface>;
+  adminApprovedShop(shopId: string): Promise<void>;
 }

@@ -1,11 +1,8 @@
-import { Transaction } from 'sequelize';
-import { RedisUsers } from '../redis/users/RedisUsers';
 import { IProductsRepository } from '../repository/IProductsRepository';
 import { ProductsInterface } from '../interface/ProductsInterface';
 import { dataProducts } from '../common/dataProduct';
 
 export class ProductsUseCase {
-  private redisUsers: RedisUsers = new RedisUsers();
   constructor(private productsRepository: IProductsRepository) {}
 
   async createdProductUseCase(reqBody: ProductsInterface) {

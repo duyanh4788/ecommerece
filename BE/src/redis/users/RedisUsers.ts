@@ -8,6 +8,16 @@ export class RedisUsers {
   private tokenUsersRepository: TokenUsersSequelize = new TokenUsersSequelize();
   private usersRepository: UserSequelize = new UserSequelize();
   private shopSequelize: ShopSequelize = new ShopSequelize();
+  static instance: RedisUsers;
+
+  private constructor() {}
+
+  public static getInstance(): RedisUsers {
+    if (!RedisUsers.instance) {
+      RedisUsers.instance = new RedisUsers();
+    }
+    return RedisUsers.instance;
+  }
 
   public async handlerGetUserByEmail(email: string) {
     let userRedis = await redisController.getRedis(email);

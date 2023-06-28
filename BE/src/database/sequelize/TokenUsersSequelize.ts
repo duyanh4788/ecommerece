@@ -1,8 +1,9 @@
-import { Transaction } from 'sequelize';
 import { ITokenUsersRepository } from '../../repository/ITokenUsersRepository';
 import { TokenUserModel } from '../model/TokenUserModel';
 import { TokenUserInterface } from '../../interface/TokenUserInterface';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
+import { RedisUsers } from '../../redis/users/RedisUsers';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class TokenUsersSequelize implements ITokenUsersRepository {
   async createTokenUsers(userId: string, publicKey: string, privateKey: string): Promise<TokenUserInterface> {
@@ -15,7 +16,9 @@ export class TokenUsersSequelize implements ITokenUsersRepository {
       tokenUser.privateKey = privateKey;
       await tokenUser.save();
     }
-    return this.transformModelToEntity(tokenUser);
+    const result = this.transformModelToEntity(tokenUser);
+    await RedisUsers.getInstance().handlerUpdateKeys(MainkeysRedis.TOKEN, userId, result);
+    return result;
   }
 
   async findByUserId(userId: string): Promise<TokenUserInterface> {
@@ -25,6 +28,7 @@ export class TokenUsersSequelize implements ITokenUsersRepository {
 
   async deleteTokenUserByUserId(userId: string): Promise<void> {
     await TokenUserModel.destroy({ where: { userId: deCryptFakeId(userId) } });
+    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.TOKEN, userId);
     return;
   }
   /**

@@ -1,8 +1,9 @@
-import { Transaction, where } from 'sequelize';
+import { Transaction } from 'sequelize';
 import { UserAttributes, UserRole } from '../../interface/UserInterface';
 import { IUserRepository } from '../../repository/IUserRepository';
 import { UsersModel } from '../model/UsersModel';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
+import { RedisUsers } from '../../redis/users/RedisUsers';
 
 export class UserSequelize implements IUserRepository {
   async findAllLists(): Promise<UserAttributes[]> {
@@ -24,11 +25,13 @@ export class UserSequelize implements IUserRepository {
     return this.transformModelToEntity(user);
   }
 
-  async updatePasswordByUserId(userId: string, newPassWord: string, transactionDb: Transaction): Promise<void> {
+  async updatePasswordByUserId(userId: string, newPassWord: string, email: string, transactionDb: Transaction): Promise<void> {
     await UsersModel.update({ password: newPassWord }, { where: { id: deCryptFakeId(userId) }, transaction: transactionDb });
+    await RedisUsers.getInstance().handlerDelKeysEmail(email);
+    return;
   }
 
-  async updateProfile(reqBody: UserAttributes, userId: string): Promise<UserAttributes> {
+  async updateProfile(reqBody: UserAttributes, userId: string): Promise<void> {
     const { fullName, phone, password, avatar } = reqBody;
     const user = await UsersModel.findByPk(deCryptFakeId(userId));
     if (fullName) {
@@ -44,7 +47,8 @@ export class UserSequelize implements IUserRepository {
       user.avatar = avatar;
     }
     await user.save();
-    return this.transformModelToEntity(user);
+    await RedisUsers.getInstance().handlerDelKeysEmail(user.email);
+    return;
   }
 
   /**

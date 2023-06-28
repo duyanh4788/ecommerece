@@ -8,20 +8,18 @@ import { IAuthenticatesCodesRepository } from '../repository/IAuthenticatesCodes
 import { ramdomAuthCode } from '../utils/ramdomAuthCode';
 import { checkTimerAuthenticator } from '../utils/timer';
 import { Transaction } from 'sequelize';
-import { MainkeysRedis } from '../interface/KeyRedisInterface';
+
 export class UserUseCase {
-  private redisUsers: RedisUsers = new RedisUsers();
   constructor(private userRepository: IUserRepository, private tokenUsersRepository: ITokenUsersRepository, private authenticatesCodesRepository: IAuthenticatesCodesRepository) {}
 
   async userSigninUseCase(email: string, password: string) {
-    let user: UserAttributes = await this.redisUsers.handlerGetUserByEmail(email);
+    let user: UserAttributes = await RedisUsers.getInstance().handlerGetUserByEmail(email);
     if (!user) throw new RestError('account not found!', 404);
     if (!user.activate) throw new RestError('account is disabled!', 404);
     const isPassWord = compareSyncPasswordInput(password, user.password);
     if (!isPassWord) throw new RestError('Password is wrong!', 400);
     const { privateKey, publicKey } = genarateKeyPairSync();
     const keyStores = await this.tokenUsersRepository.createTokenUsers(user.id, publicKey, privateKey);
-    await this.redisUsers.handlerUpdateKeys(MainkeysRedis.TOKEN, user.id, keyStores);
     return encryptTokenPasswordOutput(user, keyStores);
   }
 
@@ -37,7 +35,6 @@ export class UserUseCase {
 
   async userSginOutUseCase(userId: string) {
     await this.tokenUsersRepository.deleteTokenUserByUserId(userId);
-    await this.redisUsers.handlerDelKeys(MainkeysRedis.TOKEN, userId); // del token
     return;
   }
 
@@ -92,9 +89,7 @@ export class UserUseCase {
   }
 
   async updatePasswordUseCase(userId: string, newPassWord: string, email: string, transactionDb: Transaction) {
-    await this.userRepository.updatePasswordByUserId(userId, hashTokenPasswordInput(newPassWord), transactionDb);
-    await this.redisUsers.handlerDelKeysEmail(email);
-    return;
+    return await this.userRepository.updatePasswordByUserId(userId, hashTokenPasswordInput(newPassWord), email, transactionDb);
   }
 
   async updateProfileUseCase(reqBody: UserAttributes, userId: string) {
@@ -103,8 +98,7 @@ export class UserUseCase {
       const newPassWord = hashTokenPasswordInput(password);
       reqBody = { ...reqBody, password: newPassWord };
     }
-    const user = await this.userRepository.updateProfile(reqBody, userId);
-    await this.redisUsers.handlerDelKeysEmail(user.email);
+    await this.userRepository.updateProfile(reqBody, userId);
     return;
   }
 }
