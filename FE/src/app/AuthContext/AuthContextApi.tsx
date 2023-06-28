@@ -29,21 +29,12 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     function handleUser(user) {
-      if (!user) {
-        navigate(PATH_PARAMS.HOME);
-      }
+      if (!user) return;
       dispatch(AuthSlice.actions.getUserById());
       return;
     }
     handleUser(userStore);
   }, []);
-
-  useEffect(() => {
-    function handleUser(user) {
-      if (!user) return;
-    }
-    handleUser(userInfor);
-  }, [userInfor]);
 
   return <AuthContext.Provider value={userInfor || {}}>{children}</AuthContext.Provider>;
 };
