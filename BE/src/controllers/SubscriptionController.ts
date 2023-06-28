@@ -67,7 +67,6 @@ export class SubscriptionController {
       const links = await this.subscriptionUseCase.subscriberUseCase(tier, user.userId, transactionDB);
       await transactionDB.commit();
       return new SendRespone({ data: links }).send(res);
-      // return new SendRespone({ data: links }).redirect(res);
     } catch (error) {
       await transactionDB.rollback();
       return RestError.manageServerError(res, error, false);
@@ -82,7 +81,6 @@ export class SubscriptionController {
       }
       const { user } = req;
       const links = await this.subscriptionUseCase.changeUseCase(tier, user.userId);
-      // return new SendRespone({ data: links }).redirect(res);
       return new SendRespone({ data: links }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);

@@ -6,7 +6,7 @@ export class PaypalService {
   expiresAt: Date;
 
   static TIME_BUFFER = 60000; // if token expires in 1 min, get new one to avoid unauthorised access
-  static RESPONSE_PAYPAL_SUCCESS = process.env.SERVER_URL + '/api/v1/subscription/paysuccess';
+  static RESPONSE_PAYPAL_SUCCESS = process.env.FE_URL + '/profile';
   static RESPONSE_PAYPAL_CANCEL = process.env.FE_URL + '/home';
   static PAYPAL_ENDPOINT = 'https://api-m.sandbox.paypal.com/v1';
   constructor() {
