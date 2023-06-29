@@ -12,7 +12,7 @@ export class RequestLimitMiddleware {
   public validateRequestLimits = async (req: Request, res: Response, next: NextFunction) => {
     const ip: any = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     const splitIp = isDevelopment ? ip : `${ip.split(':')[0]}_${req.cookies.userId}`;
-    let getIp = await redisController.checkExitsKey(splitIp);
+    let getIp = await redisController.checkExistsKey(splitIp);
     if (!getIp) {
       getIp = await redisController.setNXRedis({ keyValue: splitIp, value: 0 });
       await redisController.setExpire(splitIp, this.LIMIT_TIMER);

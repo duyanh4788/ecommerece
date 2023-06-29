@@ -18,7 +18,8 @@ enum RoutesSubs {
   USER_GET_INVOICES = '/user-get-invoices',
   USER_SUBSCRIBER = '/user-subscriber',
   USER_CHANGE_SUBS = '/user-change-subscription',
-  USER_CANCELED_SUBS = '/user-cancel-subscription'
+  USER_CANCELED_SUBS = '/user-cancel-subscription',
+  RESPONSE_SUCCESS = '/response-success'
 }
 
 export class SubscriptionRouter {
@@ -35,5 +36,6 @@ export class SubscriptionRouter {
     app.post(BASE_SUBS + RoutesSubs.USER_SUBSCRIBER, this.verifyTokenMiddleware.auThenticate, this.subscriptionController.userSubscriber);
     app.post(BASE_SUBS + RoutesSubs.USER_CHANGE_SUBS, this.verifyTokenMiddleware.auThenticate, this.subscriptionController.userChanged);
     app.post(BASE_SUBS + RoutesSubs.USER_CANCELED_SUBS, this.verifyTokenMiddleware.auThenticate, this.subscriptionController.userCanceled);
+    app.get(BASE_SUBS + RoutesSubs.RESPONSE_SUCCESS, this.subscriptionController.responseSuccess);
   }
 }

@@ -8,19 +8,20 @@ import { UsersModel } from '../model/UsersModel';
 import { UserRole } from '../../interface/UserInterface';
 import { RedisUsers } from '../../redis/users/RedisUsers';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { Transaction } from 'sequelize';
 
 export class ShopSequelize implements IShopRepository {
   private ATTRIBUTES_USER: string[] = ['fullName', 'email', 'phone', 'avatar'];
   private productModel = new ProductsSequelize();
   constructor() {}
-  async registed(reqBody: ShopInterface, userId: string): Promise<void> {
+  async registed(reqBody: ShopInterface, userId: string, status: boolean, transactionDB: Transaction): Promise<void> {
     const numbers = await ShopsModel.count({ where: { userId: deCryptFakeId(userId) } });
-    if (numbers >= 2) {
-      throw new RestError('you has limit register shop!', 404);
+    if (numbers >= 1) {
+      throw new RestError('feature multiple Shop is pending!', 404);
     }
     const { nameShop, prodcutSell, banners } = reqBody;
     const deCryptProduct = prodcutSell.map((item) => deCryptFakeId(item));
-    await ShopsModel.create({ nameShop, prodcutSell: deCryptProduct, banners, userId: deCryptFakeId(userId) });
+    await ShopsModel.create({ nameShop, prodcutSell: deCryptProduct, banners, userId: deCryptFakeId(userId), status }, { transaction: transactionDB });
     await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, userId);
     return;
   }
@@ -102,11 +103,10 @@ export class ShopSequelize implements IShopRepository {
     shop.prodcutSell = products;
     return this.transformModelToEntity(shop);
   }
-  async adminApprovedShop(shopId: string): Promise<void> {
+  async updateStatusShop(shopId: string, status: boolean): Promise<void> {
     const shop = await ShopsModel.findByPk(deCryptFakeId(shopId));
-    if (!shop) throw new RestError('shop not availabe!', 404);
-    if (shop.status) throw new RestError('shop has approved!', 404);
-    shop.status = true;
+    if (!shop) return;
+    shop.status = status;
     await shop.save();
     const result = this.transformModelToEntity(shop);
     await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, result.userId);

@@ -5,6 +5,7 @@ import { SubscriptionUseCase } from '../usecase/SubscriptionUseCase';
 import { TypeOfValue, isCheckedTypeValues } from '../utils/validate';
 import { sequelize } from '../database/sequelize';
 import { Tier } from '../interface/SubscriptionInterface';
+import { URL, URLSearchParams } from 'url';
 
 export class SubscriptionController {
   constructor(private subscriptionUseCase: SubscriptionUseCase) {}
@@ -95,9 +96,24 @@ export class SubscriptionController {
       }
       const { user } = req;
       await this.subscriptionUseCase.cancelUseCase(subscriptionId, reason, user.userId);
-      return new SendRespone({ message: 'canceled successfully!' }).send(res);
+      return new SendRespone({ message: 'canceled successfully, please waiting system sync with Paypal!' }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
+    }
+  };
+
+  public responseSuccess = async (req: Request, res: Response) => {
+    try {
+      const urlString = req.url;
+      const url = new URL(urlString, `http://${req.headers.host}`);
+      const searchParams = new URLSearchParams(url.search);
+      const subscriptionId = searchParams.get('subscription_id');
+      await this.subscriptionUseCase.responseSuccessUseCase(subscriptionId);
+      const notification = 'please waiting system sync with Paypal!';
+      const encodedNotification = encodeURIComponent(notification);
+      return new SendRespone({ data: process.env.FE_URL + '/profile?notification' + encodedNotification }).redirect(res);
+    } catch (error) {
+      return new SendRespone({ data: process.env.FE_URL }).redirect(res);
     }
   };
 }

@@ -26,7 +26,7 @@ export class AdminRouter {
     app.post(BASE_ROUTE + Routes.DELETED, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.productsController.deletedProduct);
     app.get(Routes.GET_LISTS, this.verifyTokenMiddleware.auThenticate, this.productsController.getListsProducts);
     app.get(Routes.GET_BY_ID, this.verifyTokenMiddleware.auThenticate, this.productsController.getProductById);
-    app.post(BASE_ROUTE + Routes.APPROVED_SHOP, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.shopController.adminApprovedShop);
+    app.post(BASE_ROUTE + Routes.APPROVED_SHOP, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.shopController.adminUpdateStatusShop);
     app.get(BASE_ROUTE + Routes.GET_LIST_SHOP, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.shopController.adminGetListsShop);
     app.get(BASE_ROUTE + Routes.GET_SHOP_BY_ID, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.shopController.adminGetShopById);
   }

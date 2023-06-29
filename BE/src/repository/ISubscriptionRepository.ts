@@ -9,4 +9,6 @@ export interface ISubscriptionRepository {
   findBySubscriptionId(subscriptionId: string): Promise<Subscription>;
 
   createOrUpdate(reqBody: Subscription, transactionDB: Transaction): Promise<Subscription>;
+
+  updateResponseSuccess(subscriptionId: string): Promise<void>;
 }

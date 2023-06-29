@@ -2,8 +2,12 @@ import { Transaction } from 'sequelize';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
 import { SubscriptionModel } from '../model/SubscriptionModel';
 import { ISubscriptionRepository } from '../../repository/ISubscriptionRepository';
-import { Subscription } from '../../interface/SubscriptionInterface';
+import { Subscription, SubscriptionStatus } from '../../interface/SubscriptionInterface';
 import { PaypalBillingPlansModel } from '../model/PaypalBillingPlansModel';
+import { RestError } from '../../services/error/error';
+import { UsersResourcesModel } from '../model/UsersResourcesModel';
+import { RedisSubscription } from '../../redis/subscription/RedisSubscription';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class SubscriptionSequelize implements ISubscriptionRepository {
   async findAll(): Promise<Subscription[]> {
@@ -14,7 +18,10 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
   async findByUserId(userId: string): Promise<Subscription> {
     const subs = await SubscriptionModel.findOne({
       where: { userId: deCryptFakeId(userId) },
-      include: [{ model: PaypalBillingPlansModel, attributes: ['tier', 'planId', 'frequency', 'amount', 'numberProduct', 'numberIndex'] }]
+      include: [
+        { model: PaypalBillingPlansModel, attributes: ['tier', 'planId', 'frequency', 'amount', 'numberProduct', 'numberIndex'] },
+        { model: UsersResourcesModel, attributes: ['numberProduct', 'numberIndex'] }
+      ]
     });
     return this.transformModelToEntity(subs);
   }
@@ -56,7 +63,28 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
         await subs.save();
       }
     }
-    return this.transformModelToEntity(subs);
+    const result = this.transformModelToEntity(subs);
+    await this.handleRedis(result.userId, subscriptionId, result);
+    return result;
+  }
+
+  async updateResponseSuccess(subscriptionId: string): Promise<void> {
+    const find = await SubscriptionModel.findOne({ where: { subscriptionId } });
+    if (!find) {
+      throw new RestError('subscription not available!', 404);
+    }
+    find.status = SubscriptionStatus.WAITING_SYNC;
+    await find.save();
+    const result = this.transformModelToEntity(find);
+    await this.handleRedis(result.userId, subscriptionId, result);
+    return;
+  }
+
+  private async handleRedis(userId: string, subscriptionId: string, result: Subscription) {
+    await RedisSubscription.getInstance().handlerUpdateKeys(MainkeysRedis.SUBS_USERID, userId, result);
+    await RedisSubscription.getInstance().handlerUpdateKeys(MainkeysRedis.SUBS_ID, subscriptionId, result);
+    await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_SUBS);
+    await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_INV);
   }
   /**
    * Transforms database model into domain entity

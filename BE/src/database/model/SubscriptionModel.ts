@@ -1,6 +1,7 @@
 import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, ForeignKey, AllowNull, HasOne, Index, BelongsTo } from 'sequelize-typescript';
 import { UsersModel } from './UsersModel';
 import { PaypalBillingPlansModel } from './PaypalBillingPlansModel';
+import { UsersResourcesModel } from './UsersResourcesModel';
 
 @Table({
   tableName: 'subscriptions'
@@ -46,4 +47,7 @@ export class SubscriptionModel extends Model<SubscriptionModel> {
   @UpdatedAt
   @Column
   public updated_at: Date;
+
+  @HasOne(() => UsersResourcesModel)
+  usersResources: UsersResourcesModel;
 }

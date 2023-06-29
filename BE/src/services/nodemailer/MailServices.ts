@@ -30,17 +30,16 @@ export class NodeMailerServices implements INodeMailerServices {
     });
   }
 
-  async sendWelcomeUserNotification(user: UserAttributes, authCode: string): Promise<void> {
+  async sendWelcomeUserNotification(email: string): Promise<void> {
     const baseMail = `
         <div style='overflow-wrap: break-word; background-color:#ffffff; line-height: 140%; padding: 30px;'>
-          <h1>Welcome</h1>
-          <p>You are one step away from your brand new Ecommerce account !</p>
-          <p>To access all of ChatApp’s amazing features, <br>get started by verifying your email.</br></p>
-          <a href='${this.FE_URL}?authCode=${authCode}'><strong>Verify your account</strong></a>
+          <h1>Welcome System Ecommerce</h1>
+          <p>To access all of Ecommerce amazing features, Subscriber Paypal and 30 DAYS ACCESS TO ALL FEATURES on your selected subscription.
+           Change and/or cancel your subscription at any time</p>
           <p>See you there,<br> Your friends at Ecommerce<br></p>
         </div>
       `;
-    await this.sendMail(user.email as string, 'Welcome to System Ecommerce By duyanh4788', this.renderHtmlMailServices(baseMail, 'Welcome to System Ecommerce By duyanh4788'));
+    await this.sendMail(email, 'Welcome to System Ecommerce By duyanh4788', this.renderHtmlMailServices(baseMail, 'Welcome to System Ecommerce By duyanh4788'));
     return;
   }
 

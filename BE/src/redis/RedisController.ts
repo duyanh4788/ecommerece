@@ -15,7 +15,6 @@ interface RedisModel {
 
 class RedisController {
   private REDIS_URL: string = process.env.REDIS_URL as string;
-  private TIMER: number = 3600;
   private client: redis.RedisClientType;
 
   constructor() {
@@ -71,7 +70,7 @@ class RedisController {
     return;
   }
 
-  async checkExitsKey(keyValue: string) {
+  async checkExistsKey(keyValue: string) {
     const result = await this.client.exists(keyValue);
     return JSON.parse(result as any);
   }

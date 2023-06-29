@@ -1,6 +1,7 @@
 import { ShopSequelize } from '../../database/sequelize/ShopSequelize';
 import { TokenUsersSequelize } from '../../database/sequelize/TokenUsersSequelize';
 import { UserSequelize } from '../../database/sequelize/UsersSequelize';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 import { TokenUserInterface } from '../../interface/TokenUserInterface';
 import { RestError } from '../../services/error/error';
 import { redisController } from '../RedisController';
@@ -33,42 +34,42 @@ export class RedisUsers {
     await redisController.delRedis(email);
   }
 
-  public async handlerGetUserById(mainKeys: string, userId: string) {
-    let userRedis = await redisController.getRedis(`${mainKeys}${userId}`);
+  public async handlerGetUserById(userId: string) {
+    let userRedis = await redisController.getRedis(`${MainkeysRedis.USER_ID}${userId}`);
     if (!userRedis) {
       const user = await this.usersRepository.findById(userId);
       if (!user) throw new RestError('user not found!', 404);
-      userRedis = await redisController.setRedis({ keyValue: `${mainKeys}${userId}`, value: user });
+      userRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.USER_ID}${userId}`, value: user });
     }
     return userRedis;
   }
 
-  public async handlerGetTokenUserByUserId(mainKeys: string, userId: string) {
-    let userRedis = await redisController.getRedis(`${mainKeys}${userId}`);
+  public async handlerGetTokenUserByUserId(userId: string) {
+    let userRedis = await redisController.getRedis(`${MainkeysRedis.TOKEN}${userId}`);
     if (!userRedis) {
       const tokenUser = await this.tokenUsersRepository.findByUserId(userId);
       if (!tokenUser) throw new RestError('token not found!', 404);
-      userRedis = await redisController.setRedis({ keyValue: `${mainKeys}${userId}`, value: tokenUser });
+      userRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.TOKEN}${userId}`, value: tokenUser });
     }
     return userRedis;
   }
 
-  public async handlerGetShopsUserId(mainKeys: string, userId: string) {
-    let shopsRedis = await redisController.getRedis(`${mainKeys}${userId}`);
+  public async handlerGetShopsUserId(userId: string) {
+    let shopsRedis = await redisController.getRedis(`${MainkeysRedis.SHOPS_USERID}${userId}`);
     if (!shopsRedis) {
       const shops = await this.shopSequelize.getLists(userId);
       if (!shops) throw new RestError('token not found!', 404);
-      shopsRedis = await redisController.setRedis({ keyValue: `${mainKeys}${userId}`, value: shops });
+      shopsRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.SHOPS_USERID}${userId}`, value: shops });
     }
     return shopsRedis;
   }
 
-  public async handlerGetShopId(mainKeys: string, userId: string, shopId: string) {
-    let shopRedis = await redisController.getRedis(`${mainKeys}${shopId}`);
+  public async handlerGetShopId(userId: string, shopId: string) {
+    let shopRedis = await redisController.getRedis(`${MainkeysRedis.SHOP_ID}${shopId}`);
     if (!shopRedis) {
       const shop = await this.shopSequelize.getShopById(shopId, userId);
       if (!shop) throw new RestError('token not found!', 404);
-      shopRedis = await redisController.setRedis({ keyValue: `${mainKeys}${shopId}`, value: shop });
+      shopRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.SHOP_ID}${shopId}`, value: shop });
     }
     return shopRedis;
   }

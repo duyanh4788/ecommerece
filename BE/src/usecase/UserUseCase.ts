@@ -8,6 +8,7 @@ import { IAuthenticatesCodesRepository } from '../repository/IAuthenticatesCodes
 import { ramdomAuthCode } from '../utils/ramdomAuthCode';
 import { checkTimerAuthenticator } from '../utils/timer';
 import { Transaction } from 'sequelize';
+import { RedisAuthenticate } from '../redis/authenticate/RedisAuthenticate';
 
 export class UserUseCase {
   constructor(private userRepository: IUserRepository, private tokenUsersRepository: ITokenUsersRepository, private authenticatesCodesRepository: IAuthenticatesCodesRepository) {}
@@ -29,8 +30,7 @@ export class UserUseCase {
     if (findEmail) {
       throw new RestError('email has exits!', 404);
     }
-    await this.userRepository.createUser(fullName, email, hashTokenPasswordInput(password), phone, UserRole.USER);
-    return;
+    return await this.userRepository.createUser(fullName, email, hashTokenPasswordInput(password), phone, UserRole.USER);
   }
 
   async userSginOutUseCase(userId: string) {
@@ -63,7 +63,7 @@ export class UserUseCase {
   }
 
   async forgotPasswordUseCase(userId: string) {
-    const find = await this.authenticatesCodesRepository.findByUserId(userId);
+    const find = await RedisAuthenticate.getInstance().getByUserId(userId);
     if (find) {
       throw new RestError('we have send authenticator code to email, please checked to email or resend order code!', 404);
     }
@@ -72,7 +72,7 @@ export class UserUseCase {
   }
 
   async resendForgotPasswordUseCase(userId: string) {
-    const find = await this.authenticatesCodesRepository.findByUserId(userId);
+    const find = await RedisAuthenticate.getInstance().getByUserId(userId);
     if (!find) {
       throw new RestError('you can not order reset password!', 404);
     }

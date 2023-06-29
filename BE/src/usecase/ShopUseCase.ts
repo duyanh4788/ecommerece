@@ -4,11 +4,28 @@ import { ShopInterface } from '../interface/ShopInterface';
 import { IShopRepository } from '../repository/IShopRepository';
 import { UserRole } from '../interface/UserInterface';
 import { MainkeysRedis } from '../interface/KeyRedisInterface';
+import { ISubscriptionRepository } from '../repository/ISubscriptionRepository';
+import { SubscriptionStatus } from '../interface/SubscriptionInterface';
+import { RestError } from '../services/error/error';
+import { IUsersResourcesRepository } from '../repository/IUsersResourcesRepository';
+import { Transaction } from 'sequelize';
+import { IntegerValue, TypeDecInc } from '../interface/UsersResourcesInterface';
 export class ShopUseCase {
-  constructor(private userRepository: IUserRepository, private shopUsersRepository: IShopRepository) {}
+  constructor(private shopUsersRepository: IShopRepository, private subscriptionRepository: ISubscriptionRepository, private usersResourcesRepository: IUsersResourcesRepository) {}
 
-  async registedShopUseCase(reqBody: ShopInterface, userId: string) {
-    return await this.shopUsersRepository.registed(reqBody, userId);
+  async registedShopUseCase(reqBody: ShopInterface, userId: string, transactionDB: Transaction) {
+    const subs = await this.subscriptionRepository.findByUserId(userId);
+    if (!subs || (subs && subs.status !== SubscriptionStatus.ACTIVE)) {
+      throw new RestError('please subcriber paypal!', 406);
+    }
+    if (!subs.usersResources.numberProduct) {
+      throw new RestError(`you have limit Product, you can upgrade subscription or waiting next payment!`, 404);
+    }
+    if (reqBody.prodcutSell.length > subs.usersResources.numberProduct) {
+      throw new RestError(`with tier ${subs.paypalBillingPlans.tier}, you only registed ${subs.usersResources.numberProduct} Product, you can upgrade subscription or registed with 2 Product!`, 404);
+    }
+    await this.usersResourcesRepository.decretIncre(userId, TypeDecInc.NUMBER_PRODUCT, IntegerValue.DECR, reqBody.prodcutSell.length, transactionDB);
+    return await this.shopUsersRepository.registed(reqBody, userId, true, transactionDB);
   }
 
   async updatedShopUseCase(reqBody: ShopInterface, userId: string) {
@@ -23,17 +40,17 @@ export class ShopUseCase {
     if (roleId && roleId === UserRole.ADMIN) {
       return await this.shopUsersRepository.getLists(userId, roleId);
     }
-    return await RedisUsers.getInstance().handlerGetShopsUserId(MainkeysRedis.SHOPS_USERID, userId);
+    return await RedisUsers.getInstance().handlerGetShopsUserId(userId);
   }
 
   async getShopByIdUseCase(shopId: string, userId: string, roleId?: string) {
     if (roleId && roleId === UserRole.ADMIN) {
       return await this.shopUsersRepository.getShopById(shopId, roleId);
     }
-    return await RedisUsers.getInstance().handlerGetShopId(MainkeysRedis.SHOP_ID, userId, shopId);
+    return await RedisUsers.getInstance().handlerGetShopId(userId, shopId);
   }
 
-  async adminApprovedShopUseCase(shopId: string) {
-    return await this.shopUsersRepository.adminApprovedShop(shopId);
+  async updateStatusShopUseCase(shopId: string, status: boolean) {
+    return await this.shopUsersRepository.updateStatusShop(shopId, status);
   }
 }

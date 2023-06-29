@@ -1,7 +1,8 @@
+import { Transaction } from 'sequelize';
 import { ShopInterface } from '../interface/ShopInterface';
 
 export interface IShopRepository {
-  registed(reqBody: ShopInterface, userId: string): Promise<void>;
+  registed(reqBody: ShopInterface, userId: string, status: boolean, transactionDB: Transaction): Promise<void>;
 
   updated(reqBody: ShopInterface, userId: string): Promise<void>;
 
@@ -11,5 +12,5 @@ export interface IShopRepository {
 
   getShopById(shopId: string, userId?: string, roleId?: string): Promise<ShopInterface>;
 
-  adminApprovedShop(shopId: string): Promise<void>;
+  updateStatusShop(shopId: string, status: boolean): Promise<void>;
 }

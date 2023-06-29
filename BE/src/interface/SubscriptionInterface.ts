@@ -1,3 +1,5 @@
+import { UsersResourcesInterface } from './UsersResourcesInterface';
+
 export enum SubscriptionFrequency {
   MONTHLY = 'monthly',
   DAILY = 'daily'
@@ -13,7 +15,8 @@ export enum SubscriptionStatus {
   APPROVAL_PENDING = 'APPROVAL_PENDING',
   ACTIVE = 'ACTIVE',
   SUSPENDED = 'SUSPENDED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
+  WAITING_SYNC = 'WAITING_SYNC'
 }
 
 export interface Subscription {
@@ -25,6 +28,8 @@ export interface Subscription {
   isTrial?: boolean;
   status?: SubscriptionStatus;
   createdAt?: Date;
+  paypalBillingPlans?: PaypalBillingPlans;
+  usersResources?: UsersResourcesInterface;
 }
 
 export interface PaypalBillingPlans {
@@ -90,8 +95,10 @@ export interface RequestEmail {
 
 export const MsgErrSubscription = {
   ALLREADY_ACTIVE: 'User is already ACTIVE!',
+  NONE_SUBSCRIPTION: 'you can not subscription!',
   SUBSCRIPTION_SUSPENDED: 'Your payment for at least one previous billing cycle failed, please check your Paypal account!',
   CHANGE_SUBSCRIPTION: 'You can not change subscription, please contact admin!',
   PLAN_DUPLICATE: 'Please chose orther plan!',
-  PLEASE_UPDATE_BILLING: 'Please refresh this page to get the latest Subscription!'
+  PLEASE_UPDATE_BILLING: 'Please refresh this page to get the latest Subscription!',
+  PLEASE_WAITING_SYNC: 'Please waiting system sync with Paypal!'
 };

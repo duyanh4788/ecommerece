@@ -11,6 +11,7 @@ import { ProductsSequelize } from '../database/sequelize/ProductsSequelize';
 import { ShopSequelize } from '../database/sequelize/ShopSequelize';
 import { SubscriptionSequelize } from '../database/sequelize/SubscriptionSequelize';
 import { TokenUsersSequelize } from '../database/sequelize/TokenUsersSequelize';
+import { UsersResourcesSequelize } from '../database/sequelize/UsersResourcesSequelize';
 import { UserSequelize } from '../database/sequelize/UsersSequelize';
 import { AuthUserMiddleware } from '../middlewares/auth/AuthUserMiddleware';
 import { VerifyTokenMiddleware } from '../middlewares/auth/VerifyTokenMiddleware';
@@ -34,15 +35,17 @@ export class MapServices {
   public paypalBillingPlanSequelize: PaypalBillingPlanSequelize = new PaypalBillingPlanSequelize();
   public invoicesSequelize: InvoicesSequelize = new InvoicesSequelize();
   public subscriptionSequelize: SubscriptionSequelize = new SubscriptionSequelize();
+  public usersResourcesSequelize: UsersResourcesSequelize = new UsersResourcesSequelize();
 
   public subscriptionUseCase: SubscriptionUseCase = new SubscriptionUseCase(
     this.paypalService,
     this.userSequelize,
     this.subscriptionSequelize,
-    this.paypalBillingPlanSequelize,
-    this.invoicesSequelize
+    this.invoicesSequelize,
+    this.usersResourcesSequelize,
+    this.shopSequelize
   );
-  public shopUseCase: ShopUseCase = new ShopUseCase(this.userSequelize, this.shopSequelize);
+  public shopUseCase: ShopUseCase = new ShopUseCase(this.shopSequelize, this.subscriptionSequelize, this.usersResourcesSequelize);
   public productsUseCase: ProductsUseCase = new ProductsUseCase(this.productsSequelize);
   public userUseCase: UserUseCase = new UserUseCase(this.userSequelize, this.tokenUsersSequelize, this.authenticatesCodesSequelize);
   public subscriptionController: SubscriptionController = new SubscriptionController(this.subscriptionUseCase);

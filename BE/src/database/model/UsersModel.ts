@@ -3,7 +3,6 @@ import { TokenUserModel } from './TokenUserModel';
 import { AuthenticatesCodesModel } from './AuthenticatesCodesModel';
 import { ShopsModel } from './ShopsModel';
 import { SubscriptionModel } from './SubscriptionModel';
-
 @Table({
   tableName: 'users'
 })

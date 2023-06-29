@@ -4,7 +4,6 @@ import { SendRespone } from '../../services/success/success';
 import { UserRole } from '../../interface/UserInterface';
 import { RedisUsers } from '../../redis/users/RedisUsers';
 import { RestError } from '../../services/error/error';
-import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class VerifyTokenMiddleware {
   public async auThenticate(req: Request, res: Response, next: NextFunction) {
@@ -17,7 +16,7 @@ export class VerifyTokenMiddleware {
       if (!userId) {
         throw new RestError('invalid request!', 401);
       }
-      const tokenUser = await RedisUsers.getInstance().handlerGetTokenUserByUserId(MainkeysRedis.TOKEN, userId);
+      const tokenUser = await RedisUsers.getInstance().handlerGetTokenUserByUserId(userId);
       if (!tokenUser) {
         throw new RestError('invalid request!', 401);
       }
