@@ -19,7 +19,7 @@ import {
 import { makeStyles } from '@mui/styles';
 import { ShoppingCartSharp, MenuOutlined } from '@mui/icons-material';
 import { ThemeProvider } from '@emotion/react';
-import bannernode from '../../../images/bannernode.png';
+import bannernode from 'images/bannernode.png';
 import { AppHelper } from 'utils/app.helper';
 import { PopoverList } from './Popover';
 import { UserInforResponsive } from './UserInforResponsive';

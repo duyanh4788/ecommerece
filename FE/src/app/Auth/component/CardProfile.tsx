@@ -15,18 +15,18 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Done, Edit } from '@mui/icons-material';
+import { Done, Edit, HelpOutline } from '@mui/icons-material';
 import { AppHelper } from 'utils/app.helper';
 import { useDispatch, useSelector } from 'react-redux';
 import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
 import * as SubscriptionSlice from 'store/subscription/shared/slice';
 import * as SubscriptionSelector from 'store/subscription/shared/selectors';
-import profile from '../../../images/profile.png';
+import profile from 'images/profile.png';
 import { FileUpload, FileUploadProps } from './FileUpload';
 import { CardListItem } from './CardListItem';
 import { SubscriptionStatus, TypeSubscriber } from 'interface/Subscriptions.model';
-import { FREE_TRIAL, PAYPAL_LOGO } from 'commom/common.contants';
+import { FREE_TRIAL, PAYPAL_LOGO, TITLE_RESOURCE } from 'commom/common.contants';
 import { handleColorStatus, handleColorTier } from 'utils/color';
 import { ModalPlans } from './ModalPlans';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -58,8 +58,9 @@ export const CardProfile = ({ resetDataRef }: Props) => {
   useEffect(() => {
     const { pathname, search } = location;
 
-    if (search.includes('ba_token')) {
-      toast.success('please waiting system sync with Paypal!');
+    if (search.includes('notification')) {
+      const decode = decodeURIComponent(search).replaceAll('%20', ' ');
+      toast.success(decode.split('=')[1]);
     }
     navigate(pathname, { replace: true });
   }, [location, navigate]);
@@ -247,10 +248,16 @@ export const CardProfile = ({ resetDataRef }: Props) => {
                 </span>
               </Typography>
               <Typography variant="inherit">
-                Resouce Product: {subscriptions.paypalBillingPlans?.numberProduct}
+                Resouce Product: {subscriptions.usersResources?.numberProduct} / month{' '}
+                <Tooltip title={TITLE_RESOURCE}>
+                  <HelpOutline sx={{ fontSize: '12px' }} color="success" />
+                </Tooltip>
               </Typography>
               <Typography variant="inherit">
-                Resouce Index: {subscriptions.paypalBillingPlans?.numberIndex}
+                Resouce Index: {subscriptions.usersResources?.numberIndex} / month{' '}
+                <Tooltip title={TITLE_RESOURCE}>
+                  <HelpOutline sx={{ fontSize: '12px' }} color="success" />
+                </Tooltip>
               </Typography>
               <Chip
                 label="Invoices"

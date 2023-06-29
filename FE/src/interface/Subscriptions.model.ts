@@ -9,6 +9,7 @@ export interface Subscription {
   createdAt?: Date;
   reason?: string;
   paypalBillingPlans?: PaypalBillingPlans;
+  usersResources: UsersResources;
 }
 
 export interface PaypalBillingPlans {
@@ -20,6 +21,11 @@ export interface PaypalBillingPlans {
   numberIndex?: number;
   isTrial?: boolean;
   createdAt?: Date;
+}
+
+export interface UsersResources {
+  numberProduct?: number;
+  numberIndex?: number;
 }
 
 export interface Invoices {
@@ -47,6 +53,7 @@ export enum SubscriptionStatus {
   SUSPENDED = 'SUSPENDED',
   CANCELLED = 'CANCELLED',
   ACTIVE = 'ACTIVE',
+  WAITING_SYNC = 'WAITING_SYNC',
 }
 
 export enum TypeSubscriber {

@@ -50,7 +50,6 @@ export const ModalInvoices = ({ modalInvoice, invoices, handleClose, userInfor }
       headerName: 'Plan',
       align: 'center',
       headerAlign: 'center',
-      width: 150,
       renderCell: item => (
         <Chip
           label={AppHelper.capitalizeFirstLetter(item.value)}
@@ -69,10 +68,9 @@ export const ModalInvoices = ({ modalInvoice, invoices, handleClose, userInfor }
     },
     {
       field: 'action',
-      headerName: 'Donwload PDF',
+      headerName: 'PDF',
       align: 'center',
       headerAlign: 'center',
-      width: 150,
       renderCell: item => (
         <IconButton onClick={() => generatePdfDocument(item)}>
           <Download />
@@ -84,7 +82,7 @@ export const ModalInvoices = ({ modalInvoice, invoices, handleClose, userInfor }
   const getRowId = (row: any) => row.id;
 
   return (
-    <Dialog open={modalInvoice} onClose={() => handleClose(false)} maxWidth={'xl'}>
+    <Dialog open={modalInvoice} onClose={() => handleClose(false)} maxWidth={'lg'}>
       <Box display={'flex'} justifyContent={'space-between'}>
         <DialogTitle sx={{ fontWeight: 'bold' }}>Invoices Paypal Ecommerce AnhVu</DialogTitle>
         <img src={PAYPAL_BANNER} alt={PAYPAL_BANNER} />
@@ -96,6 +94,7 @@ export const ModalInvoices = ({ modalInvoice, invoices, handleClose, userInfor }
           getRowId={getRowId}
           hideFooter={true}
           disableColumnMenu={true}
+          style={{ minWidth: '600px' }}
         />
       </DialogContent>
     </Dialog>

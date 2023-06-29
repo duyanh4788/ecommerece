@@ -1,19 +1,19 @@
-import logo from '../images/logo.png';
-import react from '../images/react.png';
-import github from '../images/github.png';
-import gmail from '../images/gmail.png';
-import linkedin from '../images/linkedin.png';
-import phone from '../images/phone.png';
-import clothes from '../images/clothes.png';
-import electronic from '../images/electronic.png';
-import funiture from '../images/funiture.png';
-import cosmetics from '../images/cosmetics.png';
-import elacticsearch from '../images/elacticsearch.png';
-import rabitmq from '../images/rabitmq.png';
-import redis from '../images/redis.png';
-import mysql from '../images/mysql.png';
-import bannernode from '../images/bannernode.png';
-import free_trial from '../images/free.png';
+import logo from 'images/logo.png';
+import react from 'images/react.png';
+import github from 'images/github.png';
+import gmail from 'images/gmail.png';
+import linkedin from 'images/linkedin.png';
+import phone from 'images/phone.png';
+import clothes from 'images/clothes.png';
+import electronic from 'images/electronic.png';
+import funiture from 'images/funiture.png';
+import cosmetics from 'images/cosmetics.png';
+import elacticsearch from 'images/elacticsearch.png';
+import rabitmq from 'images/rabitmq.png';
+import redis from 'images/redis.png';
+import mysql from 'images/mysql.png';
+import bannernode from 'images/bannernode.png';
+import free_trial from 'images/free.png';
 
 export const TOKEN_EXPRIED = 'token expired, please login again.';
 
@@ -46,6 +46,9 @@ export const PAYPAL_BANNER =
 export const PAYPAL_SUBS = 'https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-150px.png';
 
 export const FREE_TRIAL = free_trial;
+
+export const TITLE_RESOURCE =
+  'Every month, System will reset resources after receiving payment from PayPal.';
 
 export const FOOTER = [
   {

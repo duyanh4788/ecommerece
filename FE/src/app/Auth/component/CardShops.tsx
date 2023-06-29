@@ -16,7 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Done, AddCircle, Cancel, Edit, Delete } from '@mui/icons-material';
-import baner_shop from '../../../images/banner_shop.png';
+import baner_shop from 'images/banner_shop.png';
 import { FileUpload, FileUploadProps } from './FileUpload';
 import * as ShopSlice from 'store/shops/shared/slice';
 import * as ShopSelector from 'store/shops/shared/selectors';
@@ -116,7 +116,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
     if (!shops.length) return null;
     return shops.map(item => {
       return (
-        <Grid item xs={12} sm={6} md={4} key={item?.id}>
+        <Grid item xs={12} sm={6} md={8} key={item?.id}>
           <Card className="card_profile">
             <CardHeader
               avatar={
@@ -185,9 +185,9 @@ export const CardShops = ({ resetDataRef }: Props) => {
               <Box>
                 Status:{' '}
                 {item?.status ? (
-                  <Chip label="approved" size="small" color="success" />
+                  <Chip label="Active" size="small" color="success" />
                 ) : (
-                  <Chip label="waiting admin approved" size="small" color="warning" />
+                  <Chip label="Disabled" size="small" color="warning" />
                 )}
               </Box>
               {editShop && shopInfor?.id === item.id ? (
@@ -210,16 +210,18 @@ export const CardShops = ({ resetDataRef }: Props) => {
                 <React.Fragment>
                   <Box>Name: {item?.nameShop}</Box>
                   <Box>
-                    <Typography variant="inherit">Products:</Typography>
-                    {item?.prodcutSell?.map(item => (
-                      <Chip
-                        label={item.nameProduct}
-                        key={item.id}
-                        sx={{ marginLeft: '2px' }}
-                        size="small"
-                        avatar={<Avatar src={item.avatar} alt={item.avatar} />}
-                      />
-                    ))}
+                    <Typography variant="inherit">
+                      Products:{' '}
+                      {item?.prodcutSell?.map(item => (
+                        <Chip
+                          label={item.nameProduct}
+                          key={item.id}
+                          sx={{ marginLeft: '2px' }}
+                          size="small"
+                          avatar={<Avatar src={item.avatar} alt={item.avatar} />}
+                        />
+                      ))}
+                    </Typography>
                   </Box>
                 </React.Fragment>
               )}
@@ -232,7 +234,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
 
   const renderRegisted = () => {
     return (
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid item xs={12} sm={6} md={8}>
         <Card className="card_profile">
           <CardHeader
             avatar={
@@ -304,26 +306,28 @@ export const CardShops = ({ resetDataRef }: Props) => {
     <Grid container columns={{ xs: 6, sm: 12, md: 12 }} spacing={2}>
       {renderShops()}
       {register && renderRegisted()}
-      <Grid item xs={12} sm={6} md={4}>
-        <Card className={classes.registed} sx={{ display: 'flex', flexDirection: 'column' }}>
-          <IconButton disabled={shops.length >= 2} onClick={() => handleCancel()}>
-            <CircularProgress
-              size={24}
-              color="success"
-              sx={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                zIndex: 1,
-              }}
-            />
-            <AddCircle color="success" sx={{ cursor: 'pointer' }} />
-          </IconButton>
-          <Typography variant="inherit" fontWeight={'bold'}>
-            you have registed free {!shops.length ? 2 + 'more' : 2 - shops.length} Shop
-          </Typography>
-        </Card>
-      </Grid>
+      {!register ? (
+        <Grid item xs={12} sm={6} md={4}>
+          <Card className={classes.registed} sx={{ display: 'flex', flexDirection: 'column' }}>
+            <IconButton disabled={shops.length >= 2} onClick={() => handleCancel()}>
+              <CircularProgress
+                size={24}
+                color="success"
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  zIndex: 1,
+                }}
+              />
+              <AddCircle color="success" sx={{ cursor: 'pointer' }} />
+            </IconButton>
+            <Typography variant="inherit" fontWeight={'bold'}>
+              Registed Shop
+            </Typography>
+          </Card>
+        </Grid>
+      ) : null}
     </Grid>
   );
 };

@@ -65,6 +65,9 @@ export const Profile = () => {
   useEffect(() => {
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
       const { type, payload } = RootStore.getState().lastAction;
+      if (payload && payload.code === 406) {
+        setSelectedTab(PAGE.PROFILLE);
+      }
       switch (type) {
         case AuthSlice.actions.updateProfileSuccess.type:
           dispatch(AuthSlice.actions.getUserById());
@@ -87,6 +90,8 @@ export const Profile = () => {
           }
           break;
         case ShopSlice.actions.uploadFileSuccess.type:
+          toast.success(payload.message);
+          break;
         case SubscriptionSlice.actions.userCanceledSuccess.type:
           toast.success(payload.message);
           handleResetData();

@@ -47,12 +47,14 @@ body {
     background: linear-gradient(#f4f4f1, #ece9e6);
 }
 
-body::-webkit-scrollbar {
+body::-webkit-scrollbar,
+.MuiDialogContent-root::-webkit-scrollbar {
     width: 6px;
     height: 6px;
     background-color: #f5f5f5;
 }
-body::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb,
+.MuiDialogContent-root::-webkit-scrollbar-thumb {
     background: #e2dfdf;
     border-radius: 6px;
 }
@@ -87,4 +89,9 @@ body::-webkit-scrollbar-thumb {
 .css-1lymaxv-MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
 .css-1lymaxv-MuiDataGrid-root .MuiDataGrid-cell:focus {
     outline: none !important;
+}
+
+.MuiDialog-paper,
+.MuiDialog-paperScrollPaper MuiDialog-paperWidthLg {
+    overflow: hidden !important;
 }

@@ -21,6 +21,8 @@ export const handleColorStatus = (status: string) => {
       return '#c00404';
     case 'ACTIVE':
       return '#36b301';
+    case 'WAITING_SYNC':
+      return '#b9af14';
     default:
       break;
   }

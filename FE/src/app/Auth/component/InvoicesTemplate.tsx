@@ -2,7 +2,7 @@ import React from 'react';
 import { Document, Page, View, Image, Text } from '@react-pdf/renderer';
 import { styles } from './StylesPdf';
 import _ from 'lodash';
-import bannernode from '../../../images/bannernode.png';
+import bannernode from 'images/bannernode.png';
 import { Invoices } from 'interface/Subscriptions.model';
 import { Users } from 'interface/Users.model';
 import { AppHelper } from 'utils/app.helper';
