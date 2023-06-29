@@ -45,6 +45,10 @@
   background: #c45648;
 }
 
+.card_profile .subs .btn_change {
+  background: #424242;
+}
+
 .card_profile .subs button {
   cursor: pointer;
   padding: 5px 10px;
@@ -55,9 +59,17 @@
   color: #fff;
   margin-left: 5px;
   text-transform: uppercase;
+  -webkit-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.178);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.178);
+  -webkit-transform: translateY(-2px);
+          transform: translateY(-2px);
+  -webkit-transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
+  transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
+  transition: box-shadow 0.3s, transform 0.3s;
+  transition: box-shadow 0.3s, transform 0.3s, -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
 }
 
-.box_unsbs {
+.box_subs {
   background: #f4f4f1;
   text-align: center;
   height: 100%;
@@ -73,12 +85,12 @@
           justify-content: center;
 }
 
-.box_unsbs p {
+.box_subs p {
   font-size: 14px;
   color: #00000099;
 }
 
-.box_unsbs button {
+.box_subs button {
   margin-top: 10px;
   cursor: pointer;
   padding: 5px 10px;
@@ -89,6 +101,14 @@
   color: #fff;
   margin-left: 5px;
   text-transform: uppercase;
+  -webkit-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.178);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.178);
+  -webkit-transform: translateY(-2px);
+          transform: translateY(-2px);
+  -webkit-transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
+  transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
+  transition: box-shadow 0.3s, transform 0.3s;
+  transition: box-shadow 0.3s, transform 0.3s, -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
 }
 
 .cell_tier {

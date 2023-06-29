@@ -89,7 +89,7 @@ export const ModalInvoices = ({ modalInvoice, invoices, handleClose, userInfor }
         <DialogTitle sx={{ fontWeight: 'bold' }}>Invoices Paypal Ecommerce AnhVu</DialogTitle>
         <img src={PAYPAL_BANNER} alt={PAYPAL_BANNER} />
       </Box>
-      <DialogContent>
+      <DialogContent style={{ border: '1px solid #ebebec' }}>
         <DataGrid
           rows={invoices}
           columns={columns}

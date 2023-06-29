@@ -4,9 +4,9 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { PaypalBillingPlans, Subscription, TypeSubscriber } from 'interface/Subscriptions.model';
 import { handleColorTier } from 'utils/color';
 import { AttachMoney, Check } from '@mui/icons-material';
-import { useDispatch } from 'react-redux';
-import * as SubscriptionSlice from 'store/subscription/shared/slice';
-import { PAYPAL_BANNER } from 'commom/common.contants';
+import { PATH_PARAMS, PAYPAL_BANNER } from 'commom/common.contants';
+import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   modalPlans: boolean;
@@ -23,17 +23,22 @@ export const ModalPlans = ({
   typeSubscriber,
   handleClose,
 }: Props) => {
-  const dispatch = useDispatch();
+  const local = new LocalStorageService();
+  const navigate = useNavigate();
 
-  const handleSubscriber = (item: string) => {
-    if (typeSubscriber === TypeSubscriber.SUBSCRIBER) {
-      dispatch(SubscriptionSlice.actions.userSubscriber({ tier: item }));
-      return;
-    }
-    if (typeSubscriber === TypeSubscriber.CHANGED) {
-      dispatch(SubscriptionSlice.actions.userChanged({ tier: item }));
-      return;
-    }
+  const handleSubscriber = (item: any) => {
+    const value = {
+      tier: item.row.tier,
+      amout: item.row.amount,
+      isTrial: subscriptions?.isTrial,
+      type:
+        typeSubscriber === TypeSubscriber.SUBSCRIBER
+          ? TypeSubscriber.SUBSCRIBER
+          : TypeSubscriber.CHANGED,
+    };
+    local.setItem({ key: LocalStorageKey.tier, value });
+    navigate(PATH_PARAMS.SUBSCRIBER);
+    return;
   };
   const columns: GridColDef[] = [
     {
@@ -42,13 +47,14 @@ export const ModalPlans = ({
       align: 'center',
       headerAlign: 'center',
       renderCell: item => (
-        <span
+        <strong
           className="cell_tier"
           style={{ color: handleColorTier(item.value) }}
-          onClick={() => handleSubscriber(item.value)}>
+          onClick={() => handleSubscriber(item)}>
           {item.value}{' '}
-          {subscriptions && subscriptions.paypalBillingPlans?.tier === item.value && <Check />}
-        </span>
+          {subscriptions &&
+            subscriptions.paypalBillingPlans?.tier?.split('_')[0] === item.value && <Check />}
+        </strong>
       ),
     },
     {
@@ -87,7 +93,7 @@ export const ModalPlans = ({
         <DialogTitle sx={{ fontWeight: 'bold' }}>Plans Paypal Ecommerce AnhVu</DialogTitle>
         <img src={PAYPAL_BANNER} alt={PAYPAL_BANNER} />
       </Box>
-      <DialogContent>
+      <DialogContent style={{ border: '1px solid #ebebec' }}>
         <DataGrid
           rows={plans}
           columns={columns}

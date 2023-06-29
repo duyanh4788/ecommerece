@@ -26,13 +26,16 @@
         .btn_unsub {
             background: #c45648;
         }
+        .btn_change {
+            background: $color-gray-2;
+        }
         button {
             @include buttonSubs;
         }
     }
 }
 
-.box_unsbs {
+.box_subs {
     background: #f4f4f1;
     text-align: center;
     height: 100%;

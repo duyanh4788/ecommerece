@@ -16,5 +16,11 @@ export const AppRouting: AppRoute[] = [
   { key: 3, path: PATH_PARAMS.SIGNIN, title: 'Sign in Ecommerce', Component: Router.SignIn },
   { key: 4, path: PATH_PARAMS.PASSW, title: 'Password Ecommerce', Component: Router.Password },
   { key: 5, path: PATH_PARAMS.PROFILE, title: 'Profile Ecommerce', Component: Router.Profile },
-  { key: 6, path: '*', title: '404 Notfound', Component: Router.NotFound },
+  {
+    key: 6,
+    path: PATH_PARAMS.SUBSCRIBER,
+    title: 'Subscriber Ecommerce',
+    Component: Router.Subscriber,
+  },
+  { key: 7, path: '*', title: '404 Notfound', Component: Router.NotFound },
 ];

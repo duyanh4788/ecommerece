@@ -36,3 +36,9 @@ export const NotFound = lazyLoad(
   module => module.NotFound,
   LoaderFallBack(),
 );
+
+export const Subscriber = lazyLoad(
+  () => import('app'),
+  module => module.Subscriber,
+  LoaderFallBack(),
+);

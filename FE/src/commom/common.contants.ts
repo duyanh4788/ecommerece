@@ -23,6 +23,7 @@ export const PATH_PARAMS = {
   SIGNUP: '/signup',
   PASSW: '/password',
   PROFILE: '/profile',
+  SUBSCRIBER: '/subscriber',
 };
 
 export const TYPE_RESET_PW = {
@@ -41,6 +42,8 @@ export const PAYPAL_LOGO =
 
 export const PAYPAL_BANNER =
   'https://www.paypalobjects.com/digitalassets/c/website/marketing/apac/C2/logos-buttons/optimize/logo-center-other-options-white-shop-pp.png';
+
+export const PAYPAL_SUBS = 'https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-150px.png';
 
 export const FREE_TRIAL = free_trial;
 

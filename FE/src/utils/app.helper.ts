@@ -87,6 +87,7 @@ export class AppHelper {
   }
 
   static capitalizeFirstLetter(string: string): string {
+    if (!string) return '';
     const slpit = string.split('_')[0];
     return slpit.charAt(0).toUpperCase() + slpit.slice(1);
   }

@@ -1,0 +1,46 @@
+@import "../extend/index.scss";
+
+.subscriber {
+    width: 100%;
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    .card {
+        max-width: 600px;
+        padding: 20px;
+        .card_content {
+            background: #f4f4f1;
+            border-radius: 10px;
+            .tag_p {
+                font-size: 16px;
+                font-weight: bolder;
+                line-height: 40px;
+                text-align: center;
+            }
+            p {
+                font-size: 14px;
+                line-height: 30px;
+                span {
+                    display: flex;
+                    justify-content: center;
+                }
+            }
+        }
+        .action {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            span {
+                padding: 20px;
+                background: #ffc14c;
+                border-radius: 20px;
+                color: white;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            span:hover {
+                background: #fda605 !important;
+            }
+        }
+    }
+}

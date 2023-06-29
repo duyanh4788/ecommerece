@@ -25,18 +25,21 @@ import profile from '../../../images/profile.png';
 import { FileUpload, FileUploadProps } from './FileUpload';
 import { CardListItem } from './CardListItem';
 import { SubscriptionStatus, TypeSubscriber } from 'interface/Subscriptions.model';
-import { FREE_TRIAL, PAYPAL_LOGO } from 'commom/common.contants';
+import { FREE_TRIAL, PATH_PARAMS, PAYPAL_LOGO } from 'commom/common.contants';
 import { handleColorStatus, handleColorTier } from 'utils/color';
 import { ModalPlans } from './ModalPlans';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ModalInvoices } from './ModalInvoices';
+import { ModalCancel } from './ModalCancel';
+import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
 
 interface Props {
   resetDataRef: RefObject<boolean | null>;
 }
 
 export const CardProfile = ({ resetDataRef }: Props) => {
+  const local = new LocalStorageService();
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -50,6 +53,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
   const [editProfile, setEditProfile] = useState<boolean>(false);
   const [modalPlans, setModalPlans] = useState<boolean>(false);
   const [modalInvoice, setModalInvoice] = useState<boolean>(false);
+  const [modalCancel, setModalCancel] = useState<boolean>(false);
   const [typeSubscriber, setTypeSubscriber] = useState<string>(TypeSubscriber.SUBSCRIBER);
 
   useEffect(() => {
@@ -62,17 +66,10 @@ export const CardProfile = ({ resetDataRef }: Props) => {
   }, [location, navigate]);
 
   useEffect(() => {
-    function initSubscription(data) {
-      if (!data) {
-        dispatch(SubscriptionSlice.actions.userGetSubscription());
-        dispatch(SubscriptionSlice.actions.getPlans());
-        return;
-      }
-      dispatch(SubscriptionSlice.actions.userGetInvoices());
-      return;
-    }
-    initSubscription(subscriptions);
-  }, [subscriptions]);
+    dispatch(SubscriptionSlice.actions.userGetSubscription());
+    dispatch(SubscriptionSlice.actions.getPlans());
+    dispatch(SubscriptionSlice.actions.userGetInvoices());
+  }, []);
 
   useEffect(() => {
     if (resetDataRef.current) {
@@ -139,6 +136,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
   const handleResetSubscription = () => {
     setModalPlans(false);
     setModalInvoice(false);
+    setModalCancel(false);
     setTypeSubscriber(TypeSubscriber.SUBSCRIBER);
   };
 
@@ -267,19 +265,23 @@ export const CardProfile = ({ resetDataRef }: Props) => {
             {Object.values(SubscriptionStatus).includes(
               subscriptions?.status as SubscriptionStatus,
             ) ? (
-              <div className="subs">
+              <CardActions className="subs">
                 <button
-                  onClick={() =>
-                    dispatch(
-                      SubscriptionSlice.actions.userSubscriber({
-                        tier: subscriptions.paypalBillingPlans?.tier?.split('_')[0],
-                      }),
-                    )
-                  }>
+                  onClick={() => {
+                    const value = {
+                      tier: subscriptions?.paypalBillingPlans?.tier,
+                      amout: subscriptions?.paypalBillingPlans?.amount,
+                      isTrial: subscriptions?.isTrial,
+                      type: TypeSubscriber.SUBSCRIBER,
+                    };
+                    local.setItem({ key: LocalStorageKey.tier, value });
+                    navigate(PATH_PARAMS.SUBSCRIBER);
+                  }}>
                   Subscribe
                 </button>
                 {subscriptions.status === SubscriptionStatus.APPROVAL_PENDING && (
                   <button
+                    className="btn_change"
                     onClick={() => {
                       setModalPlans(true);
                       setTypeSubscriber(TypeSubscriber.CHANGED);
@@ -287,22 +289,14 @@ export const CardProfile = ({ resetDataRef }: Props) => {
                     Changed
                   </button>
                 )}
-              </div>
+              </CardActions>
             ) : (
               <CardActions className="subs">
-                <button
-                  className="btn_unsub"
-                  onClick={() =>
-                    dispatch(
-                      SubscriptionSlice.actions.userCanceled({
-                        subscriptionId: subscriptions.subscriptionId,
-                        reason: `${userInfor?.email} canceled`,
-                      }),
-                    )
-                  }>
+                <button className="btn_unsub" onClick={() => setModalCancel(true)}>
                   UnSubscribe
                 </button>
                 <button
+                  className="btn_change"
                   onClick={() => {
                     setModalPlans(true);
                     setTypeSubscriber(TypeSubscriber.CHANGED);
@@ -313,7 +307,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
             )}
           </Card>
         ) : (
-          <div className="box_unsbs">
+          <div className="box_subs">
             <Box>
               <Typography>30 DAYS ACCESS TO ALL FEATURES on your selected subscription.</Typography>
               <Typography>Change and/or cancel your subscription at any time</Typography>
@@ -343,6 +337,13 @@ export const CardProfile = ({ resetDataRef }: Props) => {
           handleClose={setModalInvoice}
           invoices={invoices}
           userInfor={userInfor}
+        />
+      )}
+      {modalCancel && (
+        <ModalCancel
+          modalCancel={modalCancel}
+          handleClose={setModalCancel}
+          subscriptionId={subscriptions?.subscriptionId as string}
         />
       )}
     </Grid>

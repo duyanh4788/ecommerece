@@ -89,17 +89,12 @@ export const Profile = () => {
         case ShopSlice.actions.uploadFileSuccess.type:
         case SubscriptionSlice.actions.userCanceledSuccess.type:
           toast.success(payload.message);
-          break;
-        case SubscriptionSlice.actions.userSubscriberSuccess.type:
-        case SubscriptionSlice.actions.userChangedSuccess.type:
-          window.location.replace(payload.data);
+          handleResetData();
           break;
         case ShopSlice.actions.registedShopFail.type:
         case ShopSlice.actions.updatedShopFail.type:
         case AuthSlice.actions.updateProfileFail.type:
         case AuthSlice.actions.uploadFileFail.type:
-        case SubscriptionSlice.actions.userSubscriberFail.type:
-        case SubscriptionSlice.actions.userChangedFail.type:
         case SubscriptionSlice.actions.userCanceledFail.type:
           toast.error(payload.message);
           break;
