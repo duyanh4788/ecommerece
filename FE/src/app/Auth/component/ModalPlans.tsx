@@ -6,8 +6,6 @@ import { handleColorTier } from 'utils/color';
 import { AttachMoney, Check } from '@mui/icons-material';
 import { PATH_PARAMS, PAYPAL_BANNER } from 'commom/common.contants';
 import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
-import { useNavigate } from 'react-router-dom';
-
 interface Props {
   modalPlans: boolean;
   plans: PaypalBillingPlans[];
@@ -24,11 +22,10 @@ export const ModalPlans = ({
   handleClose,
 }: Props) => {
   const local = new LocalStorageService();
-  const navigate = useNavigate();
 
   const handleSubscriber = (item: any) => {
     const value = {
-      tier: item.row.tier,
+      tier: item.row.tier.split('_')[0],
       amout: item.row.amount,
       isTrial: subscriptions?.isTrial,
       type:
@@ -37,8 +34,7 @@ export const ModalPlans = ({
           : TypeSubscriber.CHANGED,
     };
     local.setItem({ key: LocalStorageKey.tier, value });
-    navigate(PATH_PARAMS.SUBSCRIBER);
-    return;
+    window.location.href = PATH_PARAMS.SUBSCRIBER;
   };
   const columns: GridColDef[] = [
     {
@@ -46,11 +42,13 @@ export const ModalPlans = ({
       headerName: 'Tier',
       align: 'center',
       headerAlign: 'center',
+      width: 120,
       renderCell: item => (
         <strong
+          tabIndex={item.hasFocus ? 0 : -1}
           className="cell_tier"
-          style={{ color: handleColorTier(item.value) }}
-          onClick={() => handleSubscriber(item)}>
+          onClick={() => handleSubscriber(item)}
+          style={{ color: handleColorTier(item.value) }}>
           {item.value}{' '}
           {subscriptions &&
             subscriptions.paypalBillingPlans?.tier?.split('_')[0] === item.value && <Check />}

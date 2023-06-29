@@ -46,6 +46,7 @@ export enum SubscriptionStatus {
   APPROVAL_PENDING = 'APPROVAL_PENDING',
   SUSPENDED = 'SUSPENDED',
   CANCELLED = 'CANCELLED',
+  ACTIVE = 'ACTIVE',
 }
 
 export enum TypeSubscriber {

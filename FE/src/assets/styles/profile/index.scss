@@ -29,7 +29,8 @@
         .btn_change {
             background: $color-gray-2;
         }
-        button {
+        button,
+        strong {
             @include buttonSubs;
         }
     }

@@ -3,6 +3,7 @@ import React, { ChangeEvent, RefObject, useEffect, useState } from 'react';
 import {
   Avatar,
   Box,
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -25,21 +26,19 @@ import profile from '../../../images/profile.png';
 import { FileUpload, FileUploadProps } from './FileUpload';
 import { CardListItem } from './CardListItem';
 import { SubscriptionStatus, TypeSubscriber } from 'interface/Subscriptions.model';
-import { FREE_TRIAL, PATH_PARAMS, PAYPAL_LOGO } from 'commom/common.contants';
+import { FREE_TRIAL, PAYPAL_LOGO } from 'commom/common.contants';
 import { handleColorStatus, handleColorTier } from 'utils/color';
 import { ModalPlans } from './ModalPlans';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ModalInvoices } from './ModalInvoices';
 import { ModalCancel } from './ModalCancel';
-import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
 
 interface Props {
   resetDataRef: RefObject<boolean | null>;
 }
 
 export const CardProfile = ({ resetDataRef }: Props) => {
-  const local = new LocalStorageService();
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -262,67 +261,50 @@ export const CardProfile = ({ resetDataRef }: Props) => {
                 onClick={() => setModalInvoice(true)}
               />
             </CardContent>
-            {Object.values(SubscriptionStatus).includes(
-              subscriptions?.status as SubscriptionStatus,
-            ) ? (
-              <CardActions className="subs">
-                <button
+            <CardActions className="subs">
+              {subscriptions.status === SubscriptionStatus.ACTIVE ? (
+                <Button className="btn_unsub" onClick={() => setModalCancel(true)}>
+                  UnSubscribe
+                </Button>
+              ) : (
+                <Button
                   onClick={() => {
-                    const value = {
-                      tier: subscriptions?.paypalBillingPlans?.tier,
-                      amout: subscriptions?.paypalBillingPlans?.amount,
-                      isTrial: subscriptions?.isTrial,
-                      type: TypeSubscriber.SUBSCRIBER,
-                    };
-                    local.setItem({ key: LocalStorageKey.tier, value });
-                    navigate(PATH_PARAMS.SUBSCRIBER);
+                    setModalPlans(true);
+                    setTypeSubscriber(TypeSubscriber.SUBSCRIBER);
                   }}>
                   Subscribe
-                </button>
-                {subscriptions.status === SubscriptionStatus.APPROVAL_PENDING && (
-                  <button
-                    className="btn_change"
-                    onClick={() => {
-                      setModalPlans(true);
-                      setTypeSubscriber(TypeSubscriber.CHANGED);
-                    }}>
-                    Changed
-                  </button>
-                )}
-              </CardActions>
-            ) : (
-              <CardActions className="subs">
-                <button className="btn_unsub" onClick={() => setModalCancel(true)}>
-                  UnSubscribe
-                </button>
-                <button
+                </Button>
+              )}
+              {subscriptions.status === SubscriptionStatus.ACTIVE ||
+              subscriptions.status === SubscriptionStatus.APPROVAL_PENDING ? (
+                <Button
                   className="btn_change"
                   onClick={() => {
                     setModalPlans(true);
                     setTypeSubscriber(TypeSubscriber.CHANGED);
                   }}>
                   Changed
-                </button>
-              </CardActions>
-            )}
+                </Button>
+              ) : null}
+            </CardActions>
           </Card>
         ) : (
           <div className="box_subs">
             <Box>
               <Typography>30 DAYS ACCESS TO ALL FEATURES on your selected subscription.</Typography>
               <Typography>Change and/or cancel your subscription at any time</Typography>
-              <button
+              <Button
                 onClick={() => {
                   setModalPlans(true);
                   setTypeSubscriber(TypeSubscriber.SUBSCRIBER);
                 }}>
                 Subscribe
-              </button>
+              </Button>
             </Box>
           </div>
         )}
       </Grid>
-      {modalPlans && (
+      {modalPlans ? (
         <ModalPlans
           plans={plans}
           subscriptions={subscriptions}
@@ -330,22 +312,22 @@ export const CardProfile = ({ resetDataRef }: Props) => {
           handleClose={setModalPlans}
           typeSubscriber={typeSubscriber}
         />
-      )}
-      {modalInvoice && (
+      ) : null}
+      {modalInvoice ? (
         <ModalInvoices
           modalInvoice={modalInvoice}
           handleClose={setModalInvoice}
           invoices={invoices}
           userInfor={userInfor}
         />
-      )}
-      {modalCancel && (
+      ) : null}
+      {modalCancel ? (
         <ModalCancel
           modalCancel={modalCancel}
           handleClose={setModalCancel}
           subscriptionId={subscriptions?.subscriptionId as string}
         />
-      )}
+      ) : null}
     </Grid>
   );
 };
