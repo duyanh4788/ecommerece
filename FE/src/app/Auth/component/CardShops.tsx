@@ -210,18 +210,16 @@ export const CardShops = ({ resetDataRef }: Props) => {
                 <React.Fragment>
                   <Box>Name: {item?.nameShop}</Box>
                   <Box>
-                    <Typography variant="inherit">
-                      Products:{' '}
-                      {item?.prodcutSell?.map(item => (
-                        <Chip
-                          label={item.nameProduct}
-                          key={item.id}
-                          sx={{ marginLeft: '2px' }}
-                          size="small"
-                          avatar={<Avatar src={item.avatar} alt={item.avatar} />}
-                        />
-                      ))}
-                    </Typography>
+                    Products:{' '}
+                    {item?.prodcutSell?.map(item => (
+                      <Chip
+                        label={item.nameProduct}
+                        key={item.id}
+                        sx={{ marginLeft: '2px' }}
+                        size="small"
+                        avatar={<Avatar src={item.avatar} alt={item.avatar} />}
+                      />
+                    ))}
                   </Box>
                 </React.Fragment>
               )}

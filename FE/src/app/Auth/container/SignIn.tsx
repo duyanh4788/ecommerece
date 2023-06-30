@@ -44,10 +44,10 @@ export const SignIn = () => {
       const { type, payload } = RootStore.getState().lastAction;
       switch (type) {
         case AuthSlice.actions.signInSuccess.type:
-          resetData();
           local.setItem({ key: LocalStorageKey.user, value: payload.data });
           dispatch(AuthSlice.actions.getUserById());
           toast.success(payload.message);
+          resetData();
           navigate(PATH_PARAMS.HOME);
           break;
         case AuthSlice.actions.signInFail.type:

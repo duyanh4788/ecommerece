@@ -254,7 +254,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
                 </Tooltip>
               </Typography>
               <Typography variant="inherit">
-                Resouce Index: {subscriptions.usersResources?.numberIndex} / month{' '}
+                Resouce Item: {subscriptions.usersResources?.numberIndex} / month{' '}
                 <Tooltip title={TITLE_RESOURCE}>
                   <HelpOutline sx={{ fontSize: '12px' }} color="success" />
                 </Tooltip>

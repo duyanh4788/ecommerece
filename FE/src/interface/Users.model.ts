@@ -5,12 +5,13 @@ export interface Users {
   password?: string;
   avatar?: string;
   roleId?: UserRole;
-  phone?: number;
+  phone?: string;
   activate?: boolean;
   createdAt?: Date;
   showPassword?: boolean;
   token?: string;
   refreshToKen?: string;
+  expired?: number;
 }
 
 export enum UserRole {

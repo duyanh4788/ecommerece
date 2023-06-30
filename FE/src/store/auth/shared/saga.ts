@@ -15,6 +15,16 @@ export function* signIn(api, action) {
   }
 }
 
+export function* refreshToken(api, action) {
+  try {
+    const resPonse = yield call(api.refreshToken, action.payload);
+    const data = yield configResponse(resPonse);
+    yield put(actions.refreshTokenSuccess(data));
+  } catch (error) {
+    yield put(actions.refreshTokenFail(configResponseError(error)));
+  }
+}
+
 export function* signUp(api, action) {
   try {
     const resPonse = yield call(api.signUp, action.payload);
@@ -98,6 +108,7 @@ export function* uploadFile(api, action) {
 export function* AuthSaga() {
   yield all([
     yield takeLatest(actions.signIn.type, signIn, authRequest),
+    yield takeLatest(actions.refreshToken.type, refreshToken, authRequest),
     yield takeLatest(actions.signUp.type, signUp, authRequest),
     yield takeLatest(actions.signOut.type, signOut, authRequest),
     yield takeLatest(actions.getUserById.type, getUserById, authRequest),

@@ -3,8 +3,8 @@ import { snakeCase } from 'lodash';
 import { LocalStorageService, LocalStorageKey } from './localStorage';
 import { ApiRouter } from './request.constants';
 
-export const httpRequest = () => {
-  const localService = new LocalStorageService();
+export const httpRequest = (isRefreshToken: boolean = false) => {
+  const local = new LocalStorageService();
   const request: AxiosInstance = axios.create({
     baseURL: ApiRouter.REACT_APP_DOMAIN_URL,
     headers: {
@@ -14,10 +14,13 @@ export const httpRequest = () => {
     },
     timeout: 25000,
   });
-  const user: any = localService.getItem(LocalStorageKey.user);
+  const user: any = local.getItem(LocalStorageKey.user);
   if (user) {
     request.defaults.headers.common['Authorization'] = user.token;
     request.defaults.headers.common['Client_Id'] = user.userId;
+    if (isRefreshToken) {
+      request.defaults.headers.common['Refreshtoken'] = user.refreshToKen;
+    }
   }
   return request;
 };

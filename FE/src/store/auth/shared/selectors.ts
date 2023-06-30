@@ -12,4 +12,6 @@ export const selectError = createSelector([selectAuth], state => state.error);
 
 export const selectUserInfor = createSelector([selectAuth], state => state.userInfor);
 
+export const selectRefreshToken = createSelector([selectAuth], state => state.refreshToken);
+
 export const selectUrl = createSelector([selectAuth], state => state.url);

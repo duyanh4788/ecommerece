@@ -117,4 +117,8 @@ export class AppHelper {
   static isEmpty(obj) {
     return Object.keys(obj).length;
   }
+
+  static validateExpired(expired: number) {
+    return expired - 60000 <= new Date().getTime();
+  }
 }

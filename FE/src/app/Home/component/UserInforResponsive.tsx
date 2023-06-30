@@ -51,9 +51,6 @@ export const UserInforResponsive = (props: Props) => {
   const handleLogout = (primary: string) => {
     if (primary !== 'Log out') return;
     dispatch(AuthSlice.actions.signOut());
-    dispatch(AuthSlice.actions.clearUserInfo());
-    local.clearLocalStorage();
-    navigate(PATH_PARAMS.SIGNIN);
     return;
   };
   const renderListItemButton = (icon: any, primary: any) => (
@@ -65,6 +62,7 @@ export const UserInforResponsive = (props: Props) => {
       />
     </ListItemButton>
   );
+
   return (
     <Box
       sx={{

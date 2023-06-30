@@ -3,6 +3,7 @@ const uploadPath = (path: string): string => `/upload/${path}`;
 
 export const AuthApi = {
   SIGN_IN: userPath('signin'),
+  REFRESH_TOKEN: userPath('refresh-token'),
   SIGN_UP: userPath('signup'),
   SIGN_OUT: userPath('signout'),
   GET_USER_BY_ID: userPath('get-user-by-id'),

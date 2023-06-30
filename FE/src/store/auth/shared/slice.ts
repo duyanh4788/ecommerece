@@ -7,6 +7,7 @@ export interface AuthState {
   error: any;
   userInfor: Users | null;
   url: Array<any>;
+  refreshToken: Users | null;
 }
 
 export const initialState: AuthState = {
@@ -14,6 +15,7 @@ export const initialState: AuthState = {
   success: false,
   error: false,
   userInfor: null,
+  refreshToken: null,
   url: [],
 };
 
@@ -29,6 +31,18 @@ const AuthSlice = createSlice({
       state.userInfor = action.payload.data;
     },
     signInFail(state, action) {
+      state.loading = false;
+      state.error = action.payload.data;
+    },
+
+    refreshToken(state) {
+      state.loading = true;
+    },
+    refreshTokenSuccess(state, action) {
+      state.loading = false;
+      state.refreshToken = action.payload.data;
+    },
+    refreshTokenFail(state, action) {
       state.loading = false;
       state.error = action.payload.data;
     },
@@ -66,7 +80,7 @@ const AuthSlice = createSlice({
     },
     getUserByIdFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     forgotPassword(state, action) {

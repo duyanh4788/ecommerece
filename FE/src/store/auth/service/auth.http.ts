@@ -55,6 +55,10 @@ export class AuthHttp {
     });
   };
 
+  public refreshToken = (): Promise<any> => {
+    return httpRequest(true).post(AuthApi.REFRESH_TOKEN);
+  };
+
   public signUp = (data: Users): Promise<any> => {
     return httpRequest().post(AuthApi.SIGN_UP, {
       ...this.configSignUp(data),
@@ -62,7 +66,7 @@ export class AuthHttp {
   };
 
   public signOut = (): Promise<any> => {
-    return httpRequest().post(AuthApi.SIGN_OUT);
+    return httpRequest(true).post(AuthApi.SIGN_OUT);
   };
 
   public forgotPassword = (data: any): Promise<any> => {

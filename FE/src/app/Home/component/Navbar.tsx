@@ -90,8 +90,15 @@ export const Navbar = () => {
       }
       switch (type) {
         case AuthSlice.actions.signOutSuccess.type:
+          local.clearLocalStorage();
           setAnchorEl(null);
           toast.success(payload.message);
+          dispatch(AuthSlice.actions.clearUserInfo());
+          dispatch(AuthSlice.actions.clearData());
+          navigate(PATH_PARAMS.SIGNIN);
+          break;
+        case AuthSlice.actions.refreshTokenSuccess.type:
+          local.setItem({ key: LocalStorageKey.user, value: payload.data });
           break;
         case AuthSlice.actions.signOutFail.type:
           toast.error(payload.message);

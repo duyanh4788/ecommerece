@@ -6,6 +6,7 @@ import { handleColorTier } from 'utils/color';
 import { AttachMoney, Check } from '@mui/icons-material';
 import { PATH_PARAMS, PAYPAL_BANNER } from 'commom/common.contants';
 import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
+import { useNavigate } from 'react-router-dom';
 interface Props {
   modalPlans: boolean;
   plans: PaypalBillingPlans[];
@@ -22,7 +23,7 @@ export const ModalPlans = ({
   handleClose,
 }: Props) => {
   const local = new LocalStorageService();
-
+  const navigate = useNavigate();
   const handleSubscriber = (item: any) => {
     const value = {
       tier: item.row.tier.split('_')[0],
@@ -34,7 +35,7 @@ export const ModalPlans = ({
           : TypeSubscriber.CHANGED,
     };
     local.setItem({ key: LocalStorageKey.tier, value });
-    window.location.href = PATH_PARAMS.SUBSCRIBER;
+    navigate(PATH_PARAMS.SUBSCRIBER);
   };
   const columns: GridColDef[] = [
     {
@@ -50,8 +51,9 @@ export const ModalPlans = ({
           onClick={() => handleSubscriber(item)}
           style={{ color: handleColorTier(item.value) }}>
           {item.value}{' '}
-          {subscriptions &&
-            subscriptions.paypalBillingPlans?.tier?.split('_')[0] === item.value && <Check />}
+          {subscriptions
+            ? subscriptions.paypalBillingPlans?.tier?.split('_')[0] === item.value && <Check />
+            : null}
         </strong>
       ),
     },
@@ -97,7 +99,7 @@ export const ModalPlans = ({
           columns={columns}
           getRowId={getRowId}
           hideFooter={true}
-          disableColumnMenu={true}
+          disableRowSelectionOnClick
         />
       </DialogContent>
     </Dialog>
