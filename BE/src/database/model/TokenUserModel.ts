@@ -25,6 +25,13 @@ export class TokenUserModel extends Model<TokenUserModel> {
   @Column
   public privateKey: string;
 
+  @Column(DataType.JSON)
+  public tokens: string[];
+
+  @AllowNull
+  @Column(DataType.JSON)
+  public refreshTokens: string[];
+
   @CreatedAt
   @Column
   public createdAt: Date;

@@ -14,6 +14,12 @@ export class UploadRouter {
   constructor() {}
 
   public routes(app: Router): void {
-    app.post(BASE_ROUTE + Routes.UPLOAD_FILE, this.verifyTokenMiddleware.auThenticate, this.multerMiddleware.uploadMulter, this.uploadcontroller.uploadFile);
+    app.post(BASE_ROUTE + Routes.UPLOAD_FILE, this.verifyTokenMiddleware.authenticate, this.multerMiddleware.uploadMulter, this.uploadcontroller.uploadFile);
+  }
+
+  public getUploadRouter(): Router {
+    const uploadRouter = Router();
+    this.routes(uploadRouter);
+    return uploadRouter;
   }
 }

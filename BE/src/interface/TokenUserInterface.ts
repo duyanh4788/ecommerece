@@ -3,5 +3,9 @@ export interface TokenUserInterface {
   userId?: string | number | any;
   publicKey?: string;
   privateKey?: string;
+  tokens?: string[];
+  refreshTokens?: string[];
+  refreshToken?: string;
+  token?: string;
   createdAt?: Date;
 }

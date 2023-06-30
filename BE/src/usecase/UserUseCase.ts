@@ -9,6 +9,7 @@ import { ramdomAuthCode } from '../utils/ramdomAuthCode';
 import { checkTimerAuthenticator } from '../utils/timer';
 import { Transaction } from 'sequelize';
 import { RedisAuthenticate } from '../redis/authenticate/RedisAuthenticate';
+import { TokenUserInterface } from '../interface/TokenUserInterface';
 
 export class UserUseCase {
   constructor(private userRepository: IUserRepository, private tokenUsersRepository: ITokenUsersRepository, private authenticatesCodesRepository: IAuthenticatesCodesRepository) {}
@@ -19,27 +20,53 @@ export class UserUseCase {
     if (!user.activate) throw new RestError('account is disabled!', 404);
     const isPassWord = compareSyncPasswordInput(password, user.password);
     if (!isPassWord) throw new RestError('Password is wrong!', 400);
+    const { id: userId } = user;
+    const keyStoresModel = await RedisUsers.getInstance().handlerGetTokenUserByUserId(userId);
+    if (keyStoresModel && keyStoresModel.refreshTokens.length >= 5) {
+      await this.tokenUsersRepository.deleteTokenUserByUserId(userId);
+      throw new RestError('you have login 5 devices, please relogin!', 400);
+    }
+    if (keyStoresModel) {
+      const tokenPayload = encryptTokenPasswordOutput(user, keyStoresModel);
+      const payload: TokenUserInterface = {
+        userId,
+        token: tokenPayload.token,
+        refreshToken: tokenPayload.refreshToKen
+      };
+      await this.tokenUsersRepository.createTokenUsers(payload);
+      return tokenPayload;
+    }
     const { privateKey, publicKey } = genarateKeyPairSync();
-    const keyStores = await this.tokenUsersRepository.createTokenUsers(user.id, publicKey, privateKey);
-    return encryptTokenPasswordOutput(user, keyStores);
+    if (!privateKey || !privateKey) {
+      throw new RestError('sign in failed, please relogin!', 404);
+    }
+    const tokenPayload = encryptTokenPasswordOutput(user, { privateKey, publicKey });
+    const payload: TokenUserInterface = {
+      userId,
+      publicKey,
+      privateKey,
+      token: tokenPayload.token,
+      refreshToken: tokenPayload.refreshToKen
+    };
+    await this.tokenUsersRepository.createTokenUsers(payload);
+    return tokenPayload;
   }
 
   async userSginUpUseCase(reqBody: UserAttributes) {
     const { fullName, email, phone, password } = reqBody;
-    const findEmail = await this.userRepository.findByEmail(email);
+    const findEmail = await RedisUsers.getInstance().handlerGetUserByEmail(email);
     if (findEmail) {
       throw new RestError('email has exits!', 404);
     }
     return await this.userRepository.createUser(fullName, email, hashTokenPasswordInput(password), phone, UserRole.USER);
   }
 
-  async userSginOutUseCase(userId: string) {
-    await this.tokenUsersRepository.deleteTokenUserByUserId(userId);
-    return;
+  async userSginOutUseCase(tokenUser: TokenUserInterface, refreshToKen: string, token: string) {
+    return await this.tokenUsersRepository.updateResfAndTokenUserByUserId(tokenUser.id, refreshToKen, token);
   }
 
   async getUserByIdUseCase(userId: string) {
-    const user = await this.userRepository.findById(userId);
+    const user = await RedisUsers.getInstance().handlerGetUserById(userId);
     if (!user) {
       throw new RestError('user not found!', 404);
     }
@@ -51,7 +78,7 @@ export class UserUseCase {
   }
 
   async getUserByEmailUseCase(email: string) {
-    const user = await this.userRepository.findByEmail(email);
+    const user = await RedisUsers.getInstance().handlerGetUserByEmail(email);
     if (!user) {
       throw new RestError('user not found!', 404);
     }
@@ -98,7 +125,16 @@ export class UserUseCase {
       const newPassWord = hashTokenPasswordInput(password);
       reqBody = { ...reqBody, password: newPassWord };
     }
-    await this.userRepository.updateProfile(reqBody, userId);
-    return;
+    return await this.userRepository.updateProfile(reqBody, userId);
+  }
+
+  async refresTokenUseCase(userId: string, refreshToKen: string, tokenUser: TokenUserInterface) {
+    const { refreshTokens, privateKey, publicKey } = tokenUser;
+    if (!refreshTokens.length || !refreshTokens.includes(refreshToKen)) {
+      await this.tokenUsersRepository.deleteTokenUserByUserId(userId);
+      throw new RestError('you expired, please login!', 404);
+    }
+    const userInfo = await RedisUsers.getInstance().handlerGetUserById(userId);
+    return encryptTokenPasswordOutput(userInfo, { privateKey, publicKey }, refreshToKen);
   }
 }

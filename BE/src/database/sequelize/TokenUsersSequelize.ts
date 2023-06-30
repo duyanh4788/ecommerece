@@ -6,14 +6,25 @@ import { RedisUsers } from '../../redis/users/RedisUsers';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class TokenUsersSequelize implements ITokenUsersRepository {
-  async createTokenUsers(userId: string, publicKey: string, privateKey: string): Promise<TokenUserInterface> {
+  async createTokenUsers(payload: TokenUserInterface): Promise<TokenUserInterface> {
+    const { userId, publicKey, privateKey, refreshToken, token } = payload;
     const [tokenUser, created] = await TokenUserModel.findOrCreate({
       where: { userId: deCryptFakeId(userId) },
-      defaults: { publicKey, privateKey }
+      defaults: { publicKey, privateKey, refreshTokens: [refreshToken], tokens: [token] }
     });
     if (!created) {
-      tokenUser.publicKey = publicKey;
-      tokenUser.privateKey = privateKey;
+      if (publicKey) {
+        tokenUser.publicKey = publicKey;
+      }
+      if (privateKey) {
+        tokenUser.privateKey = privateKey;
+      }
+      if (refreshToken) {
+        tokenUser.refreshTokens = [...tokenUser.refreshTokens, refreshToken];
+      }
+      if (token) {
+        tokenUser.tokens = [...tokenUser.tokens, token];
+      }
       await tokenUser.save();
     }
     const result = this.transformModelToEntity(tokenUser);
@@ -30,6 +41,16 @@ export class TokenUsersSequelize implements ITokenUsersRepository {
     await TokenUserModel.destroy({ where: { userId: deCryptFakeId(userId) } });
     await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.TOKEN, userId);
     return;
+  }
+
+  async updateResfAndTokenUserByUserId(tokenUserId: string, refreshToKen: string, token: string): Promise<void> {
+    const find = await TokenUserModel.findByPk(deCryptFakeId(tokenUserId));
+    const resultRef = find.refreshTokens.filter((item) => item !== refreshToKen);
+    find.refreshTokens = resultRef;
+    const resultToken = find.tokens.filter((item) => item !== token);
+    find.tokens = resultToken;
+    await find.save();
+    await RedisUsers.getInstance().handlerUpdateKeys(MainkeysRedis.TOKEN, enCryptFakeId(find.userId), find);
   }
   /**
    * Transforms database model into domain entity

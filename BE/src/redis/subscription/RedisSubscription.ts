@@ -2,7 +2,6 @@ import { InvoicesSequelize } from '../../database/sequelize/InvoicesSequelize';
 import { SubscriptionSequelize } from '../../database/sequelize/SubscriptionSequelize';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 import { Subscription } from '../../interface/SubscriptionInterface';
-import { RestError } from '../../services/error/error';
 import { redisController } from '../RedisController';
 
 export class RedisSubscription {
@@ -43,7 +42,7 @@ export class RedisSubscription {
     let subsRedis = await redisController.getRedis(`${MainkeysRedis.SUBS_USERID}${userId}`);
     if (!subsRedis) {
       const subs = await this.subscriptionSequelize.findByUserId(userId);
-      if (!subs) throw new RestError('user not found!', 404);
+      if (!subs) return;
       subsRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.SUBS_USERID}${userId}`, value: subs });
     }
     return subsRedis;
@@ -53,7 +52,7 @@ export class RedisSubscription {
     let subsRedis = await redisController.getRedis(`${MainkeysRedis.SUBS_ID}${subscriptionId}`);
     if (!subsRedis) {
       const subs = await this.subscriptionSequelize.findBySubscriptionId(subscriptionId);
-      if (!subs) throw new RestError('user not found!', 404);
+      if (!subs) return;
       subsRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.SUBS_ID}${subscriptionId}`, value: subs });
     }
     return subsRedis;

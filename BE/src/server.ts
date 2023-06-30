@@ -4,11 +4,15 @@ import App from './app/App';
 import { Request, Response } from 'express';
 import * as http from 'http';
 import { sequelize } from './database/sequelize';
+import { MonitorSystem } from './monitor/MonitorSystem';
 
 export const isDevelopment = process.env.APP_ENV === 'develop' ? true : false;
 
 // ********************* Connect DataBase *********************//
 sequelize.sync({ force: false, alter: false });
+
+// ********************* Monitor System *********************//
+new MonitorSystem().readMonitorSystem();
 
 // ********************* Config Server *********************//
 const APP_PORT: string | number | any = process.env.APP_PORT || 8000;

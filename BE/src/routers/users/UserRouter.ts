@@ -11,7 +11,8 @@ enum Routes {
   FOR_GOT_PW = '/forgot-password',
   RESEND_ORDER_RESET_PASSWORD = '/resend-order-reset-password',
   RESET_PASSWORD = '/reset-password',
-  UPDATE_PROFILE = '/update-profile'
+  UPDATE_PROFILE = '/update-profile',
+  REFRESH_TOKEN = '/refresh-token'
 }
 
 export class UsersRoutes {
@@ -21,13 +22,14 @@ export class UsersRoutes {
   constructor() {}
 
   public routes(app: Router): void {
+    app.post(BASE_ROUTE + Routes.REFRESH_TOKEN, this.verifyTokenMiddleware.refreshTokenAuth, this.usersController.refreshToken);
     app.post(BASE_ROUTE + Routes.SIGNIN, this.authUserMiddleware.validateSignIn, this.usersController.userSignin);
     app.post(BASE_ROUTE + Routes.SIGNUP, this.authUserMiddleware.validateSignUp, this.usersController.userSignUp);
     app.post(BASE_ROUTE + Routes.FOR_GOT_PW, this.usersController.forgotPassword);
     app.post(BASE_ROUTE + Routes.RESEND_ORDER_RESET_PASSWORD, this.usersController.resendForgotPassword);
     app.post(BASE_ROUTE + Routes.RESET_PASSWORD, this.usersController.resetForgotPassword);
-    app.post(BASE_ROUTE + Routes.SIGNOUT, this.verifyTokenMiddleware.auThenticate, this.usersController.userSignOut);
-    app.get(BASE_ROUTE + Routes.GET_USER_BY_ID, this.verifyTokenMiddleware.auThenticate, this.usersController.getUserById);
-    app.post(BASE_ROUTE + Routes.UPDATE_PROFILE, this.verifyTokenMiddleware.auThenticate, this.authUserMiddleware.validateUpdate, this.usersController.updateProfile);
+    app.post(BASE_ROUTE + Routes.SIGNOUT, this.verifyTokenMiddleware.authenticate, this.usersController.userSignOut);
+    app.get(BASE_ROUTE + Routes.GET_USER_BY_ID, this.verifyTokenMiddleware.authenticate, this.usersController.getUserById);
+    app.post(BASE_ROUTE + Routes.UPDATE_PROFILE, this.verifyTokenMiddleware.authenticate, this.authUserMiddleware.validateUpdate, this.usersController.updateProfile);
   }
 }

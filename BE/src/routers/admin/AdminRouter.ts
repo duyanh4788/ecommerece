@@ -21,13 +21,14 @@ export class AdminRouter {
   constructor() {}
 
   public routes(app: Router): void {
-    app.post(BASE_ROUTE + Routes.CRAETED, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.productsController.createdProduct);
-    app.post(BASE_ROUTE + Routes.UPDATE, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.productsController.updatedProduct);
-    app.post(BASE_ROUTE + Routes.DELETED, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.productsController.deletedProduct);
-    app.get(Routes.GET_LISTS, this.verifyTokenMiddleware.auThenticate, this.productsController.getListsProducts);
-    app.get(Routes.GET_BY_ID, this.verifyTokenMiddleware.auThenticate, this.productsController.getProductById);
-    app.post(BASE_ROUTE + Routes.APPROVED_SHOP, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.shopController.adminUpdateStatusShop);
-    app.get(BASE_ROUTE + Routes.GET_LIST_SHOP, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.shopController.adminGetListsShop);
-    app.get(BASE_ROUTE + Routes.GET_SHOP_BY_ID, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.shopController.adminGetShopById);
+    app.get(Routes.GET_BY_ID, this.verifyTokenMiddleware.authenticate, this.productsController.getProductById);
+    app.get(Routes.GET_LISTS, this.verifyTokenMiddleware.authenticate, this.productsController.getListsProducts);
+    app.use(this.verifyTokenMiddleware.permissionsRoleAdmin);
+    app.post(BASE_ROUTE + Routes.CRAETED, this.verifyTokenMiddleware.authenticate, this.productsController.createdProduct);
+    app.post(BASE_ROUTE + Routes.UPDATE, this.verifyTokenMiddleware.authenticate, this.productsController.updatedProduct);
+    app.post(BASE_ROUTE + Routes.DELETED, this.verifyTokenMiddleware.authenticate, this.productsController.deletedProduct);
+    app.post(BASE_ROUTE + Routes.APPROVED_SHOP, this.verifyTokenMiddleware.authenticate, this.shopController.adminUpdateStatusShop);
+    app.get(BASE_ROUTE + Routes.GET_LIST_SHOP, this.verifyTokenMiddleware.authenticate, this.shopController.adminGetListsShop);
+    app.get(BASE_ROUTE + Routes.GET_SHOP_BY_ID, this.verifyTokenMiddleware.authenticate, this.shopController.adminGetShopById);
   }
 }

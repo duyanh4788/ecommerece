@@ -3,7 +3,6 @@ import { TokenUsersSequelize } from '../../database/sequelize/TokenUsersSequeliz
 import { UserSequelize } from '../../database/sequelize/UsersSequelize';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 import { TokenUserInterface } from '../../interface/TokenUserInterface';
-import { RestError } from '../../services/error/error';
 import { redisController } from '../RedisController';
 export class RedisUsers {
   private tokenUsersRepository: TokenUsersSequelize = new TokenUsersSequelize();
@@ -24,7 +23,7 @@ export class RedisUsers {
     let userRedis = await redisController.getRedis(email);
     if (!userRedis) {
       const user = await this.usersRepository.findByEmail(email);
-      if (!user) throw new RestError('user not found!', 404);
+      if (!user) return;
       userRedis = await redisController.setRedis({ keyValue: email, value: user });
     }
     return userRedis;
@@ -38,7 +37,7 @@ export class RedisUsers {
     let userRedis = await redisController.getRedis(`${MainkeysRedis.USER_ID}${userId}`);
     if (!userRedis) {
       const user = await this.usersRepository.findById(userId);
-      if (!user) throw new RestError('user not found!', 404);
+      if (!user) return;
       userRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.USER_ID}${userId}`, value: user });
     }
     return userRedis;
@@ -48,7 +47,7 @@ export class RedisUsers {
     let userRedis = await redisController.getRedis(`${MainkeysRedis.TOKEN}${userId}`);
     if (!userRedis) {
       const tokenUser = await this.tokenUsersRepository.findByUserId(userId);
-      if (!tokenUser) throw new RestError('token not found!', 404);
+      if (!tokenUser) return;
       userRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.TOKEN}${userId}`, value: tokenUser });
     }
     return userRedis;
@@ -58,7 +57,7 @@ export class RedisUsers {
     let shopsRedis = await redisController.getRedis(`${MainkeysRedis.SHOPS_USERID}${userId}`);
     if (!shopsRedis) {
       const shops = await this.shopSequelize.getLists(userId);
-      if (!shops) throw new RestError('token not found!', 404);
+      if (!shops) return [];
       shopsRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.SHOPS_USERID}${userId}`, value: shops });
     }
     return shopsRedis;
@@ -68,7 +67,7 @@ export class RedisUsers {
     let shopRedis = await redisController.getRedis(`${MainkeysRedis.SHOP_ID}${shopId}`);
     if (!shopRedis) {
       const shop = await this.shopSequelize.getShopById(shopId, userId);
-      if (!shop) throw new RestError('token not found!', 404);
+      if (!shop) return;
       shopRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.SHOP_ID}${shopId}`, value: shop });
     }
     return shopRedis;
@@ -80,5 +79,9 @@ export class RedisUsers {
 
   public async handlerDelKeys(mainKeys: string, userId: string) {
     await redisController.delRedis(`${mainKeys}${userId}`);
+  }
+
+  public async detelteToken(userId: string) {
+    return await this.tokenUsersRepository.deleteTokenUserByUserId(userId);
   }
 }

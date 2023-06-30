@@ -20,8 +20,8 @@ export class UserSequelize implements IUserRepository {
     return this.transformModelToEntity(user);
   }
 
-  async createUser(fullName: string, email: string, password: string, phone: number, roleId: UserRole, transactionDb?: Transaction): Promise<UserAttributes> {
-    const user = await UsersModel.create({ fullName, email, password, phone: phone || 0, roleId }, transactionDb && { transaction: transactionDb });
+  async createUser(fullName: string, email: string, password: string, phone: string, roleId: UserRole, transactionDb?: Transaction): Promise<UserAttributes> {
+    const user = await UsersModel.create({ fullName, email, password, phone, roleId }, transactionDb && { transaction: transactionDb });
     return this.transformModelToEntity(user);
   }
 

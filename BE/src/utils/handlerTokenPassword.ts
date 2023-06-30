@@ -4,15 +4,28 @@ import * as crypto from 'crypto';
 import { UserAttributes } from '../interface/UserInterface';
 import { TokenUserInterface } from '../interface/TokenUserInterface';
 
-export const encryptTokenPasswordOutput = (user: UserAttributes, keyStores?: TokenUserInterface) => {
+enum EXPIRED_TOKEN {
+  TOKEN = 86400 * 1000
+}
+
+export const encryptTokenPasswordOutput = (user: UserAttributes, keyStores: TokenUserInterface, refreshToKen?: string) => {
+  const gt = EXPIRED_TOKEN;
   const header = {
     userId: user.id,
     fullName: user.fullName,
-    roleId: user.roleId
+    roleId: user.roleId,
+    expired: new Date().getTime() + EXPIRED_TOKEN.TOKEN
   };
   const { privateKey, publicKey } = keyStores;
-  const token = JWT.sign(header, publicKey, { expiresIn: 604800 }); // 7 day
-  const refreshToKen = JWT.sign(header, privateKey, { expiresIn: 604800 }); // 7 day
+  const token = JWT.sign(header, publicKey, { expiresIn: '1d' }); // 7 day
+  if (!refreshToKen) {
+    const refreshToKenParse = JWT.sign(header, privateKey, { expiresIn: '90d' }); // 3 months
+    return {
+      ...header,
+      token,
+      refreshToKen: refreshToKenParse
+    };
+  }
   return {
     ...header,
     token,

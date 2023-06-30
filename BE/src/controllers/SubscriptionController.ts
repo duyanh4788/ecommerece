@@ -32,7 +32,7 @@ export class SubscriptionController {
     try {
       const { user } = req;
       const subscription = await this.subscriptionUseCase.userGetSubscriptionUseCase(user.userId);
-      return new SendRespone({ data: subscription }).send(res);
+      return new SendRespone({ data: subscription || null }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }

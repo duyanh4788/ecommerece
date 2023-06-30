@@ -11,7 +11,7 @@ export interface UserAttributes {
   password?: string;
   avatar?: string;
   roleId: UserRole;
-  phone?: number;
+  phone?: string;
   activate?: boolean;
   createdAt?: Date;
 }

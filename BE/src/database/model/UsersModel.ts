@@ -30,7 +30,7 @@ export class UsersModel extends Model<UsersModel> {
   public roleId: string;
 
   @Column
-  public phone: number;
+  public phone: string;
 
   @Column
   public avatar: string;

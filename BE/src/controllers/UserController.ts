@@ -31,8 +31,11 @@ export class UsersController {
 
   public userSignOut = async (req: Request, res: Response) => {
     try {
-      const { user } = req;
-      await this.userUseCase.userSginOutUseCase(user.userId);
+      const { tokenUser, refreshToKen, token } = req;
+      if (!refreshToKen) {
+        throw new RestError('invalid request!', 404);
+      }
+      await this.userUseCase.userSginOutUseCase(tokenUser, refreshToKen, token);
       return new SendRespone({ message: 'signout successfully!' }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
@@ -102,6 +105,22 @@ export class UsersController {
       const { user } = req;
       await this.userUseCase.updateProfileUseCase(req.body, user.userId);
       return new SendRespone({ message: 'update successfully!' }).send(res);
+    } catch (error) {
+      return RestError.manageServerError(res, error, false);
+    }
+  };
+
+  public refreshToken = async (req: Request, res: Response) => {
+    try {
+      const { user, refreshToKen, tokenUser } = req;
+      if (!tokenUser) {
+        throw new RestError('you expired, please login!', 404);
+      }
+      const token = await this.userUseCase.refresTokenUseCase(user.userId, refreshToKen, tokenUser);
+      if (!token) {
+        throw new RestError('you expired, please login!', 404);
+      }
+      return new SendRespone({ data: token }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }

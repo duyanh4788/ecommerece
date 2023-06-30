@@ -28,14 +28,26 @@ export class SubscriptionRouter {
   constructor() {}
 
   public routes(app: Router): void {
-    app.get(BASE_ADMIN + RoutesAdmin.GET_SUBS, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.subscriptionController.adminFindAllSubscription);
-    app.get(BASE_ADMIN + RoutesAdmin.GET_INVOICES, this.verifyTokenMiddleware.auThenticate, this.verifyTokenMiddleware.permissionsRoleAdmin, this.subscriptionController.adminFindAllInvoices);
-    app.get(BASE_PLANS + RoutesPlan.GET_PLANS, this.subscriptionController.getPlans);
-    app.get(BASE_SUBS + RoutesSubs.USER_GET_SUBSCRIPTION, this.verifyTokenMiddleware.auThenticate, this.subscriptionController.userGetSubscription);
-    app.get(BASE_SUBS + RoutesSubs.USER_GET_INVOICES, this.verifyTokenMiddleware.auThenticate, this.subscriptionController.userGetInvoices);
-    app.post(BASE_SUBS + RoutesSubs.USER_SUBSCRIBER, this.verifyTokenMiddleware.auThenticate, this.subscriptionController.userSubscriber);
-    app.post(BASE_SUBS + RoutesSubs.USER_CHANGE_SUBS, this.verifyTokenMiddleware.auThenticate, this.subscriptionController.userChanged);
-    app.post(BASE_SUBS + RoutesSubs.USER_CANCELED_SUBS, this.verifyTokenMiddleware.auThenticate, this.subscriptionController.userCanceled);
     app.get(BASE_SUBS + RoutesSubs.RESPONSE_SUCCESS, this.subscriptionController.responseSuccess);
+    app.get(BASE_PLANS + RoutesPlan.GET_PLANS, this.subscriptionController.getPlans);
+    app.get(
+      BASE_ADMIN + RoutesAdmin.GET_SUBS,
+      this.verifyTokenMiddleware.authenticate,
+      this.verifyTokenMiddleware.permissionsRoleAdmin,
+      this.verifyTokenMiddleware.authenticate,
+      this.subscriptionController.adminFindAllSubscription
+    );
+    app.get(
+      BASE_ADMIN + RoutesAdmin.GET_INVOICES,
+      this.verifyTokenMiddleware.authenticate,
+      this.verifyTokenMiddleware.permissionsRoleAdmin,
+      this.verifyTokenMiddleware.authenticate,
+      this.subscriptionController.adminFindAllInvoices
+    );
+    app.get(BASE_SUBS + RoutesSubs.USER_GET_SUBSCRIPTION, this.verifyTokenMiddleware.authenticate, this.subscriptionController.userGetSubscription);
+    app.get(BASE_SUBS + RoutesSubs.USER_GET_INVOICES, this.verifyTokenMiddleware.authenticate, this.subscriptionController.userGetInvoices);
+    app.post(BASE_SUBS + RoutesSubs.USER_SUBSCRIBER, this.verifyTokenMiddleware.authenticate, this.subscriptionController.userSubscriber);
+    app.post(BASE_SUBS + RoutesSubs.USER_CHANGE_SUBS, this.verifyTokenMiddleware.authenticate, this.subscriptionController.userChanged);
+    app.post(BASE_SUBS + RoutesSubs.USER_CANCELED_SUBS, this.verifyTokenMiddleware.authenticate, this.subscriptionController.userCanceled);
   }
 }
