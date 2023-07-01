@@ -4,6 +4,7 @@ import { IUserRepository } from '../../repository/IUserRepository';
 import { UsersModel } from '../model/UsersModel';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
 import { RedisUsers } from '../../redis/users/RedisUsers';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class UserSequelize implements IUserRepository {
   async findAllLists(): Promise<UserAttributes[]> {
@@ -48,6 +49,7 @@ export class UserSequelize implements IUserRepository {
     }
     await user.save();
     await RedisUsers.getInstance().handlerDelKeysEmail(user.email);
+    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.USER_ID, userId);
     return;
   }
 
