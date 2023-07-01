@@ -113,7 +113,7 @@ export const CardListItem = (props: Props) => {
             pattern={name === 'phone' ? '[0-9]{10}' : undefined}
             maxLength={name === 'phone' ? 10 : 20}
             name={name}
-            value={value}
+            value={value || ''}
             onChange={handleOnChange}
           />
         )}

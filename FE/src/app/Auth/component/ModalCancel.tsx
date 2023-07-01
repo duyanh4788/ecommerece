@@ -22,11 +22,11 @@ interface Props {
 
 export const ModalCancel = ({ modalCancel, handleClose, subscriptionId }: Props) => {
   const dispatch = useDispatch();
-  const [reason, setReson] = useState<string | null>(null);
+  const [reason, setReson] = useState<string>('');
 
   const handleOnclose = () => {
     handleClose(false);
-    setReson(null);
+    setReson('');
   };
 
   return (
