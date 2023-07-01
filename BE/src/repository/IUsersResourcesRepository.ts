@@ -6,7 +6,7 @@ export interface IUsersResourcesRepository {
 
   findById(id: string): Promise<UsersResourcesInterface>;
 
-  create(reqBody: UsersResourcesInterface, transactionDb?: Transaction): Promise<UsersResourcesInterface>;
+  create(reqBody: UsersResourcesInterface, subscriptionId: string, transactionDb?: Transaction): Promise<UsersResourcesInterface>;
 
-  decretIncre(userId: string, value: any, type: string, num: number, transactionDb?: Transaction): Promise<void>;
+  decretIncre(userId: string, value: any, type: string, num: number, subscriptionId: string, transactionDb?: Transaction): Promise<void>;
 }

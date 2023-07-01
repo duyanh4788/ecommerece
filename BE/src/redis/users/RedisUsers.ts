@@ -84,4 +84,8 @@ export class RedisUsers {
   public async detelteToken(userId: string) {
     return await this.tokenUsersRepository.deleteTokenUserByUserId(userId);
   }
+
+  public async updateResfAndTokenUserByUserId(id: string, refreshToKen: string, token: string) {
+    return await this.tokenUsersRepository.updateResfAndTokenUserByUserId(id, refreshToKen, token);
+  }
 }

@@ -159,12 +159,12 @@ export class SubscriptionUseCase {
     return this.paypalService.getTransactions(paypalSubscriptionId, startTime, endTime);
   }
 
-  async getInvoicesUserPaypal(transactionPaypal: any, subsciption: Subscription, transactionDB: Transaction) {
+  async getInvoicesUserPaypal(transactionPaypal: any, subscription: Subscription, transactionDB: Transaction) {
     const billingAgreement = await this.paypalService.getBillingAgreement(transactionPaypal.billing_agreement_id);
     const invoiceModel = await this.invoicesRepository.findByPaymentProcessorId(transactionPaypal.id);
     const plan = await this.redisPlans.handlerGetPlanId(billingAgreement.plan_id);
     if (!invoiceModel) {
-      const userInfor = await await RedisUsers.getInstance().handlerGetUserById(subsciption.userId);
+      const userInfor = await await RedisUsers.getInstance().handlerGetUserById(subscription.userId);
       const resultBillingPlans = await this.redisPlans.handlerGetPlanId(billingAgreement.plan_id);
       let gst = 0;
       if (transactionPaypal.amount.currency === 'AUD') {
@@ -183,12 +183,12 @@ export class SubscriptionUseCase {
         planType: resultBillingPlans.tier,
         paymentProcessorId: transactionPaypal.id,
         paymentProcessor: 'PAYPAL',
-        subscriptionId: subsciption.subscriptionId,
+        subscriptionId: subscription.subscriptionId,
         invoiceStatus: transactionPaypal.status,
         subscriber: billingAgreement.subscriber
       };
       const invoicesCreated = await this.invoicesRepository.create(invoice, transactionDB);
-      await this.createUserResource(subsciption.userId, plan, transactionDB);
+      await this.createUserResource(subscription.userId, plan, subscription.subscriptionId, transactionDB);
       await this.createInvoiceToSendEmail(billingAgreement, transactionPaypal, userInfor, invoicesCreated);
     }
   }
@@ -238,7 +238,7 @@ export class SubscriptionUseCase {
         };
         await this.subscriptionRepository.createOrUpdate(payloadSubs, transactionDB);
         await this.shopRepository.updateStatusShop(subscription.userId, true);
-        await this.createUserResource(subscription.userId, plan, transactionDB);
+        await this.createUserResource(subscription.userId, plan, subscription.subscriptionId, transactionDB);
       }
     }
     if (billingAgreement.billing_info && billingAgreement.billing_info.cycle_executions && billingAgreement.billing_info.cycle_executions.length > 0 && subscription.isTrial) {
@@ -277,12 +277,11 @@ export class SubscriptionUseCase {
     return;
   }
 
-  private async createUserResource(userId: string, plan: PaypalBillingPlans, transactionDB: Transaction) {
+  private async createUserResource(userId: string, plan: PaypalBillingPlans, subscriptionId: string, transactionDB: Transaction) {
     const payloadRes: UsersResourcesInterface = {
       userId,
-      numberProduct: plan.numberProduct,
       numberIndex: plan.numberIndex
     };
-    await this.usersResourcesRepository.create(payloadRes, transactionDB);
+    await this.usersResourcesRepository.create(payloadRes, subscriptionId, transactionDB);
   }
 }

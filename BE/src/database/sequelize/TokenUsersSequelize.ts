@@ -50,8 +50,19 @@ export class TokenUsersSequelize implements ITokenUsersRepository {
     const resultToken = find.tokens.filter((item) => item !== token);
     find.tokens = resultToken;
     await find.save();
-    await RedisUsers.getInstance().handlerUpdateKeys(MainkeysRedis.TOKEN, enCryptFakeId(find.userId), find);
+    const result = this.transformModelToEntity(find);
+    await RedisUsers.getInstance().handlerUpdateKeys(MainkeysRedis.TOKEN, result.userId, result);
   }
+
+  async updateTokenUserById(tokenUserId: string, tokenOld: string, tokenNew: string): Promise<void> {
+    const find = await TokenUserModel.findByPk(deCryptFakeId(tokenUserId));
+    const resultToken = find.tokens.filter((item) => item !== tokenOld);
+    find.tokens = [...resultToken, tokenNew];
+    await find.save();
+    const result = this.transformModelToEntity(find);
+    await RedisUsers.getInstance().handlerUpdateKeys(MainkeysRedis.TOKEN, result.userId, result);
+  }
+
   /**
    * Transforms database model into domain entity
    * @param model

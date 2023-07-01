@@ -128,13 +128,11 @@ export class UserUseCase {
     return await this.userRepository.updateProfile(reqBody, userId);
   }
 
-  async refresTokenUseCase(userId: string, refreshToKen: string, tokenUser: TokenUserInterface) {
-    const { refreshTokens, privateKey, publicKey } = tokenUser;
-    if (!refreshTokens.length || !refreshTokens.includes(refreshToKen)) {
-      await this.tokenUsersRepository.deleteTokenUserByUserId(userId);
-      throw new RestError('you expired, please login!', 404);
-    }
+  async refresTokenUseCase(userId: string, refreshToKen: string, token: string, tokenUser: TokenUserInterface) {
+    const { id, privateKey, publicKey } = tokenUser;
     const userInfo = await RedisUsers.getInstance().handlerGetUserById(userId);
-    return encryptTokenPasswordOutput(userInfo, { privateKey, publicKey }, refreshToKen);
+    const tokenPayload = encryptTokenPasswordOutput(userInfo, { privateKey, publicKey }, refreshToKen);
+    await this.tokenUsersRepository.updateTokenUserById(id, token, tokenPayload.token);
+    return tokenPayload;
   }
 }

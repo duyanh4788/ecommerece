@@ -9,7 +9,6 @@ enum EXPIRED_TOKEN {
 }
 
 export const encryptTokenPasswordOutput = (user: UserAttributes, keyStores: TokenUserInterface, refreshToKen?: string) => {
-  const gt = EXPIRED_TOKEN;
   const header = {
     userId: user.id,
     fullName: user.fullName,
@@ -17,7 +16,7 @@ export const encryptTokenPasswordOutput = (user: UserAttributes, keyStores: Toke
     expired: new Date().getTime() + EXPIRED_TOKEN.TOKEN
   };
   const { privateKey, publicKey } = keyStores;
-  const token = JWT.sign(header, publicKey, { expiresIn: '1d' }); // 7 day
+  const token = JWT.sign(header, publicKey, { expiresIn: '1d' }); // 1 day
   if (!refreshToKen) {
     const refreshToKenParse = JWT.sign(header, privateKey, { expiresIn: '90d' }); // 3 months
     return {

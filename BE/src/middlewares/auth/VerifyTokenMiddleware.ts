@@ -36,14 +36,21 @@ export class VerifyTokenMiddleware {
   };
 
   public refreshTokenAuth = async (req: Request, res: Response, next: NextFunction) => {
+    const refreshToKen = String(req.headers[HEADER.REFRESH_TOKEN]);
+    const token = String(req.headers[HEADER.AUTHORIZATION]);
     try {
-      const deCodePrivateKey = await this.configHeaderToken(String(req.headers[HEADER.REFRESH_TOKEN]), String(req.headers[HEADER.CLIENT_ID]), false, req);
+      const deCodePrivateKey = await this.configHeaderToken(refreshToKen, String(req.headers[HEADER.CLIENT_ID]), false, req);
       req.user = deCodePrivateKey;
-      req.refreshToKen = String(req.headers[HEADER.REFRESH_TOKEN]);
+      req.refreshToKen = refreshToKen;
       return next();
     } catch (error) {
       if (error.name === 'JsonWebTokenError') {
         const restError = new RestError(error.message, 401);
+        return RestError.manageServerError(res, restError, false);
+      }
+      if (error.name === 'TokenExpiredError') {
+        await RedisUsers.getInstance().updateResfAndTokenUserByUserId(req?.tokenUser?.id, refreshToKen, token);
+        const restError = new RestError('your expired, please login', 401);
         return RestError.manageServerError(res, restError, false);
       }
       return RestError.manageServerError(res, error, false);
@@ -52,28 +59,31 @@ export class VerifyTokenMiddleware {
 
   private configHeaderToken = async (token: string, userId: string, typeToken: boolean, req?: Request) => {
     if (!token || token === 'undefined') {
-      throw new RestError('your expired, please login', 401);
+      throw new RestError('token invalid request', 401);
     }
-    if (!userId || token === 'undefined') {
-      throw new RestError('invalid request!', 401);
+    if (!userId || userId === 'undefined') {
+      throw new RestError('user id invalid request!', 401);
     }
     const tokenUser: TokenUserInterface = await RedisUsers.getInstance().handlerGetTokenUserByUserId(userId as string);
     if (!tokenUser) {
       throw new RestError('invalid request!', 401);
     }
+    req.tokenUser = tokenUser;
+    req.token = token;
     if (!typeToken) {
       if (!tokenUser.refreshTokens.length || !tokenUser.refreshTokens.includes(token)) {
-        throw new RestError('invalid request!', 404);
+        await RedisUsers.getInstance().detelteToken(userId);
+        throw new RestError('refresh token invalid request!', 401);
       }
     }
     const decode: any = JWT.verify(token, typeToken ? tokenUser.publicKey : tokenUser.privateKey);
-    if (!tokenUser.tokens || !tokenUser.tokens.length || !tokenUser.tokens.includes(token)) {
-      await RedisUsers.getInstance().detelteToken(userId);
-      throw new RestError('invalid request!', 401);
+    if (typeToken) {
+      if (!tokenUser.tokens || !tokenUser.tokens.length || !tokenUser.tokens.includes(token)) {
+        await RedisUsers.getInstance().detelteToken(userId);
+        throw new RestError('token invalid request!', 401);
+      }
     }
     if (decode.userId !== userId) throw new RestError('invalid request!', 401);
-    req.tokenUser = tokenUser;
-    req.token = token;
     return decode;
   };
 

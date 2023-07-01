@@ -112,15 +112,15 @@ export class UsersController {
 
   public refreshToken = async (req: Request, res: Response) => {
     try {
-      const { user, refreshToKen, tokenUser } = req;
+      const { user, refreshToKen, token, tokenUser } = req;
       if (!tokenUser) {
         throw new RestError('you expired, please login!', 404);
       }
-      const token = await this.userUseCase.refresTokenUseCase(user.userId, refreshToKen, tokenUser);
-      if (!token) {
+      const tokenPayload = await this.userUseCase.refresTokenUseCase(user.userId, refreshToKen, token, tokenUser);
+      if (!tokenPayload) {
         throw new RestError('you expired, please login!', 404);
       }
-      return new SendRespone({ data: token }).send(res);
+      return new SendRespone({ data: tokenPayload }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }

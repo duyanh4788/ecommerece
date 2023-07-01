@@ -9,4 +9,6 @@ export interface ITokenUsersRepository {
   deleteTokenUserByUserId(userId: string): Promise<void>;
 
   updateResfAndTokenUserByUserId(tokenUserId: string, refreshToKen: string, token: string): Promise<void>;
+
+  updateTokenUserById(tokenUserId: string, tokenOld: string, tokenNew: string): Promise<void>;
 }

@@ -5,6 +5,8 @@ import { RestError } from '../../services/error/error';
 import { IUsersResourcesRepository } from '../../repository/IUsersResourcesRepository';
 import { IntegerValue, UsersResourcesInterface } from '../../interface/UsersResourcesInterface';
 import { UsersResourcesModel } from '../model/UsersResourcesModel';
+import { RedisSubscription } from '../../redis/subscription/RedisSubscription';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class UsersResourcesSequelize implements IUsersResourcesRepository {
   async findByUserId(userId: string): Promise<UsersResourcesInterface> {
@@ -17,7 +19,7 @@ export class UsersResourcesSequelize implements IUsersResourcesRepository {
     return this.transformModelToEntity(resource);
   }
 
-  async create(reqBody: UsersResourcesInterface, transactionDB?: Transaction): Promise<UsersResourcesInterface> {
+  async create(reqBody: UsersResourcesInterface, subscriptionId: string, transactionDB?: Transaction): Promise<UsersResourcesInterface> {
     const { userId, numberProduct, numberIndex } = reqBody;
     const [resource, created] = await UsersResourcesModel.findOrCreate({
       where: { userId: deCryptFakeId(userId) },
@@ -26,14 +28,14 @@ export class UsersResourcesSequelize implements IUsersResourcesRepository {
     });
     if (!created) {
       resource.userId = deCryptFakeId(userId);
-      resource.numberProduct = numberProduct;
       resource.numberIndex = numberIndex;
       await resource.save({ transaction: transactionDB });
     }
+    await this.handleRedis(userId, subscriptionId);
     return this.transformModelToEntity(resource);
   }
 
-  async decretIncre(userId: string, value: any, type: string, num: number, transactionDb?: Transaction): Promise<void> {
+  async decretIncre(userId: string, value: any, type: string, num: number, subscriptionId: string, transactionDb?: Transaction): Promise<void> {
     const resource = await UsersResourcesModel.findOne({ where: { userId: deCryptFakeId(userId) } });
     if (!resource) throw new RestError('resource not available', 404);
     if (type === IntegerValue.DECR) {
@@ -42,7 +44,15 @@ export class UsersResourcesSequelize implements IUsersResourcesRepository {
     if (type === IntegerValue.INCR) {
       await resource.increment(value, { by: num, transaction: transactionDb });
     }
+    await this.handleRedis(userId, subscriptionId);
     return;
+  }
+
+  private async handleRedis(userId: string, subscriptionId: string) {
+    await RedisSubscription.getInstance().handlerDelKeys(MainkeysRedis.SUBS_USERID, userId);
+    await RedisSubscription.getInstance().handlerDelKeys(MainkeysRedis.SUBS_ID, subscriptionId);
+    await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_SUBS);
+    await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_INV);
   }
 
   /**

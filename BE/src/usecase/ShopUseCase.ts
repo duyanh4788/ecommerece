@@ -24,7 +24,7 @@ export class ShopUseCase {
     if (reqBody.prodcutSell.length > subs.usersResources.numberProduct) {
       throw new RestError(`with tier ${subs.paypalBillingPlans.tier}, you only registed ${subs.usersResources.numberProduct} Product, you can upgrade subscription or registed with 2 Product!`, 404);
     }
-    await this.usersResourcesRepository.decretIncre(userId, TypeDecInc.NUMBER_PRODUCT, IntegerValue.DECR, reqBody.prodcutSell.length, transactionDB);
+    await this.usersResourcesRepository.decretIncre(userId, TypeDecInc.NUMBER_PRODUCT, IntegerValue.DECR, reqBody.prodcutSell.length, subs.subscriptionId, transactionDB);
     return await this.shopUsersRepository.registed(reqBody, userId, true, transactionDB);
   }
 
