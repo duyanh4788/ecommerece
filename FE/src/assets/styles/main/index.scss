@@ -95,3 +95,8 @@ body::-webkit-scrollbar-thumb,
 .MuiDialog-paperScrollPaper MuiDialog-paperWidthLg {
     overflow: hidden !important;
 }
+
+.MuiCard-root,
+.card {
+    border-radius: 20px !important;
+}

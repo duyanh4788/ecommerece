@@ -1,20 +1,21 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { snakeCase } from 'lodash';
-import { LocalStorageService, LocalStorageKey } from './localStorage';
+import { LocalStorageKey, TypeLocal } from './localStorage';
 import { ApiRouter } from './request.constants';
+import { localStorage } from 'hooks/localStorage/LocalStorage';
+
+export const request: AxiosInstance = axios.create({
+  baseURL: ApiRouter.REACT_APP_DOMAIN_URL,
+  headers: {
+    'Cache-Control': 'no-cache',
+    'Access-Control-Allow-Origin': '***',
+    Accept: '*/*',
+  },
+  timeout: 25000,
+});
 
 export const httpRequest = (isRefreshToken: boolean = false) => {
-  const local = new LocalStorageService();
-  const request: AxiosInstance = axios.create({
-    baseURL: ApiRouter.REACT_APP_DOMAIN_URL,
-    headers: {
-      'Cache-Control': 'no-cache',
-      'Access-Control-Allow-Origin': '***',
-      Accept: '*/*',
-    },
-    timeout: 25000,
-  });
-  const user: any = local.getItem(LocalStorageKey.user);
+  const user: any = localStorage(TypeLocal.GET, LocalStorageKey.user);
   if (user) {
     request.defaults.headers.common['Authorization'] = user.token;
     request.defaults.headers.common['Client_Id'] = user.userId;

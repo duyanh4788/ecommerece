@@ -137,8 +137,8 @@ export const Profile = () => {
         <BottomNavigationAction value={PAGE.HISTORY} label="History" icon={<Bookmark />} />
       </BottomNavigation>
       <Box height={'100%'} bgcolor={'#d6cfc9'} padding={'10px'} borderRadius={'5px'}>
-        {selectedTab === PAGE.PROFILLE && <CardProfile resetDataRef={resetDataRef} />}
         {selectedTab === PAGE.SHOP && <CardShops resetDataRef={resetDataRef} />}
+        {selectedTab === PAGE.PROFILLE && <CardProfile resetDataRef={resetDataRef} />}
         {selectedTab === PAGE.HISTORY && <CardHistory resetDataRef={resetDataRef} />}
       </Box>
     </Paper>

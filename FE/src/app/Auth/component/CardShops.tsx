@@ -285,6 +285,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
   const handleResetData = () => {
     setEditShop(false);
     setRegister(false);
+    setShopInfor(null);
     resetValue();
   };
 
@@ -316,6 +317,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
                   top: 8,
                   right: 8,
                   zIndex: 1,
+                  height: '0 px !important',
                 }}
               />
               <AddCircle color="success" sx={{ cursor: 'pointer' }} />

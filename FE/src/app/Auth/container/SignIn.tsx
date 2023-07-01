@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Input, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
+import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { AuthSaga } from 'store/auth/shared/saga';
 import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
@@ -15,6 +15,7 @@ import { RootStore } from 'store/configStore';
 import { PATH_PARAMS } from 'commom/common.contants';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { localStorage } from 'hooks/localStorage/LocalStorage';
 
 const defaultValue: any = {
   email: '',
@@ -23,7 +24,7 @@ const defaultValue: any = {
 };
 
 export const SignIn = () => {
-  const local = new LocalStorageService();
+  const userLocal = localStorage(TypeLocal.GET, LocalStorageKey.user);
   const loading = useSelector(AuthSelector.selectLoading);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -40,11 +41,14 @@ export const SignIn = () => {
   });
 
   useEffect(() => {
+    if (userLocal) {
+      navigate(PATH_PARAMS.HOME);
+    }
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
       const { type, payload } = RootStore.getState().lastAction;
       switch (type) {
         case AuthSlice.actions.signInSuccess.type:
-          local.setItem({ key: LocalStorageKey.user, value: payload.data });
+          localStorage(TypeLocal.SET, LocalStorageKey.user, payload.data);
           dispatch(AuthSlice.actions.getUserById());
           toast.success(payload.message);
           resetData();

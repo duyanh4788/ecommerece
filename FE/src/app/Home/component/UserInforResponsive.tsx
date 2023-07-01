@@ -16,10 +16,11 @@ import { ExitToApp, Mail, PersonOutline, PhoneIphone, Settings, Today } from '@m
 import * as AuthSlice from 'store/auth/shared/slice';
 import { AppHelper } from 'utils/app.helper';
 import { useDispatch } from 'react-redux';
-import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
+import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { PATH_PARAMS } from 'commom/common.contants';
+import { localStorage } from 'hooks/localStorage/LocalStorage';
 
 interface Props {
   userInfor: Users | null;
@@ -46,8 +47,7 @@ export const UserInforResponsive = (props: Props) => {
   const { userInfor } = props;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const local = new LocalStorageService();
-  const userStore = local.getItem(LocalStorageKey.user);
+  const userStore = localStorage(TypeLocal.GET, LocalStorageKey.user);
   const handleLogout = (primary: string) => {
     if (primary !== 'Log out') return;
     dispatch(AuthSlice.actions.signOut());
@@ -104,6 +104,7 @@ export const UserInforResponsive = (props: Props) => {
                       position: 'absolute',
                       top: 5,
                       right: 92,
+                      height: '0 px !important',
                       zIndex: 1,
                     }}
                   />

@@ -6,7 +6,7 @@ import * as SubscriptionSelector from 'store/subscription/shared/selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { useInjectReducer, useInjectSaga } from 'store/core/@reduxjs/redux-injectors';
 import { SubscriptionSaga } from 'store/subscription/shared/saga';
-import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
+import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { useNavigate } from 'react-router-dom';
 import { FREE_TRIAL, PATH_PARAMS, PAYPAL_LOGO, PAYPAL_SUBS } from 'commom/common.contants';
 import { AppHelper } from 'utils/app.helper';
@@ -17,10 +17,10 @@ import { Loading } from 'commom/loading';
 import { toast } from 'react-toastify';
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
+import { localStorage } from 'hooks/localStorage/LocalStorage';
 
 export const Subscriber = () => {
-  const local = new LocalStorageService();
-  const planUser = local.getTier(LocalStorageKey.tier);
+  const planUser = localStorage(TypeLocal.GET, LocalStorageKey.tier);
   const loading = useSelector(SubscriptionSelector.selectLoading);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -62,7 +62,7 @@ export const Subscriber = () => {
     });
     return () => {
       storeSub$();
-      local.clearTier();
+      localStorage(TypeLocal.REMOVE, LocalStorageKey.tier);
       dispatch(SubscriptionSlice.actions.clearData());
     };
   }, []);

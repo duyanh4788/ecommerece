@@ -6,13 +6,13 @@ import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
 import { AuthSaga } from 'store/auth/shared/saga';
 import { useInjectReducer, useInjectSaga } from 'store/core/@reduxjs/redux-injectors';
-import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
+import { LocalStorageKey, TypeLocal } from 'services/localStorage';
+import { localStorage } from 'hooks/localStorage/LocalStorage';
 
 export const AuthContext = React.createContext({});
 export const AuthContextProvider = ({ children }) => {
   const dispatch = useDispatch();
-  const local = new LocalStorageService();
-  const userStore = local.getItem(LocalStorageKey.user);
+  const userStore = localStorage(TypeLocal.GET, LocalStorageKey.user);
 
   useInjectReducer({
     key: AuthSlice.sliceKey,

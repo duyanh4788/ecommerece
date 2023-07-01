@@ -26,7 +26,7 @@ import profile from 'images/profile.png';
 import { FileUpload, FileUploadProps } from './FileUpload';
 import { CardListItem } from './CardListItem';
 import { SubscriptionStatus, TypeSubscriber } from 'interface/Subscriptions.model';
-import { FREE_TRIAL, PAYPAL_LOGO, TITLE_RESOURCE } from 'commom/common.contants';
+import { FREE_TRIAL, PAYPAL_LOGO, TITLE_ITEM } from 'commom/common.contants';
 import { handleColorStatus, handleColorTier } from 'utils/color';
 import { ModalPlans } from './ModalPlans';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -248,14 +248,15 @@ export const CardProfile = ({ resetDataRef }: Props) => {
                 </span>
               </Typography>
               <Typography variant="inherit">
-                Resouce Product: {subscriptions.usersResources?.numberProduct} / month{' '}
-                <Tooltip title={TITLE_RESOURCE}>
+                Resouce Product: {subscriptions.usersResources?.numberProduct}{' '}
+                <Tooltip
+                  title={`In lifecylce your only register ${subscriptions.paypalBillingPlans?.numberProduct} product`}>
                   <HelpOutline sx={{ fontSize: '12px' }} color="success" />
                 </Tooltip>
               </Typography>
               <Typography variant="inherit">
                 Resouce Item: {subscriptions.usersResources?.numberIndex} / month{' '}
-                <Tooltip title={TITLE_RESOURCE}>
+                <Tooltip title={TITLE_ITEM}>
                   <HelpOutline sx={{ fontSize: '12px' }} color="success" />
                 </Tooltip>
               </Typography>

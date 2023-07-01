@@ -27,20 +27,7 @@
             }
         }
         .action {
-            text-align: center;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            span {
-                padding: 20px;
-                background: #ffc14c;
-                border-radius: 20px;
-                color: white;
-                font-weight: bold;
-                cursor: pointer;
-            }
-            span:hover {
-                background: #fda605 !important;
-            }
+            @include btn_paypal;
         }
     }
 }

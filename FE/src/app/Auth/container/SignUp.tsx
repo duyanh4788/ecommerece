@@ -13,6 +13,8 @@ import { Loading } from 'commom/loading';
 import { PATH_PARAMS } from 'commom/common.contants';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { localStorage } from 'hooks/localStorage/LocalStorage';
+import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 
 const defaultValue: any = {
   fullName: '',
@@ -26,8 +28,8 @@ const defaultValue: any = {
 export const SignUp = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userLocal = localStorage(TypeLocal.GET, LocalStorageKey.user);
   const loading = useSelector(AuthSelector.selectLoading);
-
   const [user, setUser] = useState(defaultValue);
   const [errors, setErrors] = useState(defaultValue);
 
@@ -41,6 +43,9 @@ export const SignUp = () => {
   });
 
   useEffect(() => {
+    if (userLocal) {
+      navigate(PATH_PARAMS.HOME);
+    }
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
       const { type, payload } = RootStore.getState().lastAction;
       switch (type) {

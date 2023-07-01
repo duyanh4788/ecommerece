@@ -11,6 +11,8 @@ import { RootStore } from 'store/configStore';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { localStorage } from 'hooks/localStorage/LocalStorage';
+import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 
 const defaultValue: any = {
   email: '',
@@ -19,6 +21,7 @@ const defaultValue: any = {
 };
 
 export const Password = () => {
+  const userLocal = localStorage(TypeLocal.GET, LocalStorageKey.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [user, setUser] = useState(defaultValue);
@@ -35,6 +38,9 @@ export const Password = () => {
   });
 
   useEffect(() => {
+    if (userLocal) {
+      navigate(PATH_PARAMS.HOME);
+    }
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
       const { type, payload } = RootStore.getState().lastAction;
       switch (type) {

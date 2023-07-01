@@ -47,7 +47,7 @@ export const PAYPAL_SUBS = 'https://www.paypalobjects.com/webstatic/mktg/Logo/pp
 
 export const FREE_TRIAL = free_trial;
 
-export const TITLE_RESOURCE =
+export const TITLE_ITEM =
   'Every month, System will reset resources after receiving payment from PayPal.';
 
 export const FOOTER = [

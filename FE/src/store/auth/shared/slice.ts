@@ -151,6 +151,10 @@ const AuthSlice = createSlice({
       state.url = [];
     },
 
+    clearRefreshToKen(state) {
+      state.refreshToken = null;
+    },
+
     clearData(state) {
       state.success = false;
       state.error = false;

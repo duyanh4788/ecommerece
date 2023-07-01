@@ -62,3 +62,40 @@
     border-radius: 10px;
     cursor: pointer;
 }
+
+.modal_plans {
+    .box_1 {
+        display: flex;
+        justify-content: space-between;
+    }
+    .dglog_conntent {
+        border: 1px solid #ebebec;
+    }
+    .box_2 {
+        display: flex;
+        .card {
+            max-width: 200px;
+            margin: 5px;
+            padding: 5px;
+            background: #f4f4f1 !important;
+        }
+        .box_fab {
+            text-align: center;
+            margin-bottom: 15px;
+            .fab {
+                background: none !important;
+                font-size: 10px;
+                font-weight: bolder;
+            }
+        }
+        .action {
+            margin-top: 0 !important;
+            margin-bottom: 5px;
+            @include btn_paypal;
+            span {
+                font-size: 12px;
+                padding: 10px;
+            }
+        }
+    }
+}

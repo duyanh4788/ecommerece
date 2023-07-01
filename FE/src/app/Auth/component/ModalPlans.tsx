@@ -1,12 +1,24 @@
 import React from 'react';
-import { Box, Dialog, DialogContent, DialogTitle } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import {
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Fab,
+  Tooltip,
+} from '@mui/material';
 import { PaypalBillingPlans, Subscription, TypeSubscriber } from 'interface/Subscriptions.model';
 import { handleColorTier } from 'utils/color';
-import { AttachMoney, Check } from '@mui/icons-material';
-import { PATH_PARAMS, PAYPAL_BANNER } from 'commom/common.contants';
-import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
+import { PATH_PARAMS, PAYPAL_BANNER, PAYPAL_SUBS } from 'commom/common.contants';
+import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { useNavigate } from 'react-router-dom';
+import { AppHelper } from 'utils/app.helper';
+import { HelpOutline } from '@mui/icons-material';
+import { localStorage } from 'hooks/localStorage/LocalStorage';
 interface Props {
   modalPlans: boolean;
   plans: PaypalBillingPlans[];
@@ -22,85 +34,102 @@ export const ModalPlans = ({
   typeSubscriber,
   handleClose,
 }: Props) => {
-  const local = new LocalStorageService();
   const navigate = useNavigate();
+
   const handleSubscriber = (item: any) => {
     const value = {
-      tier: item.row.tier.split('_')[0],
-      amout: item.row.amount,
+      tier: item.tier.split('_')[0],
+      amout: item.amount,
       isTrial: subscriptions?.isTrial,
       type:
         typeSubscriber === TypeSubscriber.SUBSCRIBER
           ? TypeSubscriber.SUBSCRIBER
           : TypeSubscriber.CHANGED,
     };
-    local.setItem({ key: LocalStorageKey.tier, value });
+    localStorage(TypeLocal.SET, LocalStorageKey.tier, value);
     navigate(PATH_PARAMS.SUBSCRIBER);
   };
-  const columns: GridColDef[] = [
-    {
-      field: 'tier',
-      headerName: 'Tier',
-      align: 'center',
-      headerAlign: 'center',
-      width: 120,
-      renderCell: item => (
-        <strong
-          tabIndex={item.hasFocus ? 0 : -1}
-          className="cell_tier"
-          onClick={() => handleSubscriber(item)}
-          style={{ color: handleColorTier(item.value) }}>
-          {item.value}{' '}
-          {subscriptions
-            ? subscriptions.paypalBillingPlans?.tier?.split('_')[0] === item.value && <Check />
-            : null}
-        </strong>
-      ),
-    },
-    {
-      field: 'amount',
-      headerName: 'Prices',
-      align: 'center',
-      headerAlign: 'center',
-      renderCell: item => (
-        <Box display={'flex'} alignItems={'center'}>
-          {item.value}
-          <AttachMoney style={{ fontSize: '13px' }} />
-        </Box>
-      ),
-    },
-    {
-      field: 'numberProduct',
-      headerName: 'Number Product',
-      align: 'center',
-      headerAlign: 'center',
-      width: 150,
-    },
-    {
-      field: 'numberIndex',
-      headerName: 'Number Index',
-      align: 'center',
-      headerAlign: 'center',
-      width: 150,
-    },
-  ];
-
-  const getRowId = (row: any) => row.planId;
 
   return (
-    <Dialog open={modalPlans} onClose={() => handleClose(false)} maxWidth={'xl'}>
-      <Box display={'flex'} justifyContent={'space-between'}>
+    <Dialog
+      open={modalPlans}
+      onClose={() => handleClose(false)}
+      maxWidth={'xl'}
+      className="modal_plans">
+      <Box className="box_1">
         <DialogTitle sx={{ fontWeight: 'bold' }}>Plans Paypal Ecommerce AnhVu</DialogTitle>
         <img src={PAYPAL_BANNER} alt={PAYPAL_BANNER} />
       </Box>
-      <DialogContent style={{ border: '1px solid #ebebec' }}>
-        <DataGrid
-          rows={plans}
-          columns={columns}
-          getRowId={getRowId}
-          hideFooter={true}
-          disableRowSelectionOnClick
-        />
+      <DialogContent className="dglog_conntent">
+        <Box className="box_2">
+          {plans.map(item => {
+            return (
+              <Card key={item.planId} className="card">
+                <CardContent>
+                  <Box className="box_fab">
+                    <Fab
+                      aria-label="tier"
+                      className="fab"
+                      style={{
+                        color: handleColorTier(item?.tier as string),
+                      }}>
+                      {AppHelper.capitalizeFirstLetter(item?.tier as string)}
+                      {subscriptions
+                        ? subscriptions.paypalBillingPlans?.tier?.split('_')[0] === item.tier && (
+                            <CircularProgress
+                              size={60}
+                              sx={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0,
+                                height: '0 px !important',
+                                zIndex: 1,
+                                color: handleColorTier(item?.tier as string),
+                              }}
+                            />
+                          )
+                        : null}
+                    </Fab>
+                  </Box>
+                  <Chip
+                    label={`Amount: ${item?.amount}$`}
+                    variant="outlined"
+                    color="success"
+                    size="small"
+                  />
+                  <Chip
+                    label={`Product: ${item?.numberProduct}`}
+                    variant="outlined"
+                    color="info"
+                    size="small"
+                    icon={
+                      <Tooltip
+                        title={`In lifecylce your only register ${item?.numberProduct} product`}>
+                        <HelpOutline sx={{ fontSize: '5px' }} color="success" />
+                      </Tooltip>
+                    }
+                  />
+                  <Chip
+                    label={`Item: ${item?.numberIndex}/month`}
+                    variant="outlined"
+                    color="warning"
+                    size="small"
+                    icon={
+                      <Tooltip title={`Every monthly system has reset Item`}>
+                        <HelpOutline sx={{ fontSize: '5px' }} color="success" />
+                      </Tooltip>
+                    }
+                  />
+                </CardContent>
+                <div className="action">
+                  <span onClick={() => handleSubscriber(item)}>
+                    PAY WITH <img src={PAYPAL_SUBS} alt="PayPal Logo" height="15px" />
+                  </span>
+                </div>
+              </Card>
+            );
+          })}
+        </Box>
       </DialogContent>
     </Dialog>
   );

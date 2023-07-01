@@ -4,7 +4,6 @@ import React, { useContext, useEffect } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   AppBar,
-  Link,
   Stack,
   Toolbar,
   createTheme,
@@ -29,13 +28,15 @@ import { PATH_PARAMS } from 'commom/common.contants';
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
 import * as AuthSlice from 'store/auth/shared/slice';
-import { LocalStorageKey, LocalStorageService } from 'services/localStorage';
+import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import * as AuthSelector from 'store/auth/shared/selectors';
 import { Loading } from 'commom/loading';
 import { toast } from 'react-toastify';
 import { Notification } from 'commom/notification';
+import { localStorage } from 'hooks/localStorage/LocalStorage';
+import { RealoadPage } from './ReloadPage';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -70,13 +71,13 @@ const darkTheme = createTheme({
 
 export const Navbar = () => {
   const userInfor: Users = useContext(AuthContext);
-  const local = new LocalStorageService();
-  const userStore = local.getItem(LocalStorageKey.user);
+  const userStore = localStorage(TypeLocal.GET, LocalStorageKey.user);
   const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const loading = useSelector(AuthSelector.selectLoading);
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [reloadPage, setReloadPage] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -84,26 +85,21 @@ export const Navbar = () => {
       const { type, payload } = RootStore.getState().lastAction;
       if (payload && payload.code === 401) {
         toast.error(payload.message);
-        local.clearLocalStorage();
-        navigate(PATH_PARAMS.SIGNIN);
+        resetData();
+        return;
+      }
+      if (payload && payload.code === 406) {
+        setReloadPage(true);
         return;
       }
       switch (type) {
         case AuthSlice.actions.signOutSuccess.type:
-          local.clearLocalStorage();
-          setAnchorEl(null);
           toast.success(payload.message);
-          dispatch(AuthSlice.actions.clearUserInfo());
-          dispatch(AuthSlice.actions.clearData());
-          navigate(PATH_PARAMS.SIGNIN);
-          break;
-        case AuthSlice.actions.refreshTokenSuccess.type:
-          local.setItem({ key: LocalStorageKey.user, value: payload.data });
+          resetData();
           break;
         case AuthSlice.actions.signOutFail.type:
-          toast.error(payload.message);
-          break;
         case AuthSlice.actions.getUserByIdFail.type:
+        case AuthSlice.actions.refreshTokenFail.type:
           toast.error(payload.message);
           break;
         default:
@@ -115,15 +111,29 @@ export const Navbar = () => {
     };
   }, []);
 
+  const resetData = () => {
+    localStorage(TypeLocal.CLEAR);
+    dispatch(AuthSlice.actions.clearUserInfo());
+    dispatch(AuthSlice.actions.clearData());
+    setAnchorEl(null);
+    navigate(PATH_PARAMS.SIGNIN);
+    setReloadPage(false);
+    return;
+  };
+
   const handleDrawerToggle = () => {
     setMobileOpen(prevState => !prevState);
   };
 
   const drawer = (
     <Box sx={{ textAlign: 'center', padding: '10px' }}>
-      <Link href={PATH_PARAMS.HOME}>
-        <img src={bannernode} alt={bannernode} width="80px" height="80px" />
-      </Link>
+      <img
+        src={bannernode}
+        alt={bannernode}
+        width="80px"
+        height="80px"
+        onClick={() => navigate(PATH_PARAMS.HOME)}
+      />
       <Divider style={{ marginBottom: '10px' }} />
       <UserInforResponsive userInfor={userInfor} />
     </Box>
@@ -139,6 +149,7 @@ export const Navbar = () => {
   return (
     <Stack sx={{ flexGrow: 1, marginBottom: '100px' }}>
       {loading && <Loading />}
+      <RealoadPage open={reloadPage} handleClose={setReloadPage} />
       <Notification />
       <CssBaseline />
       <ThemeProvider theme={darkTheme}>
@@ -150,9 +161,11 @@ export const Navbar = () => {
               onClick={handleDrawerToggle}
               sx={{ mr: 2, display: { xs: 'block', md: 'none' }, cursor: 'pointer' }}
             />
-            <Link href={PATH_PARAMS.HOME} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Box
+              sx={{ display: { xs: 'none', md: 'block' }, cursor: 'pointer' }}
+              onClick={() => navigate(PATH_PARAMS.HOME)}>
               <img src={bannernode} alt={bannernode} width="80px" height="80px" />
-            </Link>
+            </Box>
             <Paper
               component="form"
               sx={{
