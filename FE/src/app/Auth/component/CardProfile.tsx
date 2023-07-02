@@ -22,11 +22,10 @@ import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
 import * as SubscriptionSlice from 'store/subscription/shared/slice';
 import * as SubscriptionSelector from 'store/subscription/shared/selectors';
-import profile from 'images/profile.png';
 import { FileUpload, FileUploadProps } from './FileUpload';
 import { CardListItem } from './CardListItem';
 import { SubscriptionStatus, TypeSubscriber } from 'interface/Subscriptions.model';
-import { FREE_TRIAL, PAYPAL_LOGO, TITLE_ITEM } from 'commom/common.contants';
+import { FREE_TRIAL, PAYPAL_LOGO, PROFILE, TITLE_ITEM } from 'commom/common.contants';
 import { handleColorStatus, handleColorTier } from 'utils/color';
 import { ModalPlans } from './ModalPlans';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -89,7 +88,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
 
   const renderAvatar = () => {
     if (!url.length && !userInfor?.avatar) {
-      return profile;
+      return PROFILE;
     }
     if (!url.length && userInfor?.avatar) {
       return userInfor?.avatar;
@@ -238,7 +237,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
             <Box sx={{ background: '#f4f4f1', textAlign: 'center', padding: '0 10px' }}>
               <img style={{ maxHeight: '100px' }} src={PAYPAL_LOGO} alt={PAYPAL_LOGO} />
             </Box>
-            <CardContent sx={{ lineHeight: '35px', color: '#00000099' }}>
+            <CardContent sx={{ lineHeight: '35px' }}>
               <Typography variant="inherit">
                 Status:{' '}
                 <span

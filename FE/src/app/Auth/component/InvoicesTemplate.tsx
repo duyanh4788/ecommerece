@@ -2,10 +2,10 @@ import React from 'react';
 import { Document, Page, View, Image, Text } from '@react-pdf/renderer';
 import { styles } from './StylesPdf';
 import _ from 'lodash';
-import bannernode from 'images/bannernode.png';
 import { Invoices } from 'interface/Subscriptions.model';
 import { Users } from 'interface/Users.model';
 import { AppHelper } from 'utils/app.helper';
+import { CL_WT, NODEJS1 } from 'commom/common.contants';
 
 interface Props {
   invoice: Invoices;
@@ -17,13 +17,13 @@ export const InvoiceTemplate = ({ invoice, userInfor }: Props) => {
 
   return (
     <Document>
-      <Page size="C3" style={{ backgroundColor: 'white' }}>
+      <Page size="C3" style={{ backgroundColor: CL_WT }}>
         {/* ========= header ========= */}
         <View style={styles.headerContainer}>
           <View style={styles.leftCol}>
             <View style={styles.headerLeftColContainer}>
               <View style={styles.logoNameColumn}>
-                <Image src={bannernode} style={styles.imgLogo} />
+                <Image src={NODEJS1} style={styles.imgLogo} />
               </View>
 
               <View style={styles.titleColum}>
@@ -36,7 +36,7 @@ export const InvoiceTemplate = ({ invoice, userInfor }: Props) => {
           </View>
 
           <View>
-            <Image src={bannernode} style={styles.img} />
+            <Image src={NODEJS1} style={styles.img} />
           </View>
         </View>
         <View style={styles.paymentInfoContainer}>
@@ -204,7 +204,7 @@ export const InvoiceTemplate = ({ invoice, userInfor }: Props) => {
             </View>
             <View style={styles.footerContainer}>
               <View>
-                <Image style={styles.icon} src={bannernode} />
+                <Image style={styles.icon} src={NODEJS1} />
               </View>
 
               <View>
@@ -216,7 +216,7 @@ export const InvoiceTemplate = ({ invoice, userInfor }: Props) => {
               </View>
 
               <View>
-                <Image style={styles.icon} src={bannernode} />
+                <Image style={styles.icon} src={NODEJS1} />
               </View>
             </View>
           </View>

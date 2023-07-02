@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Chip, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { PATH_PARAMS } from 'commom/common.contants';
+import { CL_GR, PATH_PARAMS } from 'commom/common.contants';
 
 export const NotFound = () => {
   const navigate = useNavigate();
@@ -11,10 +11,9 @@ export const NotFound = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'linear-gradient(#f4f4f1, #ece9e6)',
       }}>
       <Box sx={{ textAlign: 'center' }}>
-        <Typography variant="h1" style={{ color: 'black' }}>
+        <Typography variant="h1" style={{ color: CL_GR }}>
           404
         </Typography>
         <Box onClick={() => navigate(PATH_PARAMS.HOME)}>

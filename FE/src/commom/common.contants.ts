@@ -1,19 +1,23 @@
-import logo from 'images/logo.png';
-import react from 'images/react.png';
-import github from 'images/github.png';
-import gmail from 'images/gmail.png';
-import linkedin from 'images/linkedin.png';
-import phone from 'images/phone.png';
-import clothes from 'images/clothes.png';
-import electronic from 'images/electronic.png';
-import funiture from 'images/funiture.png';
-import cosmetics from 'images/cosmetics.png';
-import elacticsearch from 'images/elacticsearch.png';
-import rabitmq from 'images/rabitmq.png';
-import redis from 'images/redis.png';
-import mysql from 'images/mysql.png';
-import bannernode from 'images/bannernode.png';
-import free_trial from 'images/free.png';
+const DOMAIN = 'https://dv19cu1ukmppw.cloudfront.net/ecommerce';
+export const NODEJS1 = DOMAIN + '/1688289445901.png';
+export const NODEJS2 = DOMAIN + '/1688289500323.png';
+export const REACT = DOMAIN + '/1688289511909.png';
+export const GITHUB = DOMAIN + '/1688289499827.png';
+export const CLOTHES = DOMAIN + '/1688289446712.png';
+export const COSMETICS = DOMAIN + '/1688289446819.png';
+export const ECOMMERCE = DOMAIN + '/1688289480171.png';
+export const ELS = DOMAIN + '/1688289480462.png';
+export const ELECTRONIC = DOMAIN + '/1688289480555.png';
+export const TRIAL = DOMAIN + '/1688289480649.png';
+export const FUNITURE = DOMAIN + '/1688289480758.png';
+export const MAIL = DOMAIN + '/1688289500099.png';
+export const LINKED = DOMAIN + '/1688289500196.png';
+export const MYSQL = DOMAIN + '/1688289500497.png';
+export const PHONE = DOMAIN + '/1688289511413.png';
+export const PROFILE = DOMAIN + '/1688289511701.png';
+export const BANNER_SHOP = DOMAIN + '/1688289446320.png';
+export const RABITMQ = DOMAIN + '/1688289511790.png';
+export const REDIS = DOMAIN + '/1688289512064.png';
 
 export const TOKEN_EXPRIED = 'token expired, please login again.';
 
@@ -33,8 +37,8 @@ export const TYPE_RESET_PW = {
 };
 
 export const FOOTER_INFOR = {
-  nodejs: bannernode,
-  reactjs: react,
+  nodejs: NODEJS1,
+  reactjs: REACT,
 };
 
 export const PAYPAL_LOGO =
@@ -45,15 +49,22 @@ export const PAYPAL_BANNER =
 
 export const PAYPAL_SUBS = 'https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-150px.png';
 
-export const FREE_TRIAL = free_trial;
+export const FREE_TRIAL = TRIAL;
 
 export const TITLE_ITEM =
   'Every month, System will reset resources after receiving payment from PayPal.';
 
+export const BG_BODY = '#f5f5f5';
+export const BG_MAIN = '#d6cfc957';
+export const CL_GR = '#919191';
+export const CL_BL = '#212321';
+export const CL_WT = '#ffffff';
+export const CL_GRE = '#56ab2f';
+
 export const FOOTER = [
   {
     key: 1,
-    item: logo,
+    item: NODEJS2,
     valueArr: [
       { key: 1, item: 'NodeJS | ReactJS' },
       { key: 2, item: '© 2023 Designer By Anh Vu' },
@@ -63,35 +74,35 @@ export const FOOTER = [
     key: 2,
     item: 'PRODUCTS',
     valueArr: [
-      { key: 1, item: 'Electronic', img: electronic },
-      { key: 2, item: 'Cosmetics', img: cosmetics },
-      { key: 3, item: 'Funiture', img: funiture },
-      { key: 4, item: 'Clothes', img: clothes },
+      { key: 1, item: 'Electronic', img: ELECTRONIC },
+      { key: 2, item: 'Cosmetics', img: COSMETICS },
+      { key: 3, item: 'Funiture', img: FUNITURE },
+      { key: 4, item: 'Clothes', img: CLOTHES },
     ],
   },
   {
     key: 3,
     item: 'SYSTEM',
     valueArr: [
-      { key: 1, item: 'elasticsearch', img: elacticsearch },
-      { key: 2, item: 'RabitMQ', img: rabitmq },
-      { key: 3, item: 'Redis', img: redis },
-      { key: 4, item: 'MYSQL', img: mysql },
+      { key: 1, item: 'elasticsearch', img: ELS },
+      { key: 2, item: 'RabitMQ', img: RABITMQ },
+      { key: 3, item: 'Redis', img: REDIS },
+      { key: 4, item: 'MYSQL', img: MYSQL },
     ],
   },
   {
     key: 4,
     item: 'SOCIAL',
     valueArr: [
-      { key: 1, item: 'Github', img: github, link: 'https://github.com/duyanh4788' },
+      { key: 1, item: 'Github', img: GITHUB, link: 'https://github.com/duyanh4788' },
       {
         key: 2,
         item: 'linked',
-        img: linkedin,
+        img: LINKED,
         link: 'https://www.linkedin.com/in/v%C5%A9-duy-anh-a79124220/',
       },
-      { key: 3, item: 'Gmail', img: gmail, link: 'mailto:duyanh4788@gmail.com' },
-      { key: 4, item: 'Phone', img: phone, link: 'tel:+0906068024' },
+      { key: 3, item: 'Gmail', img: MAIL, link: 'mailto:duyanh4788@gmail.com' },
+      { key: 4, item: 'Phone', img: PHONE, link: 'tel:+0906068024' },
     ],
   },
 ];

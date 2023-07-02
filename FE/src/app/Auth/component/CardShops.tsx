@@ -16,7 +16,6 @@ import {
   Typography,
 } from '@mui/material';
 import { Done, AddCircle, Cancel, Edit, Delete } from '@mui/icons-material';
-import baner_shop from 'images/banner_shop.png';
 import { FileUpload, FileUploadProps } from './FileUpload';
 import * as ShopSlice from 'store/shops/shared/slice';
 import * as ShopSelector from 'store/shops/shared/selectors';
@@ -24,6 +23,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppHelper } from 'utils/app.helper';
 import { CardListItem } from './CardListItem';
 import { Products, Shops } from 'interface/Shops.model';
+import { BANNER_SHOP } from 'commom/common.contants';
 
 const useStyles = makeStyles(theme => ({
   registed: {
@@ -127,7 +127,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
                       ? url[0]
                       : item?.banners?.length
                       ? item?.banners[0]
-                      : baner_shop
+                      : BANNER_SHOP
                   }>
                   {item?.nameShop}
                 </Avatar>
@@ -177,7 +177,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
                   ? url[0]
                   : item?.banners?.length
                   ? item?.banners[0]
-                  : baner_shop
+                  : BANNER_SHOP
               }
             />
             {editShop && shopInfor?.id === item.id ? <FileUpload {...fileUploadProp} /> : null}
@@ -236,7 +236,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
         <Card className="card_profile">
           <CardHeader
             avatar={
-              <Avatar aria-label="recipe" src={url.length ? url[0] : baner_shop}>
+              <Avatar aria-label="recipe" src={url.length ? url[0] : BANNER_SHOP}>
                 New Shop
               </Avatar>
             }
@@ -257,7 +257,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
             }
             subheader={AppHelper.formmatDateTime(new Date())}
           />
-          <CardMedia component="img" height="194" src={url.length ? url[0] : baner_shop} />
+          <CardMedia component="img" height="194" src={url.length ? url[0] : BANNER_SHOP} />
           {register ? <FileUpload {...fileUploadProp} /> : null}
           <CardContent sx={{ fontWeight: 'bold' }}>
             <Box>

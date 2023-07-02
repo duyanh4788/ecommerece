@@ -3,13 +3,14 @@ import { Box, Typography } from '@mui/material';
 import { CloudUpload } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
+import { CL_GRE } from 'commom/common.contants';
 
 const useStyles = makeStyles({
   root: {
     cursor: 'pointer',
     display: 'flex',
     justifyContent: 'center',
-    color: '#56ab2f',
+    color: CL_GRE,
     padding: '5px',
     '&:hover p,&:hover svg,& img': {
       opacity: 1,

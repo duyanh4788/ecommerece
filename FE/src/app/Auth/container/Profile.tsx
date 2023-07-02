@@ -20,6 +20,7 @@ import { CardShops } from '../component/CardShops';
 import { CardHistory } from '../component/CardHistory';
 import { AccountBox, Bookmark, Store } from '@mui/icons-material';
 import { SubscriptionSaga } from 'store/subscription/shared/saga';
+import { BG_MAIN } from 'commom/common.contants';
 
 const PAGE = {
   PROFILLE: 'PROFILLE',
@@ -128,7 +129,7 @@ export const Profile = () => {
     <Paper sx={{ background: 'none', margin: '20px' }}>
       {loadingAuth || loadingShop || loadingSubs ? <Loading /> : null}
       <BottomNavigation
-        sx={{ background: '#d6cfc9', marginBottom: '5px' }}
+        sx={{ background: BG_MAIN, marginBottom: '5px' }}
         showLabels
         value={selectedTab}
         onChange={(e, newValue) => setSelectedTab(newValue)}>
@@ -136,7 +137,7 @@ export const Profile = () => {
         <BottomNavigationAction value={PAGE.SHOP} label="Shops" icon={<Store />} />
         <BottomNavigationAction value={PAGE.HISTORY} label="History" icon={<Bookmark />} />
       </BottomNavigation>
-      <Box height={'100%'} bgcolor={'#d6cfc9'} padding={'10px'} borderRadius={'5px'}>
+      <Box height={'100%'} bgcolor={BG_MAIN} padding={'10px'} borderRadius={'5px'}>
         {selectedTab === PAGE.SHOP && <CardShops resetDataRef={resetDataRef} />}
         {selectedTab === PAGE.PROFILLE && <CardProfile resetDataRef={resetDataRef} />}
         {selectedTab === PAGE.HISTORY && <CardHistory resetDataRef={resetDataRef} />}

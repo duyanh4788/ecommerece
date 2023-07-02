@@ -18,13 +18,12 @@ import {
 import { makeStyles } from '@mui/styles';
 import { ShoppingCartSharp, MenuOutlined } from '@mui/icons-material';
 import { ThemeProvider } from '@emotion/react';
-import bannernode from 'images/bannernode.png';
 import { AppHelper } from 'utils/app.helper';
 import { PopoverList } from './Popover';
 import { UserInforResponsive } from './UserInforResponsive';
 import { Users } from 'interface/Users.model';
 import { AuthContext } from 'app/AuthContext/AuthContextApi';
-import { PATH_PARAMS } from 'commom/common.contants';
+import { BG_MAIN, CL_GR, CL_GRE, NODEJS1, PATH_PARAMS } from 'commom/common.contants';
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
 import * as AuthSlice from 'store/auth/shared/slice';
@@ -43,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     padding: '10px 0',
   },
   logo: {
-    color: 'black',
+    color: CL_GR,
     width: 'max-content',
     fontSize: '20px',
   },
@@ -55,7 +54,7 @@ const useStyles = makeStyles(theme => ({
     padding: '0 20px',
   },
   icons: {
-    color: '#2e7d32',
+    color: CL_GRE,
     cursor: 'pointer',
   },
 }));
@@ -64,7 +63,7 @@ const darkTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#d6cfc9',
+      main: BG_MAIN,
     },
   },
 });
@@ -128,8 +127,8 @@ export const Navbar = () => {
   const drawer = (
     <Box sx={{ textAlign: 'center', padding: '10px' }}>
       <img
-        src={bannernode}
-        alt={bannernode}
+        src={NODEJS1}
+        alt={NODEJS1}
         width="80px"
         height="80px"
         onClick={() => navigate(PATH_PARAMS.HOME)}
@@ -164,7 +163,7 @@ export const Navbar = () => {
             <Box
               sx={{ display: { xs: 'none', md: 'block' }, cursor: 'pointer' }}
               onClick={() => navigate(PATH_PARAMS.HOME)}>
-              <img src={bannernode} alt={bannernode} width="80px" height="80px" />
+              <img src={NODEJS1} alt={NODEJS1} width="80px" height="80px" />
             </Box>
             <Paper
               component="form"
@@ -188,7 +187,7 @@ export const Navbar = () => {
             </Paper>
             <Box sx={{ display: { xs: 'none', md: 'block' }, cursor: 'pointer' }}>
               <span onClick={handleClick}>
-                <Avatar sx={{ bgcolor: '#56ab2f' }} src={userInfor?.avatar}>
+                <Avatar sx={{ bgcolor: CL_GRE }} src={userInfor?.avatar}>
                   {AppHelper.convertFullName(userInfor?.fullName || userStore?.fullName)}
                 </Avatar>
               </span>

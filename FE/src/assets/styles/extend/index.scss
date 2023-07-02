@@ -12,7 +12,7 @@
 @mixin warp_form {
     width: 100%;
     padding: 20px;
-    background-color: $background-3;
+    background-color: $background-white;
     border-radius: $boderR5;
     overflow: hidden;
     backdrop-filter: blur(6px);
@@ -23,8 +23,8 @@
 @mixin button_form {
     font-size: $fs15;
     padding: 10px 15px;
-    color: $color-black-2;
-    background-color: $color-white-2;
+    color: $color-black;
+    background-color: $color-white;
     border: $border1;
     border-radius: $boderR5;
     outline: none;
@@ -36,13 +36,13 @@
     margin: 10px 0;
     padding: 10px 5px;
     border-radius: $boderR5;
-    background-color: $color-white-2;
+    background-color: $color-white;
     outline: none;
     border: $border3;
 }
 
 @mixin placehoder_form {
-    color: $color-gray-2;
+    color: $color-gray;
     opacity: 0.5;
     text-align: right;
 }
@@ -54,8 +54,8 @@
     border-radius: 5px;
     outline: none;
     border: none;
-    color: $color-gray-2;
-    background-color: $color-white-2;
+    color: $color-gray;
+    background-color: $color-white;
 }
 
 @mixin span_valid {
@@ -79,7 +79,7 @@
 @mixin date_timer {
     input {
         font-size: 13px;
-        color: $color-black-2;
+        color: $color-black;
     }
     .MuiInput-underline:after {
         border-bottom: 1px solid black !important;
@@ -103,7 +103,7 @@
     color: $color-white;
     margin-left: 5px;
     text-transform: uppercase;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.178);
+    box-shadow: $box-shadow;
     transform: translateY(-2px);
     transition: box-shadow 0.3s, transform 0.3s;
 }

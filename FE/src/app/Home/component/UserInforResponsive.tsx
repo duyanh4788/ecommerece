@@ -19,7 +19,7 @@ import { useDispatch } from 'react-redux';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
-import { PATH_PARAMS } from 'commom/common.contants';
+import { BG_BODY, BG_MAIN, CL_GR, PATH_PARAMS } from 'commom/common.contants';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 
 interface Props {
@@ -39,7 +39,7 @@ const FireNav = styled(List)<{ component?: React.ElementType }>({
     fontSize: 20,
   },
   '& .MuiListItemButton-root:hover': {
-    backgroundColor: '#fff ',
+    backgroundColor: BG_BODY,
   },
 });
 
@@ -58,7 +58,7 @@ export const UserInforResponsive = (props: Props) => {
       <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText
         primary={primary}
-        primaryTypographyProps={{ fontSize: 14, color: '#212321', fontWeight: 'bold' }}
+        primaryTypographyProps={{ fontSize: 14, color: CL_GR, fontWeight: 'bold' }}
       />
     </ListItemButton>
   );
@@ -66,7 +66,7 @@ export const UserInforResponsive = (props: Props) => {
   return (
     <Box
       sx={{
-        bgcolor: '#ece9e6',
+        bgcolor: BG_MAIN,
         padding: '5px',
         minHeight: '100px',
         display: 'flex',
