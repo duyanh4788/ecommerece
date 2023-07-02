@@ -1,8 +1,8 @@
 import React from 'react';
-import { Box, Chip, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material';
+import { Box, Chip, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Invoices } from 'interface/Subscriptions.model';
-import { AttachMoney, Download } from '@mui/icons-material';
+import { AttachMoney, Download, HelpOutline } from '@mui/icons-material';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { PAYPAL_BANNER } from 'commom/common.contants';
@@ -84,7 +84,13 @@ export const ModalInvoices = ({ modalInvoice, invoices, handleClose, userInfor }
   return (
     <Dialog open={modalInvoice} onClose={() => handleClose(false)} maxWidth={'lg'}>
       <Box display={'flex'} justifyContent={'space-between'}>
-        <DialogTitle sx={{ fontWeight: 'bold' }}>Invoices Paypal Ecommerce AnhVu</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 'bold' }}>
+          Invoices Paypal Ecommerce AnhVu{' '}
+          <Tooltip
+            title={`We are sending the invoice to your email after receiving payment from PayPal!`}>
+            <HelpOutline sx={{ fontSize: '12px' }} color="success" />
+          </Tooltip>
+        </DialogTitle>
         <img src={PAYPAL_BANNER} alt={PAYPAL_BANNER} />
       </Box>
       <DialogContent style={{ border: '1px solid #ebebec' }}>

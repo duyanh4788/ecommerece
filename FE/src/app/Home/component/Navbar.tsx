@@ -23,7 +23,7 @@ import { PopoverList } from './Popover';
 import { UserInforResponsive } from './UserInforResponsive';
 import { Users } from 'interface/Users.model';
 import { AuthContext } from 'app/AuthContext/AuthContextApi';
-import { BG_MAIN, CL_GR, CL_GRE, NODEJS1, PATH_PARAMS } from 'commom/common.contants';
+import { BG_MAIN_1, CL_GR, CL_GRE, NODEJS1, PATH_PARAMS } from 'commom/common.contants';
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
 import * as AuthSlice from 'store/auth/shared/slice';
@@ -63,7 +63,7 @@ const darkTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: BG_MAIN,
+      main: BG_MAIN_1,
     },
   },
 });
@@ -212,7 +212,7 @@ export const Navbar = () => {
             }}
             sx={{
               display: { xs: 'block', md: 'none' },
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 300, background: '#f8f7f7' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 260 },
             }}>
             {drawer}
           </Drawer>

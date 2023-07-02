@@ -10,10 +10,11 @@ import {
   TextField,
 } from '@mui/material';
 import { PAYPAL_BANNER } from 'commom/common.contants';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as SubscriptionSile from 'store/subscription/shared/slice';
 import { Cancel, CheckCircle } from '@mui/icons-material';
-
+import * as SubscriptionSelector from 'store/subscription/shared/selectors';
+import { Loading } from 'commom/loading';
 interface Props {
   modalCancel: boolean;
   handleClose: (e: boolean) => void;
@@ -22,6 +23,7 @@ interface Props {
 
 export const ModalCancel = ({ modalCancel, handleClose, subscriptionId }: Props) => {
   const dispatch = useDispatch();
+  const loadingSubs = useSelector(SubscriptionSelector.selectLoading);
   const [reason, setReson] = useState<string>('');
 
   const handleOnclose = () => {
@@ -31,6 +33,7 @@ export const ModalCancel = ({ modalCancel, handleClose, subscriptionId }: Props)
 
   return (
     <Dialog open={modalCancel} onClose={handleOnclose} maxWidth={'sm'}>
+      {loadingSubs ? <Loading /> : null}
       <Box display={'flex'} justifyContent={'space-between'}>
         <DialogTitle sx={{ fontWeight: 'bold' }}>Paypal Ecommerce AnhVu</DialogTitle>
         <img src={PAYPAL_BANNER} alt={PAYPAL_BANNER} />

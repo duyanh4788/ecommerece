@@ -11,9 +11,19 @@ import {
   Fab,
   Tooltip,
 } from '@mui/material';
-import { PaypalBillingPlans, Subscription, TypeSubscriber } from 'interface/Subscriptions.model';
+import {
+  PaypalBillingPlans,
+  Subscription,
+  SubscriptionStatus,
+  TypeSubscriber,
+} from 'interface/Subscriptions.model';
 import { handleColorTier } from 'utils/color';
-import { PATH_PARAMS, PAYPAL_BANNER, PAYPAL_SUBS } from 'commom/common.contants';
+import {
+  PATH_PARAMS,
+  PAYPAL_BANNER,
+  PAYPAL_SUBS,
+  renderTitleResource,
+} from 'commom/common.contants';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { useNavigate } from 'react-router-dom';
 import { AppHelper } from 'utils/app.helper';
@@ -103,8 +113,7 @@ export const ModalPlans = ({
                     color="info"
                     size="small"
                     icon={
-                      <Tooltip
-                        title={`In lifecylce your only register ${item?.numberProduct} product`}>
+                      <Tooltip title={renderTitleResource(item?.numberProduct as number)}>
                         <HelpOutline sx={{ fontSize: '5px' }} color="success" />
                       </Tooltip>
                     }
@@ -122,9 +131,13 @@ export const ModalPlans = ({
                   />
                 </CardContent>
                 <div className="action">
-                  <span onClick={() => handleSubscriber(item)}>
-                    PAY WITH <img src={PAYPAL_SUBS} alt="PayPal Logo" height="15px" />
-                  </span>
+                  {!subscriptions ||
+                  subscriptions.status !== SubscriptionStatus.ACTIVE ||
+                  subscriptions.paypalBillingPlans?.tier?.split('_')[0] !== item.tier ? (
+                    <span onClick={() => handleSubscriber(item)}>
+                      PAY WITH <img src={PAYPAL_SUBS} alt="PayPal Logo" height="15px" />
+                    </span>
+                  ) : null}
                 </div>
               </Card>
             );

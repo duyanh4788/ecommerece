@@ -25,7 +25,15 @@ import * as SubscriptionSelector from 'store/subscription/shared/selectors';
 import { FileUpload, FileUploadProps } from './FileUpload';
 import { CardListItem } from './CardListItem';
 import { SubscriptionStatus, TypeSubscriber } from 'interface/Subscriptions.model';
-import { FREE_TRIAL, PAYPAL_LOGO, PROFILE, TITLE_ITEM } from 'commom/common.contants';
+import {
+  BG_MAIN_1,
+  FREE_TRIAL,
+  PAYPAL_LOGO,
+  PROFILE,
+  TITLE_ITEM,
+  TITLE_SUBS,
+  renderTitleResource,
+} from 'commom/common.contants';
 import { handleColorStatus, handleColorTier } from 'utils/color';
 import { ModalPlans } from './ModalPlans';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -234,7 +242,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
               }
               subheader={AppHelper.formmatDateTime(subscriptions.lastPaymentsFetch)}
             />
-            <Box sx={{ background: '#f4f4f1', textAlign: 'center', padding: '0 10px' }}>
+            <Box sx={{ background: BG_MAIN_1, textAlign: 'center', padding: '0 10px' }}>
               <img style={{ maxHeight: '100px' }} src={PAYPAL_LOGO} alt={PAYPAL_LOGO} />
             </Box>
             <CardContent sx={{ lineHeight: '35px' }}>
@@ -245,17 +253,31 @@ export const CardProfile = ({ resetDataRef }: Props) => {
                   style={{ color: handleColorStatus(subscriptions.status as string) }}>
                   {subscriptions.status?.split('_').join(' ')}
                 </span>
+                {subscriptions.status === 'WAITING_SYNC' ? (
+                  <Tooltip title={`please waiting system sync transaction paymant with PayPal!`}>
+                    <HelpOutline sx={{ fontSize: '12px' }} color="success" />
+                  </Tooltip>
+                ) : null}
               </Typography>
               <Typography variant="inherit">
                 Resouce Product: {subscriptions.usersResources?.numberProduct}{' '}
                 <Tooltip
-                  title={`In lifecylce your only register ${subscriptions.paypalBillingPlans?.numberProduct} product`}>
+                  title={
+                    subscriptions.usersResources
+                      ? renderTitleResource(
+                          subscriptions.paypalBillingPlans?.numberProduct as number,
+                        )
+                      : TITLE_SUBS
+                  }>
                   <HelpOutline sx={{ fontSize: '12px' }} color="success" />
                 </Tooltip>
               </Typography>
               <Typography variant="inherit">
-                Resouce Item: {subscriptions.usersResources?.numberIndex} / month{' '}
-                <Tooltip title={TITLE_ITEM}>
+                Resouce Item:{' '}
+                {subscriptions.usersResources
+                  ? `${subscriptions.usersResources?.numberIndex}/month`
+                  : null}
+                <Tooltip title={subscriptions.usersResources ? TITLE_ITEM : TITLE_SUBS}>
                   <HelpOutline sx={{ fontSize: '12px' }} color="success" />
                 </Tooltip>
               </Typography>

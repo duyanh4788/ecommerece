@@ -20,7 +20,10 @@ import { CardShops } from '../component/CardShops';
 import { CardHistory } from '../component/CardHistory';
 import { AccountBox, Bookmark, Store } from '@mui/icons-material';
 import { SubscriptionSaga } from 'store/subscription/shared/saga';
-import { BG_MAIN } from 'commom/common.contants';
+import { BG_MAIN_1, PATH_PARAMS } from 'commom/common.contants';
+import { useNavigate } from 'react-router-dom';
+import { localStorage } from 'hooks/localStorage/LocalStorage';
+import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 
 const PAGE = {
   PROFILLE: 'PROFILLE',
@@ -30,10 +33,12 @@ const PAGE = {
 
 export const Profile = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const tabs = localStorage(TypeLocal.GET, LocalStorageKey.tabs);
   const loadingAuth = useSelector(AuthSelector.selectLoading);
   const loadingShop = useSelector(ShopSelector.selectLoading);
   const loadingSubs = useSelector(SubscriptionSelector.selectLoading);
-  const [selectedTab, setSelectedTab] = useState(PAGE.PROFILLE);
+  const [selectedTab, setSelectedTab] = useState(tabs || PAGE.PROFILLE);
 
   useInjectReducer({
     key: AuthSlice.sliceKey,
@@ -74,6 +79,11 @@ export const Profile = () => {
           dispatch(AuthSlice.actions.getUserById());
           toast.success(payload.message);
           handleResetData();
+          break;
+        case AuthSlice.actions.signOutSuccess.type:
+          toast.success(payload.message);
+          handleResetData();
+          navigate(PATH_PARAMS.SIGNIN);
           break;
         case ShopSlice.actions.updatedShopSuccess.type:
         case ShopSlice.actions.deletedShopSuccess.type:
@@ -129,15 +139,18 @@ export const Profile = () => {
     <Paper sx={{ background: 'none', margin: '20px' }}>
       {loadingAuth || loadingShop || loadingSubs ? <Loading /> : null}
       <BottomNavigation
-        sx={{ background: BG_MAIN, marginBottom: '5px' }}
+        sx={{ background: BG_MAIN_1, marginBottom: '5px' }}
         showLabels
         value={selectedTab}
-        onChange={(e, newValue) => setSelectedTab(newValue)}>
+        onChange={(e, newValue) => {
+          setSelectedTab(newValue);
+          localStorage(TypeLocal.SET, LocalStorageKey.tabs, newValue);
+        }}>
         <BottomNavigationAction value={PAGE.PROFILLE} label="Profile" icon={<AccountBox />} />
         <BottomNavigationAction value={PAGE.SHOP} label="Shops" icon={<Store />} />
         <BottomNavigationAction value={PAGE.HISTORY} label="History" icon={<Bookmark />} />
       </BottomNavigation>
-      <Box height={'100%'} bgcolor={BG_MAIN} padding={'10px'} borderRadius={'5px'}>
+      <Box height={'100%'} bgcolor={BG_MAIN_1} padding={'10px'} borderRadius={'5px'}>
         {selectedTab === PAGE.SHOP && <CardShops resetDataRef={resetDataRef} />}
         {selectedTab === PAGE.PROFILLE && <CardProfile resetDataRef={resetDataRef} />}
         {selectedTab === PAGE.HISTORY && <CardHistory resetDataRef={resetDataRef} />}

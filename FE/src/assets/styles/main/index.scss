@@ -42,20 +42,20 @@ main {
 }
 
 body {
-    background: $background-body !important;
-    background: -webkit-linear-gradient($background-body, #ece9e6);
-    background: linear-gradient($background-body, #ece9e6);
+    background: $background-body-1 !important;
+    background: -webkit-linear-gradient($background-body-1, $background-body-2);
+    background: linear-gradient($background-body-1, $background-body-2);
 }
 
 body::-webkit-scrollbar,
 .MuiDialogContent-root::-webkit-scrollbar {
     width: 6px;
     height: 6px;
-    background-color: $background-body;
+    background-color: $background-body-1;
 }
 body::-webkit-scrollbar-thumb,
 .MuiDialogContent-root::-webkit-scrollbar-thumb {
-    background: #e2dfdf;
+    background: $background-body-1;
     border-radius: 6px;
 }
 
@@ -79,7 +79,7 @@ body::-webkit-scrollbar-thumb,
 }
 
 .MuiDrawer-paper {
-    background: linear-gradient($background-body, #ece9e6) !important;
+    background: linear-gradient($background-body-1, $background-body-2) !important;
 }
 
 .css-1bjk3jo-MuiButtonBase-root-MuiBottomNavigationAction-root.Mui-selected {

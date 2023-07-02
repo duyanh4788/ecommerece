@@ -1,3 +1,5 @@
+import { SubscriptionStatus } from 'interface/Subscriptions.model';
+
 export const handleColorTier = (tier: string) => {
   switch (tier) {
     case 'starter':
@@ -13,15 +15,15 @@ export const handleColorTier = (tier: string) => {
 
 export const handleColorStatus = (status: string) => {
   switch (status) {
-    case 'APPROVAL_PENDING':
+    case SubscriptionStatus.APPROVAL_PENDING:
       return '#03b8fd';
-    case 'SUSPENDED':
+    case SubscriptionStatus.SUSPENDED:
       return '#ab0880';
-    case 'CANCELLED':
+    case SubscriptionStatus.CANCELLED:
       return '#c00404';
-    case 'ACTIVE':
+    case SubscriptionStatus.ACTIVE:
       return '#36b301';
-    case 'WAITING_SYNC':
+    case SubscriptionStatus.WAITING_SYNC:
       return '#b9af14';
     default:
       break;

@@ -116,7 +116,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
     if (!shops.length) return null;
     return shops.map(item => {
       return (
-        <Grid item xs={12} sm={6} md={8} key={item?.id}>
+        <Grid item xs={12} sm={6} md={6} key={item?.id}>
           <Card className="card_profile">
             <CardHeader
               avatar={
@@ -232,7 +232,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
 
   const renderRegisted = () => {
     return (
-      <Grid item xs={12} sm={6} md={8}>
+      <Grid item xs={12} sm={6} md={6}>
         <Card className="card_profile">
           <CardHeader
             avatar={
@@ -261,7 +261,12 @@ export const CardShops = ({ resetDataRef }: Props) => {
           {register ? <FileUpload {...fileUploadProp} /> : null}
           <CardContent sx={{ fontWeight: 'bold' }}>
             <Box>
-              Status: <Chip label="waiting admin approved" size="small" color="warning" />
+              Status:{' '}
+              <Chip
+                label="*Note: To register to Shop, You need to subscribe subscription!"
+                size="small"
+                color="warning"
+              />
             </Box>
             <CardListItem
               title={'Name Shop'}
@@ -306,7 +311,7 @@ export const CardShops = ({ resetDataRef }: Props) => {
       {renderShops()}
       {register && renderRegisted()}
       {!register ? (
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={6}>
           <Card className={classes.registed} sx={{ display: 'flex', flexDirection: 'column' }}>
             <IconButton disabled={shops.length >= 2} onClick={() => handleCancel()}>
               <CircularProgress

@@ -54,8 +54,14 @@ export const FREE_TRIAL = TRIAL;
 export const TITLE_ITEM =
   'Every month, System will reset resources after receiving payment from PayPal.';
 
-export const BG_BODY = '#f5f5f5';
-export const BG_MAIN = '#d6cfc957';
+export const TITLE_SUBS = 'Please subscribe and registed Shop.';
+
+export const renderTitleResource = (num: number) => {
+  return `In lifecycle, your can only register ${num} products in Shop`;
+};
+
+export const BG_MAIN_2 = '#f5f5f5';
+export const BG_MAIN_1 = '#d6cfc957';
 export const CL_GR = '#919191';
 export const CL_BL = '#212321';
 export const CL_WT = '#ffffff';
