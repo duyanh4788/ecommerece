@@ -204,7 +204,7 @@ export class NodeMailerServices implements INodeMailerServices {
                 <div class="row">
                     <div class="column_1">
                         <img width="80px" height="80px" alt="image"
-                            src="https://anhthuanhtu.com:50004/data_publish/images/nodejs.jpg" />
+                            src="https://dv19cu1ukmppw.cloudfront.net/ecommerce/1688289445901.png" />
                     </div>
                     <div class="column_2">
                         <p style="font-size: 16px;font-weight: bold">
@@ -364,7 +364,7 @@ export class NodeMailerServices implements INodeMailerServices {
                     <div style="padding: 20px;">
                           <div class="row">
                             <div class="column_5">
-                                <img alt="image" src="https://anhthuanhtu.com:50004/data_publish/images/nodejs.jpg" width="40px"
+                                <img alt="image" src="https://dv19cu1ukmppw.cloudfront.net/ecommerce/1688289445901.png" width="40px"
                                     height="40px" />
                                 <span
                                     style="color:#0F4B73;font-size: 23px;font-weight: bold; margin-left: 10px;">duyanh4788@gmail.com</span>
@@ -372,7 +372,7 @@ export class NodeMailerServices implements INodeMailerServices {
                             <div class="column_5" style="text-align: right;">
                                 <span
                                     style="color:#0F4B73;font-size: 23px;font-weight: bold; margin-right: 10px;">anhthuanhtu.online</span>
-                                <img alt="image" src="https://anhthuanhtu.com:50004/data_publish/images/nodejs.jpg" width="40px"
+                                <img alt="image" src="https://dv19cu1ukmppw.cloudfront.net/ecommerce/1688289445901.png" width="40px"
                                     height="40px" />
                             </div>
                           </div>

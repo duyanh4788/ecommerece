@@ -8,7 +8,7 @@ export class ProductsUseCase {
   async createdProductUseCase(reqBody: ProductsInterface) {
     await Promise.all(
       dataProducts.map(async (item) => {
-        await this.productsRepository.created({ nameProduct: item.nameProduct, avatar: `${process.env.END_POINT_PRODUCTS_PATH}${item.avatar}` });
+        await this.productsRepository.created({ nameProduct: item.nameProduct, avatar: item.avatar });
       })
     );
   }
