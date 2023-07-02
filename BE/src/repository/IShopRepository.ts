@@ -12,5 +12,7 @@ export interface IShopRepository {
 
   getShopById(shopId: string, userId?: string, roleId?: string): Promise<ShopInterface>;
 
-  updateStatusShop(shopId: string, status: boolean): Promise<void>;
+  updateStatusShopById(shopId: string, status: boolean): Promise<void>;
+
+  updateStatusShopByUserIdId(userId: string, status: boolean, transactionDB: Transaction): Promise<void>;
 }

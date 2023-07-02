@@ -39,8 +39,7 @@ export class ShopSequelize implements IShopRepository {
     if (banners) {
       find.banners = banners;
     }
-    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, userId);
-    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOP_ID, id);
+    await this.handleRedis(id, userId);
     await find.save();
     return;
   }
@@ -50,8 +49,7 @@ export class ShopSequelize implements IShopRepository {
     if (!find) throw new RestError('shop not availabe!', 404);
     if (find.userId !== deCryptFakeId(userId)) throw new RestError('shop not availabe!', 404);
     await find.destroy();
-    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, userId);
-    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOP_ID, id);
+    await this.handleRedis(id, userId);
     return;
   }
 
@@ -103,15 +101,30 @@ export class ShopSequelize implements IShopRepository {
     shop.prodcutSell = products;
     return this.transformModelToEntity(shop);
   }
-  async updateStatusShop(shopId: string, status: boolean): Promise<void> {
+  async updateStatusShopById(shopId: string, status: boolean): Promise<void> {
     const shop = await ShopsModel.findByPk(deCryptFakeId(shopId));
     if (!shop) return;
     shop.status = status;
     await shop.save();
     const result = this.transformModelToEntity(shop);
-    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, result.userId);
-    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOP_ID, shopId);
+    await this.handleRedis(shopId, result.userId);
     return;
+  }
+
+  async updateStatusShopByUserIdId(userId: string, status: boolean, transactionDB: Transaction): Promise<void> {
+    const shops = await ShopsModel.findAll({ where: { userId: deCryptFakeId(userId) } });
+    await Promise.all(
+      shops.map(async (item) => {
+        item.status = status;
+        await item.save({ transaction: transactionDB });
+        await this.handleRedis(enCryptFakeId(item.id), userId);
+      })
+    );
+    return;
+  }
+  private async handleRedis(shopId: string, userId: string) {
+    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, userId);
+    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOP_ID, shopId);
   }
 
   /**

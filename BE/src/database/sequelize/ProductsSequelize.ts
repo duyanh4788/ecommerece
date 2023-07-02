@@ -5,6 +5,7 @@ import { ProductsModel } from '../model/ProductsModel';
 import { RestError } from '../../services/error/error';
 
 export class ProductsSequelize implements IProductsRepository {
+  private ATTRIBUTES: string[] = ['id', 'nameProduct', 'avatar'];
   async created(reqBody: ProductsInterface): Promise<void> {
     const { nameProduct, avatar } = reqBody;
     await ProductsModel.create({ nameProduct, avatar });
@@ -33,7 +34,7 @@ export class ProductsSequelize implements IProductsRepository {
   }
 
   async getLists(): Promise<ProductsInterface[]> {
-    const products = await ProductsModel.findAll({ attributes: ['id', 'nameProduct', 'avatar'] });
+    const products = await ProductsModel.findAll({ attributes: this.ATTRIBUTES });
     return products.map((item) => this.transformModelToEntity(item));
   }
 
@@ -43,7 +44,7 @@ export class ProductsSequelize implements IProductsRepository {
   }
 
   async findById(id: number): Promise<ProductsInterface> {
-    const product = await ProductsModel.findByPk(id, { attributes: ['id', 'nameProduct', 'avatar'] });
+    const product = await ProductsModel.findByPk(id, { attributes: this.ATTRIBUTES });
     return this.transformModelToEntity(product);
   }
 

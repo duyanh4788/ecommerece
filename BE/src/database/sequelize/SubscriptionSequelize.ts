@@ -10,6 +10,10 @@ import { RedisSubscription } from '../../redis/subscription/RedisSubscription';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class SubscriptionSequelize implements ISubscriptionRepository {
+  private INCLUDES: any[] = [
+    { model: PaypalBillingPlansModel, attributes: ['tier', 'planId', 'frequency', 'amount', 'numberProduct', 'numberIndex'] },
+    { model: UsersResourcesModel, attributes: ['numberProduct', 'numberIndex'] }
+  ];
   async findAll(): Promise<Subscription[]> {
     const subsciptions = await SubscriptionModel.findAll();
     return subsciptions.map((item) => this.transformModelToEntity(item));
@@ -18,10 +22,7 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
   async findByUserId(userId: string): Promise<Subscription> {
     const subs = await SubscriptionModel.findOne({
       where: { userId: deCryptFakeId(userId) },
-      include: [
-        { model: PaypalBillingPlansModel, attributes: ['tier', 'planId', 'frequency', 'amount', 'numberProduct', 'numberIndex'] },
-        { model: UsersResourcesModel, attributes: ['numberProduct', 'numberIndex'] }
-      ]
+      include: this.INCLUDES
     });
     return this.transformModelToEntity(subs);
   }
@@ -35,7 +36,8 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
     const { userId, subscriptionId, lastPaymentsFetch, paymentProcessor, planId, isTrial, status } = reqBody;
     const [subs, created] = await SubscriptionModel.findOrCreate({
       where: { userId: deCryptFakeId(userId) },
-      defaults: { subscriptionId, lastPaymentsFetch, paymentProcessor, planId, status, isTrial }
+      defaults: { subscriptionId, lastPaymentsFetch, paymentProcessor, planId, status, isTrial },
+      include: this.INCLUDES
     });
     if (!created) {
       if (subscriptionId) {
@@ -64,12 +66,15 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
       }
     }
     const result = this.transformModelToEntity(subs);
-    await this.handleRedis(result.userId, subscriptionId, result);
+    await this.handleRedis(result.userId, result.subscriptionId, result);
     return result;
   }
 
   async updateResponseSuccess(subscriptionId: string): Promise<void> {
-    const find = await SubscriptionModel.findOne({ where: { subscriptionId } });
+    const find = await SubscriptionModel.findOne({
+      where: { subscriptionId },
+      include: this.INCLUDES
+    });
     if (!find) {
       throw new RestError('subscription not available!', 404);
     }

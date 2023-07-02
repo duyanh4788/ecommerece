@@ -29,6 +29,9 @@ export class UsersResourcesSequelize implements IUsersResourcesRepository {
     if (!created) {
       resource.userId = deCryptFakeId(userId);
       resource.numberIndex = numberIndex;
+      if (numberProduct) {
+        resource.numberProduct = numberProduct;
+      }
       await resource.save({ transaction: transactionDB });
     }
     await this.handleRedis(userId, subscriptionId);
