@@ -86,6 +86,7 @@ export const Profile = () => {
           handleResetData();
           break;
         case ShopSlice.actions.registedShopFail.type:
+        case ShopSlice.actions.deletedShopFail.type:
         case ShopSlice.actions.updatedShopFail.type:
         case AuthSlice.actions.updateProfileFail.type:
         case AuthSlice.actions.uploadFileFail.type:

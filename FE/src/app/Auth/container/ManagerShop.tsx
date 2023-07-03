@@ -77,7 +77,8 @@ export const ManagerShop = () => {
         case ShopSlice.actions.registedShopFail.type:
         case ShopSlice.actions.updatedShopFail.type:
         case ShopSlice.actions.updatedSlidersFail.type:
-          toast.success(payload.message);
+        case ShopSlice.actions.uploadFileFail.type:
+          toast.error(payload.message);
           break;
         default:
           break;
