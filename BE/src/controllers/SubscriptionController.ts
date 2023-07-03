@@ -110,7 +110,7 @@ export class SubscriptionController {
       const subscriptionId = searchParams.get('subscription_id');
       await this.subscriptionUseCase.responseSuccessUseCase(subscriptionId);
       const notification = 'please waiting system sync with Paypal!';
-      return new SendRespone({ data: process.env.FE_URL + '/profile?notification' + encodeURIComponent(notification) }).redirect(res);
+      return new SendRespone({ data: process.env.FE_URL + '/profile?notification=' + encodeURIComponent(notification) }).redirect(res);
     } catch (error) {
       return new SendRespone({ data: process.env.FE_URL }).redirect(res);
     }

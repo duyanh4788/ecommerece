@@ -238,7 +238,9 @@ export class SubscriptionUseCase {
         };
         await this.subscriptionRepository.createOrUpdate(payloadSubs, transactionDB);
         await this.shopRepository.updateStatusShopByUserIdId(subscription.userId, true, transactionDB);
-        await this.createUserResource(subscription.userId, subscription.subscriptionId, transactionDB, plan.numberIndex, plan.numberProduct);
+        if (subscription.status === SubscriptionStatus.WAITING_SYNC) {
+          await this.createUserResource(subscription.userId, subscription.subscriptionId, transactionDB, plan.numberIndex, plan.numberProduct);
+        }
       }
     }
     if (billingAgreement.billing_info && billingAgreement.billing_info.cycle_executions && billingAgreement.billing_info.cycle_executions.length > 0 && subscription.isTrial) {
