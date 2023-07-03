@@ -1,23 +1,23 @@
 const DOMAIN = 'https://dv19cu1ukmppw.cloudfront.net/ecommerce';
-export const NODEJS1 = DOMAIN + '/1688289445901.png';
+export const NODEJS1 = DOMAIN + '/bannernode.png';
 export const NODEJS2 = DOMAIN + '/1688289500323.png';
-export const REACT = DOMAIN + '/1688289511909.png';
-export const GITHUB = DOMAIN + '/1688289499827.png';
-export const CLOTHES = DOMAIN + '/1688289446712.png';
-export const COSMETICS = DOMAIN + '/1688289446819.png';
-export const ECOMMERCE = DOMAIN + '/1688289480171.png';
-export const ELS = DOMAIN + '/1688289480462.png';
-export const ELECTRONIC = DOMAIN + '/1688289480555.png';
-export const TRIAL = DOMAIN + '/1688289480649.png';
-export const FUNITURE = DOMAIN + '/1688289480758.png';
-export const MAIL = DOMAIN + '/1688289500099.png';
-export const LINKED = DOMAIN + '/1688289500196.png';
-export const MYSQL = DOMAIN + '/1688289500497.png';
-export const PHONE = DOMAIN + '/1688289511413.png';
-export const PROFILE = DOMAIN + '/1688289511701.png';
-export const BANNER_SHOP = DOMAIN + '/1688289446320.png';
-export const RABITMQ = DOMAIN + '/1688289511790.png';
-export const REDIS = DOMAIN + '/1688289512064.png';
+export const ELECTRONIC = DOMAIN + '/electronic.png';
+export const COSMETICS = DOMAIN + '/cosmetics.png';
+export const CLOTHES = DOMAIN + '/clothes.png';
+export const FUNITURE = DOMAIN + '/funiture.png';
+export const TRIAL = DOMAIN + '/free.png';
+export const PROFILE = DOMAIN + '/profile.png';
+export const BANNER_SHOP = DOMAIN + '/banner_shop.png';
+export const REACT = DOMAIN + '/react.png';
+export const GITHUB = DOMAIN + '/github.png';
+export const LINKED = DOMAIN + '/linkedin.png';
+export const MAIL = DOMAIN + '/gmail.png';
+export const PHONE = DOMAIN + '/phone.png';
+export const ECOMMERCE = DOMAIN + '/ecommerce.png';
+export const ELS = DOMAIN + '/elacticsearch.png';
+export const MYSQL = DOMAIN + '/mysql.png';
+export const RABITMQ = DOMAIN + '/rabitmq.png';
+export const REDIS = DOMAIN + '/redis.png';
 
 export const TOKEN_EXPRIED = 'token expired, please login again.';
 
@@ -28,6 +28,7 @@ export const PATH_PARAMS = {
   PASSW: '/password',
   PROFILE: '/profile',
   SUBSCRIBER: '/subscriber',
+  MANAGER_SHOP: '/manager-shop',
 };
 
 export const TYPE_RESET_PW = {

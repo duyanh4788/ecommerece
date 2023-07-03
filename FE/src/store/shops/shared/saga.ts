@@ -25,6 +25,16 @@ export function* updatedShop(api, action) {
   }
 }
 
+export function* updatedSliders(api, action) {
+  try {
+    const resPonse = yield call(api.updatedSliders, action.payload);
+    const data = yield configResponse(resPonse);
+    yield put(actions.updatedSlidersSuccess(data));
+  } catch (error) {
+    yield put(actions.updatedSlidersFail(configResponseError(error)));
+  }
+}
+
 export function* deletedShop(api, action) {
   try {
     const resPonse = yield call(api.deletedShop, action.payload);
@@ -75,14 +85,26 @@ export function* uploadFile(api, action) {
   }
 }
 
+export function* removeFile(api, action) {
+  try {
+    const resPonse = yield call(api.removeFile, action.payload);
+    const data = yield configResponse(resPonse);
+    yield put(actions.removeFileSuccess(data));
+  } catch (error) {
+    yield put(actions.removeFileFail(configResponseError(error)));
+  }
+}
+
 export function* ShopSaga() {
   yield all([
     yield takeLatest(actions.registedShop.type, registedShop, shopRequest),
     yield takeLatest(actions.updatedShop.type, updatedShop, shopRequest),
+    yield takeLatest(actions.updatedSliders.type, updatedSliders, shopRequest),
     yield takeLatest(actions.deletedShop.type, deletedShop, shopRequest),
     yield takeLatest(actions.getListsShop.type, getListsShop, shopRequest),
     yield takeLatest(actions.getShopById.type, getShopById, shopRequest),
     yield takeLatest(actions.prodGetLists.type, prodGetLists, shopRequest),
     yield takeLatest(actions.uploadFile.type, uploadFile, shopRequest),
+    yield takeLatest(actions.removeFile.type, removeFile, shopRequest),
   ]);
 }

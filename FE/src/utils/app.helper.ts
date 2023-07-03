@@ -122,4 +122,8 @@ export class AppHelper {
   static validateExpired(expired: number) {
     return expired - 60000 <= new Date().getTime();
   }
+
+  static ramdomColImg() {
+    return Math.floor(Math.random() * 2) + 1;
+  }
 }

@@ -103,7 +103,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     const { files }: any = event.target;
     if (files !== null && files.length > 0) {
       const newFormData = new FormData();
-      newFormData.append('file', files.length === 1 ? files[0] : files);
+      for (let i = 0; i < files.length; i++) {
+        newFormData.append('file', files[i]);
+      }
       onChange(newFormData);
     }
   };
@@ -116,6 +118,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         className={classes.hidden}
         id={idInput}
         type="file"
+        multiple
       />
       <label
         htmlFor={idInput}

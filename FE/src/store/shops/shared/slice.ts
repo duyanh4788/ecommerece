@@ -49,6 +49,18 @@ const ShopSlice = createSlice({
       state.error = action.payload.data;
     },
 
+    updatedSliders(state, action) {
+      state.loading = true;
+    },
+    updatedSlidersSuccess(state, action) {
+      state.loading = false;
+      state.success = action.payload.data;
+    },
+    updatedSlidersFail(state, action) {
+      state.loading = false;
+      state.error = action.payload.data;
+    },
+
     deletedShop(state) {
       state.loading = true;
     },
@@ -105,6 +117,18 @@ const ShopSlice = createSlice({
       state.url = action.payload.data;
     },
     uploadFileFail(state, action) {
+      state.loading = false;
+      state.error = action.payload.data;
+    },
+
+    removeFile(state, action) {
+      state.loading = true;
+    },
+    removeFileSuccess(state, action) {
+      state.loading = false;
+      state.success = action.payload.data;
+    },
+    removeFileFail(state, action) {
       state.loading = false;
       state.error = action.payload.data;
     },

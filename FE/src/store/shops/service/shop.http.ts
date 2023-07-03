@@ -18,6 +18,7 @@ export class ShopHttp {
       nameShop: shops.nameShop,
       prodcutSell: shops.prodcutSell,
       banners: shops.banners,
+      sliders: shops.sliders,
     };
   };
 
@@ -33,6 +34,12 @@ export class ShopHttp {
     });
   };
 
+  public updatedSliders = (payload: Shops): Promise<any> => {
+    return httpRequest().post(ShopApi.UPDATED_SLIDERS, {
+      ...this.configUpdated(payload),
+    });
+  };
+
   public deletedShop = (id: string): Promise<any> => {
     return httpRequest().post(ShopApi.DELETED, { id });
   };
@@ -42,7 +49,7 @@ export class ShopHttp {
   };
 
   public getShopById = (id: string): Promise<any> => {
-    return httpRequest().get(ShopApi.GET_LISTS + '/' + id);
+    return httpRequest().get(ShopApi.GET_BY_ID + '/' + id);
   };
 
   public prodGetLists = (): Promise<any> => {
@@ -51,5 +58,9 @@ export class ShopHttp {
 
   public uploadFile = (data: any): Promise<any> => {
     return httpRequest().post(ShopApi.UPLOAD_FILE, data);
+  };
+
+  public removeFile = (data: any): Promise<any> => {
+    return httpRequest().post(ShopApi.REMOVE_FILE, data);
   };
 }

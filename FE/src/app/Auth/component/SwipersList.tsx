@@ -1,19 +1,24 @@
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Autoplay } from 'swiper';
+interface Props {
+  data: string[];
+}
 
-export const SwipersList = ({ data }) => {
+export const SwipersList = ({ data }: Props) => {
   SwiperCore.use([Autoplay]);
   return (
     <Swiper
-      slidesPerView={1}
-      loop
-      rewind
+      loop={true}
+      slidesPerView={'auto'}
+      spaceBetween={30}
+      centeredSlides={true}
       autoplay={{
-        delay: 3000,
+        delay: 2500,
+        disableOnInteraction: false,
       }}
-      speed={1200}
-      longSwipesMs={300}>
+      modules={[Autoplay]}
+      className="mySwiper">
       {data.map((row, idx) => (
         <SwiperSlide key={idx}>
           <img src={row} alt={row} style={{ width: '100%', height: '360px' }} />

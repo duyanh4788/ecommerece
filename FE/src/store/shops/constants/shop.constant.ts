@@ -5,10 +5,12 @@ const uploadPath = (path: string): string => `/upload/${path}`;
 export const ShopApi = {
   REGISTED: shopPath('registed'),
   UPDATED: shopPath('updated'),
+  UPDATED_SLIDERS: shopPath('updated-sliders'),
   DELETED: shopPath('deleted'),
   GET_LISTS: shopPath('get-lists'),
   GET_BY_ID: shopPath('get-by-id'),
   UPLOAD_FILE: uploadPath('upload-file'),
+  REMOVE_FILE: uploadPath('remove-file'),
   PROD_GET_LISTS: productPath('get-lists'),
 };
 

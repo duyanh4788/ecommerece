@@ -15,7 +15,7 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material';
-import { Done, AddCircle, Cancel, Edit, Delete } from '@mui/icons-material';
+import { Done, AddCircle, Cancel, Edit, Delete, DashboardCustomize } from '@mui/icons-material';
 import { FileUpload, FileUploadProps } from './FileUpload';
 import * as ShopSlice from 'store/shops/shared/slice';
 import * as ShopSelector from 'store/shops/shared/selectors';
@@ -23,7 +23,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppHelper } from 'utils/app.helper';
 import { CardListItem } from './CardListItem';
 import { Products, Shops } from 'interface/Shops.model';
-import { BANNER_SHOP } from 'commom/common.contants';
+import { BANNER_SHOP, PATH_PARAMS } from 'commom/common.contants';
+import { useNavigate } from 'react-router-dom';
+import { LocalStorageKey, TypeLocal } from 'services/localStorage';
+import { localStorage } from 'hooks/localStorage/LocalStorage';
 
 const useStyles = makeStyles(theme => ({
   registed: {
@@ -44,6 +47,7 @@ interface Props {
 }
 
 export const CardShops = ({ resetDataRef }: Props) => {
+  const navigate = useNavigate();
   const classes = useStyles();
   const dispatch = useDispatch();
   const [editShop, setEditShop] = useState<boolean>(false);
@@ -165,6 +169,13 @@ export const CardShops = ({ resetDataRef }: Props) => {
               title={
                 <Typography variant="inherit" fontWeight={'bold'}>
                   {item?.nameShop}
+                  <IconButton
+                    onClick={() => {
+                      localStorage(TypeLocal.SET, LocalStorageKey.shopId, item.id);
+                      navigate(PATH_PARAMS.MANAGER_SHOP);
+                    }}>
+                    <DashboardCustomize color="success" />
+                  </IconButton>
                 </Typography>
               }
               subheader={AppHelper.formmatDateTime(item?.createdAt)}

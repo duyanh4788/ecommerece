@@ -42,3 +42,9 @@ export const Subscriber = lazyLoad(
   module => module.Subscriber,
   LoaderFallBack(),
 );
+
+export const ManagerShop = lazyLoad(
+  () => import('app'),
+  module => module.ManagerShop,
+  LoaderFallBack(),
+);

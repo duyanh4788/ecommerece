@@ -1,14 +1,28 @@
 import React from 'react';
-import { Button, ButtonGroup } from '@mui/material';
 
 export const Home = () => {
+  const data = [
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/bannernode.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/banner_shop.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/ecommerce.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/elacticsearch.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/free.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/github.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/gmail.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/linkedin.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/logo.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/mysql.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/phone.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/profile.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/rabitmq.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/react.png',
+    'https://dv19cu1ukmppw.cloudfront.net/ecommerce/redis.png',
+  ];
   return (
     <div>
-      <ButtonGroup variant="contained" aria-label="outlined primary button group">
-        <Button>One</Button>
-        <Button>Two</Button>
-        <Button>Three</Button>
-      </ButtonGroup>
+      {data.map(item => (
+        <img src={item} alt="" width={'100px'} height={'100px'} />
+      ))}
     </div>
   );
 };

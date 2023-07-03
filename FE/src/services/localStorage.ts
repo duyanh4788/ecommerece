@@ -21,8 +21,9 @@ export type LocalStorageItem = {
 
 export enum LocalStorageKey {
   user = '_user',
+  shopId = '_shopId',
   tier = '_tier',
-  tabs = 'tabs',
+  tabs = '_tabs',
 }
 
 export class LocalStorageService {

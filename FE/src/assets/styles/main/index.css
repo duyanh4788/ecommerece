@@ -125,7 +125,7 @@
 }
 
 .loading {
-  z-index: 9;
+  z-index: 99999;
   position: fixed;
   top: 0;
   left: 0;
@@ -394,6 +394,14 @@
   background: #fda605 !important;
 }
 
+.outstanding {
+  color: #a7a7a7;
+  text-align: center;
+  font-size: 100px;
+  font-weight: 900;
+  text-shadow: -0.0075em 0.0075em 0 #f8f8f8, 0.005em 0.005em 0 lightgray, 0.01em 0.01em 0 #d5d5d5, 0.015em 0.015em #d7d7d7, 0.02em 0.02em 0 #dadada, 0.025em 0.025em 0 gainsboro, 0.03em 0.03em 0 #dedede, 0.035em 0.035em 0 #e0e0e0;
+}
+
 @font-face {
   font-family: "Gotham Ultra";
   src: url("../../font/Gotham Ultra.otf") format("opentype");
@@ -501,5 +509,46 @@ body::-webkit-scrollbar-thumb,
 .MuiCard-root,
 .card {
   border-radius: 20px !important;
+}
+
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+  /* Center slide text vertically */
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.swiper-slide {
+  width: 60%;
+}
+
+.swiper-slide:nth-child(2n) {
+  width: 40%;
+}
+
+.swiper-slide:nth-child(3n) {
+  width: 20%;
 }
 /*# sourceMappingURL=index.css.map */
