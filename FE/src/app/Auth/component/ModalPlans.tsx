@@ -22,12 +22,13 @@ import {
   PATH_PARAMS,
   PAYPAL_BANNER,
   PAYPAL_SUBS,
+  TITLE_CHANGED,
   renderTitleResource,
 } from 'commom/common.contants';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { useNavigate } from 'react-router-dom';
 import { AppHelper } from 'utils/app.helper';
-import { HelpOutline } from '@mui/icons-material';
+import { HelpOutline, NoteAlt } from '@mui/icons-material';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 interface Props {
   modalPlans: boolean;
@@ -67,7 +68,14 @@ export const ModalPlans = ({
       maxWidth={'xl'}
       className="modal_plans">
       <Box className="box_1">
-        <DialogTitle sx={{ fontWeight: 'bold' }}>Plans Paypal Ecommerce AnhVu</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 'bold' }}>
+          Plans Paypal Ecommerce AnhVu{' '}
+          {typeSubscriber === TypeSubscriber.CHANGED ? (
+            <Tooltip title={TITLE_CHANGED}>
+              <NoteAlt sx={{ fontSize: '15px' }} color="success" />
+            </Tooltip>
+          ) : null}
+        </DialogTitle>
         <img src={PAYPAL_BANNER} alt={PAYPAL_BANNER} />
       </Box>
       <DialogContent className="dglog_conntent">

@@ -85,6 +85,7 @@ export const Navbar = () => {
       if (payload && payload.code === 401) {
         toast.error(payload.message);
         resetData();
+        navigate(PATH_PARAMS.SIGNIN);
         return;
       }
       if (payload && payload.code === 406) {
@@ -95,6 +96,7 @@ export const Navbar = () => {
         case AuthSlice.actions.signOutSuccess.type:
           toast.success(payload.message);
           resetData();
+          navigate(PATH_PARAMS.SIGNIN);
           break;
         case AuthSlice.actions.signOutFail.type:
         case AuthSlice.actions.getUserByIdFail.type:
@@ -107,16 +109,16 @@ export const Navbar = () => {
     });
     return () => {
       storeSub$();
+      resetData();
     };
   }, []);
 
   const resetData = () => {
     localStorage(TypeLocal.CLEAR);
+    setReloadPage(false);
+    setAnchorEl(null);
     dispatch(AuthSlice.actions.clearUserInfo());
     dispatch(AuthSlice.actions.clearData());
-    setAnchorEl(null);
-    navigate(PATH_PARAMS.SIGNIN);
-    setReloadPage(false);
     return;
   };
 

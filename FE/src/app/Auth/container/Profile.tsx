@@ -1,9 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from 'react';
 import { BottomNavigation, BottomNavigationAction, Box, Paper } from '@mui/material';
-import { useInjectReducer, useInjectSaga } from 'store/core/@reduxjs/redux-injectors';
-import { AuthSaga } from 'store/auth/shared/saga';
-import { ShopSaga } from 'store/shops/shared/saga';
 import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
 import * as ShopSlice from 'store/shops/shared/slice';
@@ -19,9 +16,8 @@ import { CardProfile } from '../component/CardProfile';
 import { CardShops } from '../component/CardShops';
 import { CardHistory } from '../component/CardHistory';
 import { AccountBox, Bookmark, Store } from '@mui/icons-material';
-import { SubscriptionSaga } from 'store/subscription/shared/saga';
 import { BG_MAIN_1, PATH_PARAMS } from 'commom/common.contants';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 
@@ -33,47 +29,29 @@ const PAGE = {
 
 export const Profile = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const navigate = useNavigate();
   const tabs = localStorage(TypeLocal.GET, LocalStorageKey.tabs);
   const loadingAuth = useSelector(AuthSelector.selectLoading);
   const loadingShop = useSelector(ShopSelector.selectLoading);
   const loadingSubs = useSelector(SubscriptionSelector.selectLoading);
   const [selectedTab, setSelectedTab] = useState(tabs || PAGE.PROFILLE);
-
-  useInjectReducer({
-    key: AuthSlice.sliceKey,
-    reducer: AuthSlice.reducer,
-  });
-  useInjectSaga({
-    key: AuthSlice.sliceKey,
-    saga: AuthSaga,
-  });
-
-  useInjectReducer({
-    key: ShopSlice.sliceKey,
-    reducer: ShopSlice.reducer,
-  });
-  useInjectSaga({
-    key: ShopSlice.sliceKey,
-    saga: ShopSaga,
-  });
-
-  useInjectReducer({
-    key: SubscriptionSlice.sliceKey,
-    reducer: SubscriptionSlice.reducer,
-  });
-  useInjectSaga({
-    key: SubscriptionSlice.sliceKey,
-    saga: SubscriptionSaga,
-  });
-
   const resetDataRef = useRef<boolean | null>(false);
+
+  useEffect(() => {
+    function initUrl(url) {
+      const { pathname, search } = url;
+      if (!search.includes('notification')) return;
+      const decode = decodeURIComponent(search).replaceAll('%20', ' ');
+      toast.success(decode.split('=')[1]);
+      navigate(pathname, { replace: true });
+    }
+    initUrl(location);
+  }, [location]);
+
   useEffect(() => {
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
       const { type, payload } = RootStore.getState().lastAction;
-      if (payload && payload.code === 406) {
-        setSelectedTab(PAGE.PROFILLE);
-      }
       switch (type) {
         case AuthSlice.actions.updateProfileSuccess.type:
           dispatch(AuthSlice.actions.getUserById());

@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Chip, Input, Link } from '@mui/material';
 import { PATH_PARAMS, TYPE_RESET_PW } from 'commom/common.contants';
-import { useInjectReducer, useInjectSaga } from 'store/core/@reduxjs/redux-injectors';
-import { AuthSaga } from 'store/auth/shared/saga';
 import * as AuthSlice from 'store/auth/shared/slice';
 import { useDispatch } from 'react-redux';
 import { Unsubscribe } from 'redux';
@@ -27,15 +25,6 @@ export const Password = () => {
   const [user, setUser] = useState(defaultValue);
   const [errors, setErrors] = useState(defaultValue);
   const [typePage, setTypePage] = useState<boolean>(true);
-
-  useInjectReducer({
-    key: AuthSlice.sliceKey,
-    reducer: AuthSlice.reducer,
-  });
-  useInjectSaga({
-    key: AuthSlice.sliceKey,
-    saga: AuthSaga,
-  });
 
   useEffect(() => {
     if (userLocal) {
@@ -67,7 +56,6 @@ export const Password = () => {
     });
     return () => {
       storeSub$();
-      dispatch(AuthSlice.actions.clearData());
       resetData();
     };
   }, []);
@@ -76,6 +64,7 @@ export const Password = () => {
     setUser(defaultValue);
     setErrors(defaultValue);
     setTypePage(true);
+    dispatch(AuthSlice.actions.clearData());
   };
 
   const handleChange = event => {

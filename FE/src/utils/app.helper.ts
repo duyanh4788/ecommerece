@@ -114,9 +114,9 @@ export class AppHelper {
     return convert;
   }
 
-  static isEmpty(obj) {
+  static isEmpty(obj): boolean {
     if (!obj) return false;
-    return Object.keys(obj).length;
+    return Object.keys(obj).length ? true : false;
   }
 
   static validateExpired(expired: number) {

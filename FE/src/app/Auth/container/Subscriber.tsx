@@ -4,8 +4,6 @@ import { Box, Card, CardContent, Fab, Link, Tooltip, Typography } from '@mui/mat
 import * as SubscriptionSlice from 'store/subscription/shared/slice';
 import * as SubscriptionSelector from 'store/subscription/shared/selectors';
 import { useDispatch, useSelector } from 'react-redux';
-import { useInjectReducer, useInjectSaga } from 'store/core/@reduxjs/redux-injectors';
-import { SubscriptionSaga } from 'store/subscription/shared/saga';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { useNavigate } from 'react-router-dom';
 import { FREE_TRIAL, PATH_PARAMS, PAYPAL_LOGO, PAYPAL_SUBS } from 'commom/common.contants';
@@ -24,15 +22,6 @@ export const Subscriber = () => {
   const loading = useSelector(SubscriptionSelector.selectLoading);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  useInjectReducer({
-    key: SubscriptionSlice.sliceKey,
-    reducer: SubscriptionSlice.reducer,
-  });
-  useInjectSaga({
-    key: SubscriptionSlice.sliceKey,
-    saga: SubscriptionSaga,
-  });
 
   useEffect(() => {
     function initData(plan) {

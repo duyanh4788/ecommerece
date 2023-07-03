@@ -4,12 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Input, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
-import { AuthSaga } from 'store/auth/shared/saga';
 import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
 import { Loading } from 'commom/loading';
 import { Users } from 'interface/Users.model';
-import { useInjectReducer, useInjectSaga } from 'store/core/@reduxjs/redux-injectors';
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
 import { PATH_PARAMS } from 'commom/common.contants';
@@ -30,15 +28,6 @@ export const SignIn = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<Users>(defaultValue);
   const [errors, setErrors] = useState<Users>(defaultValue);
-
-  useInjectReducer({
-    key: AuthSlice.sliceKey,
-    reducer: AuthSlice.reducer,
-  });
-  useInjectSaga({
-    key: AuthSlice.sliceKey,
-    saga: AuthSaga,
-  });
 
   useEffect(() => {
     if (userLocal) {
@@ -64,7 +53,6 @@ export const SignIn = () => {
     });
     return () => {
       storeSub$();
-      dispatch(AuthSlice.actions.clearData());
       resetData();
     };
   }, []);
@@ -72,6 +60,7 @@ export const SignIn = () => {
   const resetData = () => {
     setUser(defaultValue);
     setErrors(defaultValue);
+    dispatch(AuthSlice.actions.clearData());
   };
 
   const handleChange = event => {

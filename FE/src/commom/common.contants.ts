@@ -60,6 +60,10 @@ export const renderTitleResource = (num: number) => {
   return `In lifecycle, your can only register ${num} products in Shop`;
 };
 
+export const TITLE_WAITING = 'please waiting system sync transaction paymant with PayPal!';
+export const TITLE_CHANGED =
+  'Note: If you change your subscription, System is update the new plan with the cycle next payment, and the resource for you is reset with the new Plan after the system received payment from Paypal.';
+
 export const BG_MAIN_2 = '#f5f5f5';
 export const BG_MAIN_1 = '#d6cfc957';
 export const CL_GR = '#919191';

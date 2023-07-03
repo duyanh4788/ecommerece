@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from 'react';
+import { useInjectSlicesAndSagas } from 'store/core/map/mapServices';
 
 interface Opts {
   fallback: React.ReactNode;
@@ -18,9 +19,12 @@ export const lazyLoad = <T extends Promise<any>, U extends React.ComponentType<a
 
   const LazyComponent = lazy(lazyFactory);
 
-  return (props: React.ComponentProps<U>): JSX.Element => (
-    <Suspense fallback={opts.fallback!}>
-      <LazyComponent {...props} />
-    </Suspense>
-  );
+  return (props: React.ComponentProps<U>): JSX.Element => {
+    useInjectSlicesAndSagas();
+    return (
+      <Suspense fallback={opts.fallback!}>
+        <LazyComponent {...props} />
+      </Suspense>
+    );
+  };
 };

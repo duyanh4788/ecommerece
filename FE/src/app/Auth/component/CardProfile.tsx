@@ -32,12 +32,11 @@ import {
   PROFILE,
   TITLE_ITEM,
   TITLE_SUBS,
+  TITLE_WAITING,
   renderTitleResource,
 } from 'commom/common.contants';
 import { handleColorStatus, handleColorTier } from 'utils/color';
 import { ModalPlans } from './ModalPlans';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { ModalInvoices } from './ModalInvoices';
 import { ModalCancel } from './ModalCancel';
 
@@ -47,8 +46,6 @@ interface Props {
 
 export const CardProfile = ({ resetDataRef }: Props) => {
   const dispatch = useDispatch();
-  const location = useLocation();
-  const navigate = useNavigate();
   const userInfor = useSelector(AuthSelector.selectUserInfor);
   const url = useSelector(AuthSelector.selectUrl);
   const plans = useSelector(SubscriptionSelector.selectPlans);
@@ -61,16 +58,6 @@ export const CardProfile = ({ resetDataRef }: Props) => {
   const [modalInvoice, setModalInvoice] = useState<boolean>(false);
   const [modalCancel, setModalCancel] = useState<boolean>(false);
   const [typeSubscriber, setTypeSubscriber] = useState<string>(TypeSubscriber.SUBSCRIBER);
-
-  useEffect(() => {
-    const { pathname, search } = location;
-
-    if (search.includes('notification')) {
-      const decode = decodeURIComponent(search).replaceAll('%20', ' ');
-      toast.success(decode.split('=')[1]);
-    }
-    navigate(pathname, { replace: true });
-  }, [location, navigate]);
 
   useEffect(() => {
     dispatch(SubscriptionSlice.actions.userGetSubscription());
@@ -254,7 +241,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
                   {subscriptions.status?.split('_').join(' ')}
                 </span>
                 {subscriptions.status === 'WAITING_SYNC' ? (
-                  <Tooltip title={`please waiting system sync transaction paymant with PayPal!`}>
+                  <Tooltip title={TITLE_WAITING}>
                     <HelpOutline sx={{ fontSize: '12px' }} color="success" />
                   </Tooltip>
                 ) : null}

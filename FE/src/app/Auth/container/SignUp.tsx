@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Link } from '@mui/material';
 import { Visibility, VisibilityOff, Password, EnhancedEncryptionSharp } from '@mui/icons-material';
-import { useInjectReducer, useInjectSaga } from 'store/core/@reduxjs/redux-injectors';
-import { AuthSaga } from 'store/auth/shared/saga';
 import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
 import { Unsubscribe } from 'redux';
@@ -33,15 +31,6 @@ export const SignUp = () => {
   const [user, setUser] = useState(defaultValue);
   const [errors, setErrors] = useState(defaultValue);
 
-  useInjectReducer({
-    key: AuthSlice.sliceKey,
-    reducer: AuthSlice.reducer,
-  });
-  useInjectSaga({
-    key: AuthSlice.sliceKey,
-    saga: AuthSaga,
-  });
-
   useEffect(() => {
     if (userLocal) {
       navigate(PATH_PARAMS.HOME);
@@ -63,7 +52,6 @@ export const SignUp = () => {
     });
     return () => {
       storeSub$();
-      dispatch(AuthSlice.actions.clearData());
       resetData();
     };
   }, []);
@@ -104,6 +92,7 @@ export const SignUp = () => {
   const resetData = () => {
     setUser(defaultValue);
     setErrors(defaultValue);
+    dispatch(AuthSlice.actions.clearData());
   };
 
   const validate = () => {
@@ -151,7 +140,6 @@ export const SignUp = () => {
             onChange={handleChange}
           />
           <Input
-            id="standard-adornment-password"
             className="input_show"
             name="password"
             type={user.showPassword ? 'text' : 'password'}
@@ -170,7 +158,6 @@ export const SignUp = () => {
           {errors.password && <span className="msg_error">*{errors.password}</span>}
 
           <Input
-            id="standard-adornment-password"
             className="input_show"
             name="confirmPassword"
             type={user.showPassword ? 'text' : 'password'}
