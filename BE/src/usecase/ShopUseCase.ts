@@ -8,11 +8,12 @@ import { RestError } from '../services/error/error';
 import { IUsersResourcesRepository } from '../repository/IUsersResourcesRepository';
 import { Transaction } from 'sequelize';
 import { IntegerValue, TypeDecInc } from '../interface/UsersResourcesInterface';
+import { RedisSubscription } from '../redis/subscription/RedisSubscription';
 export class ShopUseCase {
   constructor(private shopUsersRepository: IShopRepository, private subscriptionRepository: ISubscriptionRepository, private usersResourcesRepository: IUsersResourcesRepository) {}
 
   async registedShopUseCase(reqBody: ShopInterface, userId: string, transactionDB: Transaction) {
-    const subs = await this.subscriptionRepository.findByUserId(userId);
+    const subs = await RedisSubscription.getInstance().getSubsByUserId(userId);
     if (subs && subs.status === SubscriptionStatus.WAITING_SYNC) {
       throw new RestError('Please waiting system sync with to PayPal!', 404);
     }
@@ -28,8 +29,9 @@ export class ShopUseCase {
         404
       );
     }
+    const payload = { ...reqBody, numberProduct: subs.usersResources.numberProduct, numberIndex: subs.usersResources.numberIndex };
     await this.usersResourcesRepository.decretIncre(userId, TypeDecInc.NUMBER_PRODUCT, IntegerValue.DECR, reqBody.prodcutSell.length, subs.subscriptionId, transactionDB);
-    return await this.shopUsersRepository.registed(reqBody, userId, true, transactionDB);
+    return await this.shopUsersRepository.registed(payload, userId, true, transactionDB);
   }
 
   async updatedShopUseCase(reqBody: ShopInterface, userId: string) {
@@ -42,6 +44,8 @@ export class ShopUseCase {
   }
 
   async deletedShopUseCase(id: string, userId: string) {
+    const subs = await RedisSubscription.getInstance().getSubsByUserId(userId);
+    if (subs) throw new RestError('you have subscription so you can not delete shop, please contact admin!', 404);
     return await this.shopUsersRepository.deleted(id, userId);
   }
 

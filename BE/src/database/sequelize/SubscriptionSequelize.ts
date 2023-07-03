@@ -33,10 +33,10 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
   }
 
   async createOrUpdate(reqBody: Subscription, transactionDB: Transaction): Promise<Subscription> {
-    const { userId, subscriptionId, lastPaymentsFetch, paymentProcessor, planId, isTrial, status } = reqBody;
+    const { userId, subscriptionId, lastPaymentsFetch, paymentProcessor, planId, isTrial, eventType, status } = reqBody;
     const [subs, created] = await SubscriptionModel.findOrCreate({
       where: { userId: deCryptFakeId(userId) },
-      defaults: { subscriptionId, lastPaymentsFetch, paymentProcessor, planId, status, isTrial },
+      defaults: { subscriptionId, lastPaymentsFetch, paymentProcessor, planId, status, isTrial, eventType },
       include: this.INCLUDES
     });
     if (!created) {
@@ -55,6 +55,9 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
       if (status) {
         subs.status = status;
       }
+      if (eventType) {
+        subs.eventType = eventType;
+      }
       if (isTrial !== undefined) {
         subs.isTrial = isTrial;
       }
@@ -66,7 +69,7 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
       }
     }
     const result = this.transformModelToEntity(subs);
-    await this.handleRedis(result.userId, result.subscriptionId, result);
+    await this.handleRedis(result.userId, result.subscriptionId);
     return result;
   }
 
@@ -81,13 +84,13 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
     find.status = SubscriptionStatus.WAITING_SYNC;
     await find.save();
     const result = this.transformModelToEntity(find);
-    await this.handleRedis(result.userId, subscriptionId, result);
+    await this.handleRedis(result.userId, subscriptionId);
     return;
   }
 
-  private async handleRedis(userId: string, subscriptionId: string, result: Subscription) {
-    await RedisSubscription.getInstance().handlerUpdateKeys(MainkeysRedis.SUBS_USERID, userId, result);
-    await RedisSubscription.getInstance().handlerUpdateKeys(MainkeysRedis.SUBS_ID, subscriptionId, result);
+  private async handleRedis(userId: string, subscriptionId: string) {
+    await RedisSubscription.getInstance().adminDelKeys(`${MainkeysRedis.SUBS_USERID}${userId}`);
+    await RedisSubscription.getInstance().adminDelKeys(`${MainkeysRedis.SUBS_ID}${subscriptionId}`);
     await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_SUBS);
     await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_INV);
   }

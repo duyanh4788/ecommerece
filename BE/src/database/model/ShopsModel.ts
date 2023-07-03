@@ -34,6 +34,14 @@ export class ShopsModel extends Model<ShopsModel> {
   public sliders: string[];
 
   @AllowNull
+  @Column
+  public numberProduct: number;
+
+  @AllowNull
+  @Column
+  public numberIndex: number;
+
+  @AllowNull
   @Column({ defaultValue: false })
   public status: boolean;
 

@@ -5,6 +5,8 @@ export interface ShopInterface {
   banners?: string[];
   sliders?: string[];
   prodcutSell?: any[];
+  numberProduct?: number;
+  numberIndex?: number;
   status?: boolean;
   createdAt?: Date;
 }

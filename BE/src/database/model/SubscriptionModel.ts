@@ -32,6 +32,10 @@ export class SubscriptionModel extends Model<SubscriptionModel> {
 
   @AllowNull
   @Column
+  public eventType: string;
+
+  @AllowNull
+  @Column
   public isTrial: boolean;
 
   @Column

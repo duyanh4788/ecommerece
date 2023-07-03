@@ -19,6 +19,11 @@ export enum SubscriptionStatus {
   WAITING_SYNC = 'WAITING_SYNC'
 }
 
+export enum EventType {
+  CHANGED = 'CHANGED',
+  NOMORAL = 'NOMORAL'
+}
+
 export interface Subscription {
   userId?: string | number | any;
   subscriptionId?: string;
@@ -27,6 +32,7 @@ export interface Subscription {
   planId?: string;
   isTrial?: boolean;
   status?: SubscriptionStatus;
+  eventType?: string;
   createdAt?: Date;
   paypalBillingPlans?: PaypalBillingPlans;
   usersResources?: UsersResourcesInterface;

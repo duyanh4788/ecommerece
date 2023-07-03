@@ -28,7 +28,7 @@ export class UsersResourcesSequelize implements IUsersResourcesRepository {
     });
     if (!created) {
       resource.userId = deCryptFakeId(userId);
-      resource.numberIndex = numberIndex;
+      resource.numberIndex = resource.numberIndex ? resource.numberIndex + numberIndex : numberIndex;
       if (numberProduct) {
         resource.numberProduct = numberProduct;
       }

@@ -19,9 +19,9 @@ export class ShopSequelize implements IShopRepository {
     if (numbers >= 1) {
       throw new RestError('feature multiple Shop is pending!', 404);
     }
-    const { nameShop, prodcutSell, banners } = reqBody;
+    const { nameShop, prodcutSell, banners, numberProduct, numberIndex } = reqBody;
     const deCryptProduct = prodcutSell.map((item) => deCryptFakeId(item));
-    await ShopsModel.create({ nameShop, prodcutSell: deCryptProduct, banners, userId: deCryptFakeId(userId), status }, { transaction: transactionDB });
+    await ShopsModel.create({ nameShop, prodcutSell: deCryptProduct, banners, numberProduct, numberIndex, userId: deCryptFakeId(userId), status }, { transaction: transactionDB });
     await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, userId);
     return;
   }
@@ -34,6 +34,9 @@ export class ShopSequelize implements IShopRepository {
       find.nameShop = nameShop;
     }
     if (prodcutSell) {
+      if (prodcutSell.length > find.numberProduct) {
+        throw new RestError(`You can only update product with ${find.numberProduct} number`, 404);
+      }
       find.prodcutSell = prodcutSell.map((item) => deCryptFakeId(item));
     }
     if (banners) {
@@ -51,6 +54,21 @@ export class ShopSequelize implements IShopRepository {
   async updatedSliders(sliders: string[], id: string, userId: string): Promise<void> {
     await ShopsModel.update({ sliders }, { where: { id: deCryptFakeId(id) } });
     await this.handleRedis(id, userId);
+    return;
+  }
+
+  async updatedNumberResource(payload: ShopInterface, transactionDB: Transaction): Promise<void> {
+    const { numberProduct, numberIndex, userId } = payload;
+    const shops = await ShopsModel.findAll({ where: { userId: deCryptFakeId(userId) } });
+    if (!shops.length) return;
+    await Promise.all(
+      shops.map(async (item) => {
+        item.numberProduct = numberProduct;
+        item.numberIndex = item.numberIndex ? item.numberIndex + numberIndex : numberIndex;
+        await item.save({ transaction: transactionDB });
+        await this.handleRedis(enCryptFakeId(item.id), userId);
+      })
+    );
     return;
   }
 
