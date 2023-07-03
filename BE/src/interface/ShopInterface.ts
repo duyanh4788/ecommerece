@@ -3,6 +3,7 @@ export interface ShopInterface {
   userId?: string | number | any;
   nameShop?: string;
   banners?: string[];
+  sliders?: string[];
   prodcutSell?: any[];
   status?: boolean;
   createdAt?: Date;

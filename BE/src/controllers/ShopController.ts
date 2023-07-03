@@ -30,6 +30,20 @@ export class ShopController {
     }
   };
 
+  public updatedSliders = async (req: Request, res: Response) => {
+    try {
+      const { user } = req;
+      const { id, sliders } = req.body;
+      if (!isCheckedTypeValues(sliders, TypeOfValue.ARRAY, false) || !isCheckedTypeValues(id, TypeOfValue.STRING)) {
+        throw new RestError('invalid request!', 404);
+      }
+      await this.shopUseCase.updatedSlidersUseCase(req.body, user.userId);
+      return new SendRespone({ message: 'updated successfullly.' }).send(res);
+    } catch (error) {
+      return RestError.manageServerError(res, error, false);
+    }
+  };
+
   public deletedShop = async (req: Request, res: Response) => {
     try {
       const { user } = req;

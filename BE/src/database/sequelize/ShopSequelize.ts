@@ -26,7 +26,7 @@ export class ShopSequelize implements IShopRepository {
     return;
   }
   async updated(reqBody: ShopInterface, userId: string): Promise<void> {
-    const { id, nameShop, prodcutSell, banners } = reqBody;
+    const { id, nameShop, prodcutSell, banners, sliders } = reqBody;
     const find = await ShopsModel.findByPk(deCryptFakeId(id));
     if (!find) throw new RestError('shop not availabe!', 404);
     if (find.userId !== deCryptFakeId(userId)) throw new RestError('shop not availabe!', 404);
@@ -39,8 +39,18 @@ export class ShopSequelize implements IShopRepository {
     if (banners) {
       find.banners = banners;
     }
+    if (sliders) {
+      const clone = find.sliders || [];
+      find.sliders = [...clone, ...sliders];
+    }
     await this.handleRedis(id, userId);
     await find.save();
+    return;
+  }
+
+  async updatedSliders(sliders: string[], id: string, userId: string): Promise<void> {
+    await ShopsModel.update({ sliders }, { where: { id: deCryptFakeId(id) } });
+    await this.handleRedis(id, userId);
     return;
   }
 

@@ -30,6 +30,10 @@ export class ShopsModel extends Model<ShopsModel> {
   public banners: string[];
 
   @AllowNull
+  @Column(DataType.JSON)
+  public sliders: string[];
+
+  @AllowNull
   @Column({ defaultValue: false })
   public status: boolean;
 

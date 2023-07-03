@@ -36,6 +36,11 @@ export class ShopUseCase {
     return await this.shopUsersRepository.updated(reqBody, userId);
   }
 
+  async updatedSlidersUseCase(reqBody: ShopInterface, userId: string) {
+    const { id, sliders } = reqBody;
+    return await this.shopUsersRepository.updatedSliders(sliders, id, userId);
+  }
+
   async deletedShopUseCase(id: string, userId: string) {
     return await this.shopUsersRepository.deleted(id, userId);
   }

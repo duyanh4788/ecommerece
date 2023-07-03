@@ -4,7 +4,8 @@ import { MapServices } from '../../infrastructure/MapServices';
 const BASE_ROUTE = '/upload';
 
 enum Routes {
-  UPLOAD_FILE = '/upload-file'
+  UPLOAD_FILE = '/upload-file',
+  REMOVE_FILE = '/remove-file'
 }
 
 export class UploadRouter {
@@ -15,6 +16,7 @@ export class UploadRouter {
 
   public routes(app: Router): void {
     app.post(BASE_ROUTE + Routes.UPLOAD_FILE, this.verifyTokenMiddleware.authenticate, this.multerMiddleware.uploadMulter, this.uploadcontroller.uploadFile);
+    app.post(BASE_ROUTE + Routes.REMOVE_FILE, this.verifyTokenMiddleware.authenticate, this.uploadcontroller.removeFile);
   }
 
   public getUploadRouter(): Router {

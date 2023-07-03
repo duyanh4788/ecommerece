@@ -6,6 +6,8 @@ export interface IShopRepository {
 
   updated(reqBody: ShopInterface, userId: string): Promise<void>;
 
+  updatedSliders(sliders: string[], id: string, userId: string): Promise<void>;
+
   deleted(id: string, userId: string): Promise<void>;
 
   getLists(userId: string, roleId?: string): Promise<ShopInterface[]>;

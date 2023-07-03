@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { SendRespone } from '../services/success/success';
 import { RestError } from '../services/error/error';
-
+import fs from 'fs';
 export class Uploadcontroller {
   public uploadFile = async (req: Request, res: Response) => {
     try {
@@ -21,6 +21,23 @@ export class Uploadcontroller {
         })
       );
       return new SendRespone({ data: url, message: 'upload successfullly.' }).send(res);
+    } catch (error) {
+      return RestError.manageServerError(res, error, false);
+    }
+  };
+
+  public removeFile = async (req: Request, res: Response) => {
+    try {
+      const { idImage } = req.body;
+      if (!idImage) {
+        throw new RestError('invalid request!', 404);
+      }
+      const splitFolder = idImage.split('/data_publish/')[1];
+      const splitFileName = splitFolder.split('/');
+      const filePath = splitFileName[0] === 'videos' ? `${_pathFileVideo}/${splitFileName[1]}/${splitFileName[2]}` : `${_pathFileImages}/${splitFileName[1]}/${splitFileName[2]}`;
+      fs.accessSync(filePath);
+      fs.unlinkSync(filePath);
+      return new SendRespone({ message: 'remove successfullly.' }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
