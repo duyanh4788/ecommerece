@@ -127,7 +127,7 @@ export const ModalPlans = ({
                     }
                   />
                   <Chip
-                    label={`Item: ${item?.numberIndex}/month`}
+                    label={`Item: ${item?.numberItem}/month`}
                     variant="outlined"
                     color="warning"
                     size="small"

@@ -20,8 +20,8 @@ export const Home = () => {
   ];
   return (
     <div>
-      {data.map(item => (
-        <img src={item} alt="" width={'100px'} height={'100px'} />
+      {data.map((item, idx) => (
+        <img key={idx} src={item} alt={item} width={'100px'} height={'100px'} />
       ))}
     </div>
   );

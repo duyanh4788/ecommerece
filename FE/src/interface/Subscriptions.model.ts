@@ -18,14 +18,14 @@ export interface PaypalBillingPlans {
   planId?: string;
   amount?: number;
   numberProduct?: number;
-  numberIndex?: number;
+  numberItem?: number;
   isTrial?: boolean;
   createdAt?: Date;
 }
 
 export interface UsersResources {
   numberProduct?: number;
-  numberIndex?: number;
+  numberItem?: number;
 }
 
 export interface Invoices {

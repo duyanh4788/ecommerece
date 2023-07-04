@@ -103,8 +103,7 @@ export const ManagerShop = () => {
       if (files !== null && files.length > 0) {
         const formData = new FormData();
         formData.append('file', files.length === 1 ? files[0] : files);
-        console.log(formData);
-        // dispatch(ShopSlice.actions.uploadFile(formData));
+        dispatch(ShopSlice.actions.uploadFile(formData));
       }
     },
   };

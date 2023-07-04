@@ -262,7 +262,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
               <Typography variant="inherit">
                 Resouce Item:{' '}
                 {subscriptions.usersResources
-                  ? `${subscriptions.usersResources?.numberIndex}/month`
+                  ? `${subscriptions.usersResources?.numberItem}/month`
                   : null}
                 <Tooltip title={subscriptions.usersResources ? TITLE_ITEM : TITLE_SUBS}>
                   <HelpOutline sx={{ fontSize: '12px' }} color="success" />
