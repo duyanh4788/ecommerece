@@ -29,7 +29,7 @@ export class ShopUseCase {
         404
       );
     }
-    const payload = { ...reqBody, numberProduct: subs.usersResources.numberProduct, numberIndex: subs.usersResources.numberIndex };
+    const payload = { ...reqBody, numberProduct: subs.usersResources.numberProduct, numberItem: subs.usersResources.numberItem };
     await this.usersResourcesRepository.decretIncre(userId, TypeDecInc.NUMBER_PRODUCT, IntegerValue.DECR, reqBody.prodcutSell.length, subs.subscriptionId, transactionDB);
     return await this.shopUsersRepository.registed(payload, userId, true, transactionDB);
   }

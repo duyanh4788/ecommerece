@@ -11,8 +11,8 @@ import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class SubscriptionSequelize implements ISubscriptionRepository {
   private INCLUDES: any[] = [
-    { model: PaypalBillingPlansModel, attributes: ['tier', 'planId', 'frequency', 'amount', 'numberProduct', 'numberIndex'] },
-    { model: UsersResourcesModel, attributes: ['numberProduct', 'numberIndex'] }
+    { model: PaypalBillingPlansModel, attributes: ['tier', 'planId', 'frequency', 'amount', 'numberProduct', 'numberItem'] },
+    { model: UsersResourcesModel, attributes: ['numberProduct', 'numberItem'] }
   ];
   async findAll(): Promise<Subscription[]> {
     const subsciptions = await SubscriptionModel.findAll();

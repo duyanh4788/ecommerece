@@ -25,7 +25,7 @@ export class UsersResourcesModel extends Model<UsersResourcesModel> {
 
   @AllowNull
   @Column
-  public numberIndex: number;
+  public numberItem: number;
 
   @CreatedAt
   @Column

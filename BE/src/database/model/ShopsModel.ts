@@ -1,5 +1,6 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, BelongsTo, DataType } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, BelongsTo, DataType, HasMany } from 'sequelize-typescript';
 import { UsersModel } from './UsersModel';
+import { ItemsModel } from './ItemsModel';
 
 @Table({
   tableName: 'shops'
@@ -39,7 +40,7 @@ export class ShopsModel extends Model<ShopsModel> {
 
   @AllowNull
   @Column
-  public numberIndex: number;
+  public numberItem: number;
 
   @AllowNull
   @Column({ defaultValue: false })
@@ -52,4 +53,7 @@ export class ShopsModel extends Model<ShopsModel> {
   @UpdatedAt
   @Column
   public updatedAt: Date;
+
+  @HasMany(() => ItemsModel)
+  items: ItemsModel[];
 }

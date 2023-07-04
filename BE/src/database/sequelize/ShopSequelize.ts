@@ -19,9 +19,9 @@ export class ShopSequelize implements IShopRepository {
     if (numbers >= 1) {
       throw new RestError('feature multiple Shop is pending!', 404);
     }
-    const { nameShop, prodcutSell, banners, numberProduct, numberIndex } = reqBody;
+    const { nameShop, prodcutSell, banners, numberProduct, numberItem } = reqBody;
     const deCryptProduct = prodcutSell.map((item) => deCryptFakeId(item));
-    await ShopsModel.create({ nameShop, prodcutSell: deCryptProduct, banners, numberProduct, numberIndex, userId: deCryptFakeId(userId), status }, { transaction: transactionDB });
+    await ShopsModel.create({ nameShop, prodcutSell: deCryptProduct, banners, numberProduct, numberItem, userId: deCryptFakeId(userId), status }, { transaction: transactionDB });
     await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, userId);
     return;
   }
@@ -58,13 +58,13 @@ export class ShopSequelize implements IShopRepository {
   }
 
   async updatedNumberResource(payload: ShopInterface, transactionDB: Transaction): Promise<void> {
-    const { numberProduct, numberIndex, userId } = payload;
+    const { numberProduct, numberItem, userId } = payload;
     const shops = await ShopsModel.findAll({ where: { userId: deCryptFakeId(userId) } });
     if (!shops.length) return;
     await Promise.all(
       shops.map(async (item) => {
         item.numberProduct = numberProduct;
-        item.numberIndex = item.numberIndex ? item.numberIndex + numberIndex : numberIndex;
+        item.numberItem = item.numberItem ? item.numberItem + numberItem : numberItem;
         await item.save({ transaction: transactionDB });
         await this.handleRedis(enCryptFakeId(item.id), userId);
       })

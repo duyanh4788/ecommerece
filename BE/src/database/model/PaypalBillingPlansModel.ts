@@ -26,7 +26,7 @@ export class PaypalBillingPlansModel extends Model<PaypalBillingPlansModel> {
   public numberProduct: number;
 
   @Column
-  public numberIndex: number;
+  public numberItem: number;
 
   @Index
   @Column

@@ -7,7 +7,7 @@ export const sequelize = new Sequelize({
   database: process.env.DB_DATABASE,
   port: parseInt(process.env.DB_PORT || '0'),
   dialect: 'mysql',
-  models: [__dirname + '/model'],
+  models: [__dirname + '/model', __dirname + '/model/EAV'],
   logging: false,
   pool: {
     max: parseInt(process.env.DB_CONNECTION_LIMIT || '0'),
@@ -16,5 +16,3 @@ export const sequelize = new Sequelize({
     idle: 10000
   }
 });
-
-console.log(__dirname + '/model');

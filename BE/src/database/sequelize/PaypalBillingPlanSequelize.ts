@@ -3,7 +3,7 @@ import { PaypalBillingPlans } from '../../interface/SubscriptionInterface';
 import { PaypalBillingPlansModel } from '../model/PaypalBillingPlansModel';
 
 export class PaypalBillingPlanSequelize implements IPaypalBillingPlanRepository {
-  private ATTRIBUTES: string[] = ['tier', 'planId', 'frequency', 'amount', 'numberProduct', 'numberIndex'];
+  private ATTRIBUTES: string[] = ['tier', 'planId', 'frequency', 'amount', 'numberProduct', 'numberItem'];
   async findAll(): Promise<PaypalBillingPlans[]> {
     const plans = await PaypalBillingPlansModel.findAll({
       where: { isTrial: true },

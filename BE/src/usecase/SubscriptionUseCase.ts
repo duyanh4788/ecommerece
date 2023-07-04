@@ -190,7 +190,7 @@ export class SubscriptionUseCase {
         subscriber: billingAgreement.subscriber
       };
       const invoicesCreated = await this.invoicesRepository.create(invoice, transactionDB);
-      let payload: any = { userId: subscription.userId, numberIndex: plan.numberIndex };
+      let payload: any = { userId: subscription.userId, numberItem: plan.numberItem };
       if (subscription.eventType === EventType.CHANGED) {
         payload = { ...payload, numberProduct: plan.numberProduct };
       }
@@ -252,7 +252,7 @@ export class SubscriptionUseCase {
           const payload: any = {
             userId: subscription.userId,
             numberProduct: plan.numberProduct,
-            numberIndex: plan.numberIndex
+            numberItem: plan.numberItem
           };
           await this.createUserResource(payload, subscription.subscriptionId, transactionDB);
           await this.updatedNumberResourceShop(payload, transactionDB);

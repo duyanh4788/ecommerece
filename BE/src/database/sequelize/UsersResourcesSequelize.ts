@@ -20,15 +20,15 @@ export class UsersResourcesSequelize implements IUsersResourcesRepository {
   }
 
   async create(reqBody: UsersResourcesInterface, subscriptionId: string, transactionDB?: Transaction): Promise<UsersResourcesInterface> {
-    const { userId, numberProduct, numberIndex } = reqBody;
+    const { userId, numberProduct, numberItem } = reqBody;
     const [resource, created] = await UsersResourcesModel.findOrCreate({
       where: { userId: deCryptFakeId(userId) },
-      defaults: { numberProduct, numberIndex },
+      defaults: { numberProduct, numberItem },
       transaction: transactionDB
     });
     if (!created) {
       resource.userId = deCryptFakeId(userId);
-      resource.numberIndex = resource.numberIndex ? resource.numberIndex + numberIndex : numberIndex;
+      resource.numberItem = resource.numberItem ? resource.numberItem + numberItem : numberItem;
       if (numberProduct) {
         resource.numberProduct = numberProduct;
       }

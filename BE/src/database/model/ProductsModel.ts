@@ -1,4 +1,5 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, AllowNull } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, AllowNull, HasMany } from 'sequelize-typescript';
+import { ItemsModel } from './ItemsModel';
 
 @Table({
   tableName: 'products'
@@ -27,4 +28,7 @@ export class ProductsModel extends Model<ProductsModel> {
   @UpdatedAt
   @Column
   public updatedAt: Date;
+
+  @HasMany(() => ItemsModel)
+  items: ItemsModel[];
 }
