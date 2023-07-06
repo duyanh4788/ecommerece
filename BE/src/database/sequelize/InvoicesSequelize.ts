@@ -10,8 +10,8 @@ export class InvoicesSequelize implements IInvoicesRepository {
     return invoices.map((item) => this.transformModelToEntity(item));
   }
 
-  async findByUserId(userId: string): Promise<Invoices[]> {
-    const invoices = await InvoicesModel.findAll({ where: { userId: deCryptFakeId(userId) } });
+  async findByShopId(shopId: string): Promise<Invoices[]> {
+    const invoices = await InvoicesModel.findAll({ where: { shopId: deCryptFakeId(shopId) } });
     return invoices.map((item) => this.transformModelToEntity(item));
   }
 
@@ -21,9 +21,9 @@ export class InvoicesSequelize implements IInvoicesRepository {
   }
 
   async create(reqBody: Invoices, transactionDB?: Transaction): Promise<Invoices> {
-    const { userId, paidAt, amount, currency, gst, renewsDate, totalAmount, invoiceFrom, invoiceTo, planType, paymentProcessorId, paymentProcessor } = reqBody;
+    const { shopId, userId, paidAt, amount, currency, gst, renewsDate, totalAmount, invoiceFrom, invoiceTo, planType, paymentProcessorId, paymentProcessor } = reqBody;
     const invoice = await InvoicesModel.create(
-      { userId: deCryptFakeId(userId), paidAt, amount, currency, gst, renewsDate, totalAmount, invoiceFrom, invoiceTo, planType, paymentProcessorId, paymentProcessor },
+      { shopId: deCryptFakeId(shopId), userId: deCryptFakeId(userId), paidAt, amount, currency, gst, renewsDate, totalAmount, invoiceFrom, invoiceTo, planType, paymentProcessorId, paymentProcessor },
       { transaction: transactionDB }
     );
     return this.transformModelToEntity(invoice);
@@ -40,6 +40,7 @@ export class InvoicesSequelize implements IInvoicesRepository {
     for (let key of keysObj) {
       entity[key] = model[key];
     }
+    entity.shopId = enCryptFakeId(entity.shopId);
     entity.userId = enCryptFakeId(entity.userId);
     return entity;
   }

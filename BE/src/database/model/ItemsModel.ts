@@ -1,4 +1,4 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, ForeignKey, AutoIncrement, DataType, BelongsTo, AllowNull, HasMany, HasOne } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, ForeignKey, AutoIncrement, DataType, BelongsTo, AllowNull, HasMany, HasOne, Index } from 'sequelize-typescript';
 import { ShopsModel } from './ShopsModel';
 import { ProductsModel } from './ProductsModel';
 import { EntityValuesModel } from './EAV/EntityValuesModel';
@@ -12,20 +12,21 @@ export class ItemsModel extends Model<ItemsModel> {
   @Column
   public id: number;
 
-  @PrimaryKey
+  @Index
   @Column
   @ForeignKey(() => ShopsModel)
   public shopId: number;
   @BelongsTo(() => ShopsModel)
   shops: ShopsModel;
 
-  @PrimaryKey
+  @Index
   @Column
   @ForeignKey(() => ProductsModel)
   public productId: number;
   @BelongsTo(() => ProductsModel)
   products: ProductsModel;
 
+  @Index
   @AllowNull
   @Column
   public nameItem: string;
@@ -58,6 +59,7 @@ export class ItemsModel extends Model<ItemsModel> {
   @Column
   public origin: string;
 
+  @Index
   @AllowNull
   @Column
   public typeProduct: string;

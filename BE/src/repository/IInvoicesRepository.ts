@@ -4,7 +4,7 @@ import { Invoices } from '../interface/SubscriptionInterface';
 export interface IInvoicesRepository {
   findAllInvoices(): Promise<Invoices[]>;
 
-  findByUserId(userId: string): Promise<Invoices[]>;
+  findByShopId(userId: string): Promise<Invoices[]>;
 
   findByPaymentProcessorId(paymentProcessorId: string): Promise<Invoices>;
 

@@ -9,21 +9,20 @@ import { IUserRepository } from '../repository/IUserRepository';
 import { nodeMailerServices } from '../services/nodemailer/MailServices';
 import { RedisPlans } from '../redis/Plans/RedisPlans';
 import { capitalizeFirstLetter } from '../utils/accents';
-import { IUsersResourcesRepository } from '../repository/IUsersResourcesRepository';
-import { UsersResourcesInterface } from '../interface/UsersResourcesInterface';
 import { IShopRepository } from '../repository/IShopRepository';
 import { RedisSubscription } from '../redis/subscription/RedisSubscription';
 import { RedisUsers } from '../redis/users/RedisUsers';
 import { ShopInterface } from '../interface/ShopInterface';
+import { IShopsResourcesRepository } from '../repository/IShopsResourcesRepository';
+import { ShopsResourcesInterface } from '../interface/ShopsResourcesInterface';
 
 export class SubscriptionUseCase {
   private redisPlans: RedisPlans = new RedisPlans();
   constructor(
     private paypalService: PaypalService,
-    private userRepository: IUserRepository,
     private subscriptionRepository: ISubscriptionRepository,
     private invoicesRepository: IInvoicesRepository,
-    private usersResourcesRepository: IUsersResourcesRepository,
+    private shopsResourcesRepository: IShopsResourcesRepository,
     private shopRepository: IShopRepository
   ) {}
 
@@ -43,12 +42,12 @@ export class SubscriptionUseCase {
     return await this.redisPlans.handlerGetPlanId(planId);
   }
 
-  async userGetSubscriptionUseCase(userId: string) {
-    return await RedisSubscription.getInstance().getSubsByUserId(userId);
+  async shopGetSubscriptionUseCase(shopId: string) {
+    return await RedisSubscription.getInstance().getSubsByShopId(shopId);
   }
 
-  async userGetInvoicesUseCase(userId: string) {
-    return await RedisSubscription.getInstance().getInvsByUserId(userId);
+  async shopGetInvoicesUseCase(shopId: string) {
+    return await RedisSubscription.getInstance().getInvsByShopId(shopId);
   }
 
   async getSubscriptionBySubsIdUseCase(subscriptionId: string) {
@@ -59,8 +58,8 @@ export class SubscriptionUseCase {
     return this.invoicesRepository.create(reqBody, transactionDB);
   }
 
-  async subscriberUseCase(tier: string, userId: string, transactionDB: Transaction) {
-    const subscription = await RedisSubscription.getInstance().getSubsByUserId(userId);
+  async subscriberUseCase(tier: string, shopId: string, userId: string, transactionDB: Transaction) {
+    const subscription = await RedisSubscription.getInstance().getSubsByShopId(shopId);
     const user = await RedisUsers.getInstance().handlerGetUserById(userId);
     if (subscription && subscription.status === SubscriptionStatus.ACTIVE) {
       throw new RestError(MsgErrSubscription.ALLREADY_ACTIVE, 404);
@@ -80,6 +79,7 @@ export class SubscriptionUseCase {
       }
       if (subscription && subscription.status === SubscriptionStatus.APPROVAL_PENDING && subscription.planId !== plan.planId) {
         const payload: Subscription = {
+          shopId: subscription.shopId,
           userId: user.id,
           planId: plan.planId
         };
@@ -88,18 +88,19 @@ export class SubscriptionUseCase {
         return agreement.links.find((link) => link.rel === 'approve').href;
       }
       if (!subscription || (subscription && subscription.status === SubscriptionStatus.CANCELLED)) {
-        return this.createSubscription(user, plan.planId, subscription, transactionDB);
+        return this.createSubscription(user, shopId, plan.planId, subscription, transactionDB);
       }
     } catch (error) {
-      return this.createSubscription(user, plan.planId, subscription, transactionDB);
+      return this.createSubscription(user, shopId, plan.planId, subscription, transactionDB);
     }
   }
 
-  private async createSubscription(userInfo: UserAttributes, planId: string, subscription: Subscription, transactionDB: Transaction) {
+  private async createSubscription(userInfo: UserAttributes, shopId: string, planId: string, subscription: Subscription, transactionDB: Transaction) {
     const response = await this.paypalService.subscribeToBillingPlan(planId, userInfo.email);
     const { subscriptionId, confirmationLink } = response;
     const isTrial = subscription && subscription.status === SubscriptionStatus.CANCELLED ? false : true;
     const payload: Subscription = {
+      shopId,
       userId: userInfo.id,
       subscriptionId,
       lastPaymentsFetch: new Date(),
@@ -113,22 +114,22 @@ export class SubscriptionUseCase {
     return confirmationLink;
   }
 
-  async cancelUseCase(subscriptionId: string, reason: string, userId: string) {
-    const subscription = await RedisSubscription.getInstance().getSubsByUserId(userId);
-    if (!subscription || subscription.status !== 'ACTIVE') {
+  async cancelUseCase(subscriptionId: string, reason: string, shopId: string, userId: string) {
+    const subscription = await RedisSubscription.getInstance().getSubsByShopId(shopId);
+    if (!subscription || subscription.status !== SubscriptionStatus.ACTIVE) {
       throw new RestError('No active subscription to cancel', 400);
     }
-    if (subscription.subscriptionId !== subscriptionId) {
+    if (subscription.subscriptionId !== subscriptionId || subscription.userId !== userId) {
       throw new RestError('subscription not available', 400);
     }
     await this.paypalService.cancelSubscription(subscriptionId, reason);
     return;
   }
 
-  async changeUseCase(tier: string, userId: string) {
+  async changeUseCase(tier: string, shopId: string, userId: string) {
     const userInfo = await RedisUsers.getInstance().handlerGetUserById(userId);
-    const subscription = await RedisSubscription.getInstance().getSubsByUserId(userId);
-    if (!subscription) {
+    const subscription = await RedisSubscription.getInstance().getSubsByShopId(shopId);
+    if (!subscription || subscription.userId !== userId) {
       throw new RestError(MsgErrSubscription.NONE_SUBSCRIPTION, 404);
     }
     if (subscription && subscription.status === SubscriptionStatus.WAITING_SYNC) {
@@ -173,6 +174,7 @@ export class SubscriptionUseCase {
         gst = Math.round((transactionPaypal.amount.details.subtotal / 11) * 100) / 100;
       }
       const invoice: Invoices = {
+        shopId: subscription.shopId,
         userId: userInfor.id,
         paidAt: transactionPaypal.create_time,
         amount: transactionPaypal.amount.total - gst || 0,
@@ -190,17 +192,17 @@ export class SubscriptionUseCase {
         subscriber: billingAgreement.subscriber
       };
       const invoicesCreated = await this.invoicesRepository.create(invoice, transactionDB);
-      let payload: any = { userId: subscription.userId, numberItem: plan.numberItem };
+      let payload: any = { shopId: subscription.shopId, userId: subscription.userId, numberItem: plan.numberItem };
       if (subscription.eventType === EventType.CHANGED) {
         payload = { ...payload, numberProduct: plan.numberProduct };
       }
       await this.createUserResource(payload, subscription.subscriptionId, transactionDB);
       await this.updatedNumberResourceShop(payload, transactionDB);
-      await this.createInvoiceToSendEmail(billingAgreement, transactionPaypal, userInfor, invoicesCreated);
+      await this.createInvoiceToSendEmail(billingAgreement, transactionPaypal, userInfor, invoicesCreated, subscription.shops.nameShop);
     }
   }
 
-  private async createInvoiceToSendEmail(billingAgreement: any, transactionPaypal: any, userInfor: UserAttributes, invoices: Invoices) {
+  private async createInvoiceToSendEmail(billingAgreement: any, transactionPaypal: any, userInfor: UserAttributes, invoices: Invoices, nameShop: string) {
     const taxRate = invoices.gst > 0 ? '10%' : '0';
     const addressLine1 =
       billingAgreement.subscriber && billingAgreement.subscriber.shipping_address && billingAgreement.subscriber.shipping_address.address
@@ -213,6 +215,7 @@ export class SubscriptionUseCase {
           billingAgreement.subscriber.shipping_address.address.country_code
         : '';
     const requestEmail: RequestEmail = {
+      nameShop,
       billingName: billingAgreement.subscriber.name.given_name + ' ' + billingAgreement.subscriber.name.surname,
       addressLine1,
       addressLine2,
@@ -238,6 +241,7 @@ export class SubscriptionUseCase {
       if (billingAgreement.status === SubscriptionStatus.ACTIVE) {
         const findTrial = billingAgreement.billing_info.cycle_executions.find((item) => item.tenure_type === 'TRIAL');
         const payloadSubs: Subscription = {
+          shopId: subscription.shopId,
           userId: subscription.userId,
           lastPaymentsFetch: new Date(),
           paymentProcessor: 'PAYPAL',
@@ -247,9 +251,10 @@ export class SubscriptionUseCase {
           isTrial: findTrial ? true : false
         };
         await this.subscriptionRepository.createOrUpdate(payloadSubs, transactionDB);
-        await this.shopRepository.updateStatusShopByUserIdId(subscription.userId, true, transactionDB);
-        if (subscription.status === SubscriptionStatus.WAITING_SYNC && subscription.planId === billingAgreement.plan_id) {
+        await this.shopRepository.updateStatusShopById(subscription.shopId, true, transactionDB);
+        if (subscription.status === SubscriptionStatus.WAITING_SYNC && findTrial) {
           const payload: any = {
+            shopId: subscription.shopId,
             userId: subscription.userId,
             numberProduct: plan.numberProduct,
             numberItem: plan.numberItem
@@ -267,25 +272,26 @@ export class SubscriptionUseCase {
       (subscription.status === SubscriptionStatus.SUSPENDED && billingAgreement.status === SubscriptionStatus.CANCELLED)
     ) {
       const payload: Subscription = {
+        shopId: subscription.shopId,
         userId: subscription.userId,
         status: billingAgreement.status,
         isTrial: false
       };
-      await this.shopRepository.updateStatusShopByUserIdId(subscription.userId, false, transactionDB);
+      await this.shopRepository.updateStatusShopById(subscription.shopId, false, transactionDB);
       await this.subscriptionRepository.createOrUpdate(payload, transactionDB);
       const userInfor = await RedisUsers.getInstance().handlerGetUserById(subscription.userId);
       if (billingAgreement.status === SubscriptionStatus.CANCELLED) {
-        await nodeMailerServices.sendSubscriptionCanceled(userInfor);
+        await nodeMailerServices.sendSubscriptionCanceled(userInfor, subscription.shops.nameShop);
       }
       if (billingAgreement.status === SubscriptionStatus.SUSPENDED) {
-        await nodeMailerServices.sendSubscriptionSuspended(userInfor);
+        await nodeMailerServices.sendSubscriptionSuspended(userInfor, subscription.shops.nameShop);
       }
     }
     return;
   }
 
-  private async createUserResource(payload: UsersResourcesInterface, subscriptionId: string, transactionDB: Transaction) {
-    await this.usersResourcesRepository.create(payload, subscriptionId, transactionDB);
+  private async createUserResource(payload: ShopsResourcesInterface, subscriptionId: string, transactionDB: Transaction) {
+    await this.shopsResourcesRepository.create(payload, subscriptionId, transactionDB);
   }
 
   private async updatedNumberResourceShop(payload: ShopInterface, transactionDB: Transaction) {

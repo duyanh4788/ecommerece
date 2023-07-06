@@ -1,6 +1,8 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, BelongsTo, DataType, HasMany } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, BelongsTo, DataType, HasMany, HasOne, Index } from 'sequelize-typescript';
 import { UsersModel } from './UsersModel';
 import { ItemsModel } from './ItemsModel';
+import { SubscriptionModel } from './SubscriptionModel';
+import { InvoicesModel } from './InvoicesModel';
 
 @Table({
   tableName: 'shops'
@@ -11,13 +13,15 @@ export class ShopsModel extends Model<ShopsModel> {
   @Column
   public id: number;
 
-  @ForeignKey(() => UsersModel)
+  @Index
   @AllowNull
   @Column
+  @ForeignKey(() => UsersModel)
   public userId: number;
   @BelongsTo(() => UsersModel)
   users: UsersModel;
 
+  @Index
   @AllowNull
   @Column
   public nameShop: string;
@@ -42,6 +46,7 @@ export class ShopsModel extends Model<ShopsModel> {
   @Column
   public numberItem: number;
 
+  @Index
   @AllowNull
   @Column({ defaultValue: false })
   public status: boolean;
@@ -54,6 +59,12 @@ export class ShopsModel extends Model<ShopsModel> {
   @Column
   public updatedAt: Date;
 
+  @HasOne(() => SubscriptionModel)
+  subscription: SubscriptionModel;
+
   @HasMany(() => ItemsModel)
   items: ItemsModel[];
+
+  @HasMany(() => InvoicesModel)
+  invoices: InvoicesModel[];
 }

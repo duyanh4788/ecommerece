@@ -1,5 +1,6 @@
-export interface UsersResourcesInterface {
+export interface ShopsResourcesInterface {
   id?: string | number | any;
+  shopId?: string | number | any;
   userId?: string | number | any;
   numberProduct?: number;
   numberItem?: number;

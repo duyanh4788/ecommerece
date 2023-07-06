@@ -5,38 +5,45 @@ import { ISubscriptionRepository } from '../../repository/ISubscriptionRepositor
 import { Subscription, SubscriptionStatus } from '../../interface/SubscriptionInterface';
 import { PaypalBillingPlansModel } from '../model/PaypalBillingPlansModel';
 import { RestError } from '../../services/error/error';
-import { UsersResourcesModel } from '../model/UsersResourcesModel';
 import { RedisSubscription } from '../../redis/subscription/RedisSubscription';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { ShopsResourcesModel } from '../model/ShopsResourcesModel';
+import { ShopsModel } from '../model/ShopsModel';
 
 export class SubscriptionSequelize implements ISubscriptionRepository {
   private INCLUDES: any[] = [
+    { model: ShopsModel, attributes: ['nameShop'] },
     { model: PaypalBillingPlansModel, attributes: ['tier', 'planId', 'frequency', 'amount', 'numberProduct', 'numberItem'] },
-    { model: UsersResourcesModel, attributes: ['numberProduct', 'numberItem'] }
+    { model: ShopsResourcesModel, attributes: ['numberProduct', 'numberItem'] }
   ];
   async findAll(): Promise<Subscription[]> {
     const subsciptions = await SubscriptionModel.findAll();
     return subsciptions.map((item) => this.transformModelToEntity(item));
   }
 
-  async findByUserId(userId: string): Promise<Subscription> {
-    const subs = await SubscriptionModel.findOne({
+  async findByShopId(shopId: string): Promise<Subscription> {
+    const sub = await SubscriptionModel.findByPk(deCryptFakeId(shopId), { include: this.INCLUDES });
+    return this.transformModelToEntity(sub);
+  }
+
+  async findByUserId(userId: string): Promise<Subscription[]> {
+    const subs = await SubscriptionModel.findAll({
       where: { userId: deCryptFakeId(userId) },
       include: this.INCLUDES
     });
-    return this.transformModelToEntity(subs);
+    return subs.map((item) => this.transformModelToEntity(item));
   }
 
   async findBySubscriptionId(subscriptionId: string): Promise<Subscription> {
-    const subs = await SubscriptionModel.findOne({ where: { subscriptionId } });
+    const subs = await SubscriptionModel.findOne({ where: { subscriptionId }, include: [{ model: ShopsModel, attributes: ['nameShop'] }] });
     return this.transformModelToEntity(subs);
   }
 
   async createOrUpdate(reqBody: Subscription, transactionDB: Transaction): Promise<Subscription> {
-    const { userId, subscriptionId, lastPaymentsFetch, paymentProcessor, planId, isTrial, eventType, status } = reqBody;
+    const { shopId, userId, subscriptionId, lastPaymentsFetch, paymentProcessor, planId, isTrial, eventType, status } = reqBody;
     const [subs, created] = await SubscriptionModel.findOrCreate({
-      where: { userId: deCryptFakeId(userId) },
-      defaults: { subscriptionId, lastPaymentsFetch, paymentProcessor, planId, status, isTrial, eventType },
+      where: { shopId: deCryptFakeId(shopId) },
+      defaults: { subscriptionId, lastPaymentsFetch, paymentProcessor, planId, status, isTrial, eventType, userId: deCryptFakeId(userId) },
       include: this.INCLUDES
     });
     if (!created) {
@@ -69,7 +76,7 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
       }
     }
     const result = this.transformModelToEntity(subs);
-    await this.handleRedis(result.userId, result.subscriptionId);
+    await this.handleRedis(result.shopId, result.subscriptionId);
     return result;
   }
 
@@ -84,12 +91,12 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
     find.status = SubscriptionStatus.WAITING_SYNC;
     await find.save();
     const result = this.transformModelToEntity(find);
-    await this.handleRedis(result.userId, subscriptionId);
+    await this.handleRedis(result.shopId, subscriptionId);
     return;
   }
 
-  private async handleRedis(userId: string, subscriptionId: string) {
-    await RedisSubscription.getInstance().adminDelKeys(`${MainkeysRedis.SUBS_USERID}${userId}`);
+  private async handleRedis(shopId: string, subscriptionId: string) {
+    await RedisSubscription.getInstance().adminDelKeys(`${MainkeysRedis.SUBS_SHOPID}${shopId}`);
     await RedisSubscription.getInstance().adminDelKeys(`${MainkeysRedis.SUBS_ID}${subscriptionId}`);
     await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_SUBS);
     await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_INV);
@@ -105,6 +112,7 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
     for (let key of keysObj) {
       entity[key] = model[key];
     }
+    entity.shopId = enCryptFakeId(entity.shopId);
     entity.userId = enCryptFakeId(entity.userId);
     return entity;
   }

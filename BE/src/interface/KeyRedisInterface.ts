@@ -14,6 +14,7 @@ export enum MainkeysRedis {
   ADMIN_SUBS = 'admin_subs',
   ADMIN_INV = 'admin_inv',
   SUBS_USERID = 'subs_userid:',
+  SUBS_SHOPID = 'subs_shopid:',
   SUBS_ID = 'subs_subid:',
   INVS_ID = 'invs_subid:'
 }

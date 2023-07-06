@@ -4,7 +4,9 @@ import { Subscription } from '../interface/SubscriptionInterface';
 export interface ISubscriptionRepository {
   findAll(): Promise<Subscription[]>;
 
-  findByUserId(userId: string): Promise<Subscription>;
+  findByShopId(shopId: string): Promise<Subscription>;
+
+  findByUserId(userId: string): Promise<Subscription[]>;
 
   findBySubscriptionId(subscriptionId: string): Promise<Subscription>;
 

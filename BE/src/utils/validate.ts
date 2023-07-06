@@ -10,12 +10,15 @@ export const isCheckedTypeValues = (value: any, types: TypeOfValue, noneChecked:
   const typeOf = Object.prototype.toString.call(value).slice(8, -1);
   switch (types) {
     case TypeOfValue.STRING:
+      if (Array.isArray(value)) return false;
       if (value === '' && noneChecked) return false;
       break;
     case TypeOfValue.NUMBER:
+      if (Array.isArray(value)) return false;
       if (value <= 0 && noneChecked) return false;
       break;
     case TypeOfValue.ARRAY:
+      if (!Array.isArray(value)) return false;
       if (value.length <= 0 && noneChecked) return false;
       break;
     default:

@@ -14,11 +14,11 @@ enum RoutesPlan {
 
 const BASE_SUBS = '/subscriptions';
 enum RoutesSubs {
-  USER_GET_SUBSCRIPTION = '/user-get-subsription',
-  USER_GET_INVOICES = '/user-get-invoices',
-  USER_SUBSCRIBER = '/user-subscriber',
-  USER_CHANGE_SUBS = '/user-change-subscription',
-  USER_CANCELED_SUBS = '/user-cancel-subscription',
+  SHOP_GET_SUBSCRIPTION = '/shop-get-subsription/:shopId',
+  SHOP_GET_INVOICES = '/shop-get-invoices/:shopId',
+  SHOP_SUBSCRIBER = '/shop-subscriber',
+  SHOP_CHANGE_SUBS = '/shop-change-subscription',
+  SHOP_CANCELED_SUBS = '/shop-cancel-subscription',
   RESPONSE_SUCCESS = '/response-success'
 }
 
@@ -44,10 +44,10 @@ export class SubscriptionRouter {
       this.verifyTokenMiddleware.authenticate,
       this.subscriptionController.adminFindAllInvoices
     );
-    app.get(BASE_SUBS + RoutesSubs.USER_GET_SUBSCRIPTION, this.verifyTokenMiddleware.authenticate, this.subscriptionController.userGetSubscription);
-    app.get(BASE_SUBS + RoutesSubs.USER_GET_INVOICES, this.verifyTokenMiddleware.authenticate, this.subscriptionController.userGetInvoices);
-    app.post(BASE_SUBS + RoutesSubs.USER_SUBSCRIBER, this.verifyTokenMiddleware.authenticate, this.subscriptionController.userSubscriber);
-    app.post(BASE_SUBS + RoutesSubs.USER_CHANGE_SUBS, this.verifyTokenMiddleware.authenticate, this.subscriptionController.userChanged);
-    app.post(BASE_SUBS + RoutesSubs.USER_CANCELED_SUBS, this.verifyTokenMiddleware.authenticate, this.subscriptionController.userCanceled);
+    app.get(BASE_SUBS + RoutesSubs.SHOP_GET_SUBSCRIPTION, this.verifyTokenMiddleware.authenticate, this.subscriptionController.shopGetSubscription);
+    app.get(BASE_SUBS + RoutesSubs.SHOP_GET_INVOICES, this.verifyTokenMiddleware.authenticate, this.subscriptionController.shopGetInvoices);
+    app.post(BASE_SUBS + RoutesSubs.SHOP_SUBSCRIBER, this.verifyTokenMiddleware.authenticate, this.subscriptionController.shopSubscriber);
+    app.post(BASE_SUBS + RoutesSubs.SHOP_CHANGE_SUBS, this.verifyTokenMiddleware.authenticate, this.subscriptionController.shopChanged);
+    app.post(BASE_SUBS + RoutesSubs.SHOP_CANCELED_SUBS, this.verifyTokenMiddleware.authenticate, this.subscriptionController.shopCanceled);
   }
 }

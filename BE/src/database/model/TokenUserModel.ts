@@ -1,4 +1,4 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, Unique, HasMany, BelongsTo, DataType } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, Unique, HasMany, BelongsTo, DataType, Index } from 'sequelize-typescript';
 import { UsersModel } from './UsersModel';
 
 @Table({
@@ -10,9 +10,10 @@ export class TokenUserModel extends Model<TokenUserModel> {
   @Column
   public id: number;
 
-  @ForeignKey(() => UsersModel)
+  @Index
   @AllowNull
   @Column
+  @ForeignKey(() => UsersModel)
   public userId: number;
   @BelongsTo(() => UsersModel)
   users: UsersModel;

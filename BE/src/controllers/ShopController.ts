@@ -3,19 +3,15 @@ import { SendRespone } from '../services/success/success';
 import { RestError } from '../services/error/error';
 import { ShopUseCase } from '../usecase/ShopUseCase';
 import { TypeOfValue, isCheckedTypeValues } from '../utils/validate';
-import { sequelize } from '../database/sequelize';
 
 export class ShopController {
   constructor(private shopUseCase: ShopUseCase) {}
   public registedShop = async (req: Request, res: Response) => {
-    const transactionDB = await sequelize.transaction();
     try {
       const { user } = req;
-      await this.shopUseCase.registedShopUseCase(req.body, user.userId, transactionDB);
-      await transactionDB.commit();
+      await this.shopUseCase.registedShopUseCase(req.body, user.userId);
       return new SendRespone({ message: 'register successfullly!' }).send(res);
     } catch (error) {
-      await transactionDB.rollback();
       return RestError.manageServerError(res, error, false);
     }
   };

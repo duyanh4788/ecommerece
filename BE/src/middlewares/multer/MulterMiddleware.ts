@@ -96,8 +96,8 @@ export class MulterMiddleware {
     } else {
       await sharp(file.buffer)
         .resize({
-          width: 800,
-          height: 800,
+          width: 400,
+          height: 400,
           fit: sharp.fit.inside,
           withoutEnlargement: true
         })

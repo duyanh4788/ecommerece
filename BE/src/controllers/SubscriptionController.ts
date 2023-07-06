@@ -28,10 +28,13 @@ export class SubscriptionController {
     }
   };
 
-  public userGetSubscription = async (req: Request, res: Response) => {
+  public shopGetSubscription = async (req: Request, res: Response) => {
     try {
-      const { user } = req;
-      const subscription = await this.subscriptionUseCase.userGetSubscriptionUseCase(user.userId);
+      const { shopId } = req.params;
+      if (!isCheckedTypeValues(shopId, TypeOfValue.STRING)) {
+        throw new RestError('shop not available!', 404);
+      }
+      const subscription = await this.subscriptionUseCase.shopGetSubscriptionUseCase(shopId);
       return new SendRespone({ data: subscription || null }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
@@ -47,25 +50,28 @@ export class SubscriptionController {
     }
   };
 
-  public userGetInvoices = async (req: Request, res: Response) => {
+  public shopGetInvoices = async (req: Request, res: Response) => {
     try {
-      const { user } = req;
-      const subscription = await this.subscriptionUseCase.userGetInvoicesUseCase(user.userId);
+      const { shopId } = req.params;
+      if (!isCheckedTypeValues(shopId, TypeOfValue.STRING)) {
+        throw new RestError('shop not available!', 404);
+      }
+      const subscription = await this.subscriptionUseCase.shopGetInvoicesUseCase(shopId);
       return new SendRespone({ data: subscription }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
   };
 
-  public userSubscriber = async (req: Request, res: Response) => {
+  public shopSubscriber = async (req: Request, res: Response) => {
     const transactionDB = await sequelize.transaction();
     try {
-      const { tier } = req.body;
-      if (!isCheckedTypeValues(tier, TypeOfValue.STRING) || !Object.values(Tier).includes(tier)) {
+      const { tier, shopId } = req.body;
+      if (!isCheckedTypeValues(tier, TypeOfValue.STRING) || !isCheckedTypeValues(shopId, TypeOfValue.STRING) || !Object.values(Tier).includes(tier)) {
         throw new RestError('tier not available!', 404);
       }
       const { user } = req;
-      const links = await this.subscriptionUseCase.subscriberUseCase(tier, user.userId, transactionDB);
+      const links = await this.subscriptionUseCase.subscriberUseCase(tier, shopId, user.userId, transactionDB);
       await transactionDB.commit();
       return new SendRespone({ data: links }).send(res);
     } catch (error) {
@@ -74,28 +80,28 @@ export class SubscriptionController {
     }
   };
 
-  public userChanged = async (req: Request, res: Response) => {
+  public shopChanged = async (req: Request, res: Response) => {
     try {
-      const { tier } = req.body;
-      if (!isCheckedTypeValues(tier, TypeOfValue.STRING) || !Object.values(Tier).includes(tier)) {
+      const { tier, shopId } = req.body;
+      if (!isCheckedTypeValues(tier, TypeOfValue.STRING) || !isCheckedTypeValues(shopId, TypeOfValue.STRING) || !Object.values(Tier).includes(tier)) {
         throw new RestError('tier not available!', 404);
       }
       const { user } = req;
-      const links = await this.subscriptionUseCase.changeUseCase(tier, user.userId);
+      const links = await this.subscriptionUseCase.changeUseCase(tier, shopId, user.userId);
       return new SendRespone({ data: links }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
   };
 
-  public userCanceled = async (req: Request, res: Response) => {
+  public shopCanceled = async (req: Request, res: Response) => {
     try {
-      const { subscriptionId, reason } = req.body;
-      if (!isCheckedTypeValues(subscriptionId, TypeOfValue.STRING) || !isCheckedTypeValues(reason, TypeOfValue.STRING)) {
+      const { subscriptionId, shopId, reason } = req.body;
+      if (!isCheckedTypeValues(subscriptionId, TypeOfValue.STRING) || !isCheckedTypeValues(shopId, TypeOfValue.STRING) || !isCheckedTypeValues(reason, TypeOfValue.STRING)) {
         throw new RestError('request not available!', 404);
       }
       const { user } = req;
-      await this.subscriptionUseCase.cancelUseCase(subscriptionId, reason, user.userId);
+      await this.subscriptionUseCase.cancelUseCase(subscriptionId, reason, shopId, user.userId);
       return new SendRespone({ message: 'canceled successfully, please waiting system sync with Paypal!' }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);

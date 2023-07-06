@@ -5,7 +5,7 @@ import { UserAttributes } from '../interface/UserInterface';
 import { TokenUserInterface } from '../interface/TokenUserInterface';
 
 enum EXPIRED_TOKEN {
-  TOKEN = 86400 * 1000
+  TOKEN = 3600 * 1000
 }
 
 export const encryptTokenPasswordOutput = (user: UserAttributes, keyStores: TokenUserInterface, refreshToKen?: string) => {
@@ -16,9 +16,9 @@ export const encryptTokenPasswordOutput = (user: UserAttributes, keyStores: Toke
     expired: new Date().getTime() + EXPIRED_TOKEN.TOKEN
   };
   const { privateKey, publicKey } = keyStores;
-  const token = JWT.sign(header, publicKey, { expiresIn: '1d' }); // 1 day
+  const token = JWT.sign(header, publicKey, { expiresIn: '1h' }); // 1 day
   if (!refreshToKen) {
-    const refreshToKenParse = JWT.sign(header, privateKey, { expiresIn: '90d' }); // 3 months
+    const refreshToKenParse = JWT.sign(header, privateKey, { expiresIn: '1d' }); // 3 months
     return {
       ...header,
       token,

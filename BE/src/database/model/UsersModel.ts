@@ -1,4 +1,4 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, Unique, HasMany, HasOne, BelongsTo } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, Unique, HasMany, HasOne, BelongsTo, Index } from 'sequelize-typescript';
 import { TokenUserModel } from './TokenUserModel';
 import { AuthenticatesCodesModel } from './AuthenticatesCodesModel';
 import { ShopsModel } from './ShopsModel';
@@ -16,6 +16,7 @@ export class UsersModel extends Model<UsersModel> {
   @Column
   public fullName: string;
 
+  @Index
   @AllowNull
   @Unique
   @Column
@@ -25,6 +26,7 @@ export class UsersModel extends Model<UsersModel> {
   @Column
   public password: string;
 
+  @Index
   @AllowNull
   @Column
   public roleId: string;
@@ -55,6 +57,6 @@ export class UsersModel extends Model<UsersModel> {
   @HasOne(() => AuthenticatesCodesModel)
   authenticatesCodes: AuthenticatesCodesModel;
 
-  @HasOne(() => SubscriptionModel)
-  subscription: SubscriptionModel;
+  @HasMany(() => SubscriptionModel)
+  subscription: SubscriptionModel[];
 }

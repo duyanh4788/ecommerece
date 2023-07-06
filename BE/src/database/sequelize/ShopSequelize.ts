@@ -9,26 +9,29 @@ import { UserRole } from '../../interface/UserInterface';
 import { RedisUsers } from '../../redis/users/RedisUsers';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 import { Transaction } from 'sequelize';
+import { SubscriptionModel } from '../model/SubscriptionModel';
 
 export class ShopSequelize implements IShopRepository {
-  private ATTRIBUTES_USER: string[] = ['fullName', 'email', 'phone', 'avatar'];
+  private INCLUDES: any[] = [
+    { model: UsersModel, attributes: ['fullName', 'email', 'phone', 'avatar'] },
+    { model: SubscriptionModel, attributes: ['status'] }
+  ];
   private productModel = new ProductsSequelize();
+
   constructor() {}
-  async registed(reqBody: ShopInterface, userId: string, status: boolean, transactionDB: Transaction): Promise<void> {
-    const numbers = await ShopsModel.count({ where: { userId: deCryptFakeId(userId) } });
-    if (numbers >= 1) {
-      throw new RestError('feature multiple Shop is pending!', 404);
-    }
-    const { nameShop, prodcutSell, banners, numberProduct, numberItem } = reqBody;
-    const deCryptProduct = prodcutSell.map((item) => deCryptFakeId(item));
-    await ShopsModel.create({ nameShop, prodcutSell: deCryptProduct, banners, numberProduct, numberItem, userId: deCryptFakeId(userId), status }, { transaction: transactionDB });
+
+  async registed(reqBody: ShopInterface, userId: string): Promise<void> {
+    const { nameShop, banners } = reqBody;
+    await ShopsModel.create({ nameShop, banners, userId: deCryptFakeId(userId) });
     await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.SHOPS_USERID, userId);
     return;
   }
+
   async updated(reqBody: ShopInterface, userId: string): Promise<void> {
     const { id, nameShop, prodcutSell, banners, sliders } = reqBody;
     const find = await ShopsModel.findByPk(deCryptFakeId(id));
     if (!find) throw new RestError('shop not availabe!', 404);
+    if (!find.status) throw new RestError('shop is not active subscription!', 404);
     if (find.userId !== deCryptFakeId(userId)) throw new RestError('shop not availabe!', 404);
     if (nameShop) {
       find.nameShop = nameShop;
@@ -58,17 +61,13 @@ export class ShopSequelize implements IShopRepository {
   }
 
   async updatedNumberResource(payload: ShopInterface, transactionDB: Transaction): Promise<void> {
-    const { numberProduct, numberItem, userId } = payload;
-    const shops = await ShopsModel.findAll({ where: { userId: deCryptFakeId(userId) } });
-    if (!shops.length) return;
-    await Promise.all(
-      shops.map(async (item) => {
-        item.numberProduct = numberProduct;
-        item.numberItem = item.numberItem ? item.numberItem + numberItem : numberItem;
-        await item.save({ transaction: transactionDB });
-        await this.handleRedis(enCryptFakeId(item.id), userId);
-      })
-    );
+    const { numberProduct, numberItem, shopId, userId } = payload;
+    const shop = await ShopsModel.findByPk(deCryptFakeId(shopId));
+    if (!shop) return;
+    shop.numberProduct = numberProduct;
+    shop.numberItem = shop.numberItem ? shop.numberItem + numberItem : numberItem;
+    await shop.save({ transaction: transactionDB });
+    await this.handleRedis(enCryptFakeId(shop.id), userId);
     return;
   }
 
@@ -89,15 +88,12 @@ export class ShopSequelize implements IShopRepository {
               userId: deCryptFakeId(userId)
             }
           : null,
-      include: {
-        model: UsersModel,
-        attributes: this.ATTRIBUTES_USER
-      }
+      include: this.INCLUDES
     };
     const shops = await ShopsModel.findAll(options);
     const listShop = await Promise.all(
       shops.map(async (item) => {
-        if (!item.prodcutSell.length) return item;
+        if (!item.prodcutSell || !item.prodcutSell.length) return item;
         item.prodcutSell = await Promise.all(
           item.prodcutSell.map(async (itemProd) => {
             const product = await this.productModel.findById(itemProd);
@@ -112,12 +108,11 @@ export class ShopSequelize implements IShopRepository {
   }
 
   async getShopById(shopId: string, userId?: string, roleId?: string): Promise<ShopInterface> {
-    const shop = await ShopsModel.findByPk(deCryptFakeId(shopId), { include: { model: UsersModel, attributes: this.ATTRIBUTES_USER } });
+    const shop = await ShopsModel.findByPk(deCryptFakeId(shopId), { include: this.INCLUDES });
     if ((!roleId && shop.userId !== deCryptFakeId(userId)) || (roleId && roleId !== UserRole.ADMIN && shop.userId !== deCryptFakeId(userId))) {
       throw new RestError('shop is not available!', 404);
     }
-    if ((!shop.status && !roleId) || (!shop.status && roleId && roleId !== UserRole.ADMIN)) throw new RestError('shop is not approved by admin!', 404);
-    if (!shop.prodcutSell.length) {
+    if (!shop.prodcutSell || !shop.prodcutSell.length) {
       return this.transformModelToEntity(shop);
     }
     const products = await Promise.all(
@@ -129,25 +124,20 @@ export class ShopSequelize implements IShopRepository {
     shop.prodcutSell = products;
     return this.transformModelToEntity(shop);
   }
-  async updateStatusShopById(shopId: string, status: boolean): Promise<void> {
+
+  async findShopDisable(userId: string): Promise<boolean> {
+    const find = await ShopsModel.findAll({ where: { userId: deCryptFakeId(userId), status: false } });
+    if (find && find.length) return true;
+    return false;
+  }
+
+  async updateStatusShopById(shopId: string, status: boolean, transactionDB: Transaction): Promise<void> {
     const shop = await ShopsModel.findByPk(deCryptFakeId(shopId));
     if (!shop) return;
     shop.status = status;
-    await shop.save();
+    await shop.save(transactionDB && { transaction: transactionDB });
     const result = this.transformModelToEntity(shop);
     await this.handleRedis(shopId, result.userId);
-    return;
-  }
-
-  async updateStatusShopByUserIdId(userId: string, status: boolean, transactionDB: Transaction): Promise<void> {
-    const shops = await ShopsModel.findAll({ where: { userId: deCryptFakeId(userId) } });
-    await Promise.all(
-      shops.map(async (item) => {
-        item.status = status;
-        await item.save({ transaction: transactionDB });
-        await this.handleRedis(enCryptFakeId(item.id), userId);
-      })
-    );
     return;
   }
   private async handleRedis(shopId: string, userId: string) {

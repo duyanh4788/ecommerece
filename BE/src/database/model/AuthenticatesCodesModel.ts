@@ -1,4 +1,4 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, Unique, HasMany, BelongsTo } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, Unique, HasMany, BelongsTo, Index } from 'sequelize-typescript';
 import { TokenUserModel } from './TokenUserModel';
 import { UsersModel } from './UsersModel';
 
@@ -11,14 +11,16 @@ export class AuthenticatesCodesModel extends Model<AuthenticatesCodesModel> {
   @Column
   public id: number;
 
+  @Index
   @AllowNull
-  @ForeignKey(() => UsersModel)
   @Column
+  @ForeignKey(() => UsersModel)
   public userId: number;
 
   @BelongsTo(() => UsersModel)
   users: UsersModel;
 
+  @Index
   @AllowNull
   @Column
   public authCode: string;

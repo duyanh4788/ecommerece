@@ -1,4 +1,5 @@
-import { UsersResourcesInterface } from './UsersResourcesInterface';
+import { ShopInterface } from './ShopInterface';
+import { ShopsResourcesInterface } from './ShopsResourcesInterface';
 
 export enum SubscriptionFrequency {
   MONTHLY = 'monthly',
@@ -25,6 +26,7 @@ export enum EventType {
 }
 
 export interface Subscription {
+  shopId?: string | number | any;
   userId?: string | number | any;
   subscriptionId?: string;
   lastPaymentsFetch?: Date;
@@ -34,8 +36,9 @@ export interface Subscription {
   status?: SubscriptionStatus;
   eventType?: string;
   createdAt?: Date;
+  shops?: ShopInterface;
   paypalBillingPlans?: PaypalBillingPlans;
-  usersResources?: UsersResourcesInterface;
+  shopsResources?: ShopsResourcesInterface;
 }
 
 export interface PaypalBillingPlans {
@@ -51,6 +54,7 @@ export interface PaypalBillingPlans {
 
 export interface Invoices {
   id?: string | number | any;
+  shopId?: string | number | any;
   userId?: string | number | any;
   paidAt?: Date;
   amount?: number;
@@ -82,6 +86,7 @@ export enum NameEventWebHook {
 }
 
 export interface RequestEmail {
+  nameShop: string;
   billingName: string;
   addressLine1: string;
   addressLine2: string;

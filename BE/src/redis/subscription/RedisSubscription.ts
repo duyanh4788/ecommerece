@@ -38,14 +38,14 @@ export class RedisSubscription {
     return invRedis;
   }
 
-  public async getSubsByUserId(userId: string) {
-    let subsRedis = await redisController.getRedis(`${MainkeysRedis.SUBS_USERID}${userId}`);
-    if (!subsRedis) {
-      const subs = await this.subscriptionSequelize.findByUserId(userId);
-      if (!subs) return;
-      subsRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.SUBS_USERID}${userId}`, value: subs });
+  public async getSubsByShopId(shopId: string) {
+    let subRedis = await redisController.getRedis(`${MainkeysRedis.SUBS_SHOPID}${shopId}`);
+    if (!subRedis) {
+      const sub = await this.subscriptionSequelize.findByShopId(shopId);
+      if (!sub) return;
+      subRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.SUBS_SHOPID}${shopId}`, value: sub });
     }
-    return subsRedis;
+    return subRedis;
   }
 
   public async getSubsBySubsId(subscriptionId: string) {
@@ -58,14 +58,14 @@ export class RedisSubscription {
     return subsRedis;
   }
 
-  public async getInvsByUserId(userId: string) {
-    let subsRedis = await redisController.getRedis(`${MainkeysRedis.INVS_ID}${userId}`);
-    if (!subsRedis) {
-      const subs = await this.invoicesSequelize.findByUserId(userId);
-      if (!subs.length) return [];
-      subsRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.INVS_ID}${userId}`, value: subs });
+  public async getInvsByShopId(shopId: string) {
+    let invsRedis = await redisController.getRedis(`${MainkeysRedis.INVS_ID}${shopId}`);
+    if (!invsRedis) {
+      const invs = await this.invoicesSequelize.findByShopId(shopId);
+      if (!invs.length) return [];
+      invsRedis = await redisController.setRedis({ keyValue: `${MainkeysRedis.INVS_ID}${shopId}`, value: invs });
     }
-    return subsRedis;
+    return invsRedis;
   }
 
   public async handlerUpdateKeys(mainKeys: string, id: string, subscription: Subscription) {

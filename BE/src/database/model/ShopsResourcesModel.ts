@@ -3,9 +3,9 @@ import { Index } from 'sequelize-typescript';
 import { SubscriptionModel } from './SubscriptionModel';
 
 @Table({
-  tableName: 'users_resources'
+  tableName: 'shops_resources'
 })
-export class UsersResourcesModel extends Model<UsersResourcesModel> {
+export class ShopsResourcesModel extends Model<ShopsResourcesModel> {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -15,7 +15,7 @@ export class UsersResourcesModel extends Model<UsersResourcesModel> {
   @AllowNull
   @Column
   @Index
-  public userId: number;
+  public shopId: number;
   @BelongsTo(() => SubscriptionModel)
   subscriptions: SubscriptionModel;
 

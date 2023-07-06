@@ -1,5 +1,6 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, ForeignKey, AutoIncrement, DataType } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, ForeignKey, AutoIncrement, DataType, Index } from 'sequelize-typescript';
 import { UsersModel } from './UsersModel';
+import { ShopsModel } from './ShopsModel';
 
 @Table({
   tableName: 'invoices'
@@ -10,7 +11,12 @@ export class InvoicesModel extends Model<InvoicesModel> {
   @Column
   public id: number;
 
-  @PrimaryKey
+  @Index
+  @Column
+  @ForeignKey(() => ShopsModel)
+  public shopId: number;
+
+  @Index
   @Column
   @ForeignKey(() => UsersModel)
   public userId: number;
@@ -42,6 +48,7 @@ export class InvoicesModel extends Model<InvoicesModel> {
   @Column
   public planType: string;
 
+  @Index
   @Column
   public paymentProcessorId: string;
 

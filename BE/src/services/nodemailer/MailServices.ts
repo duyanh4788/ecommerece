@@ -85,11 +85,11 @@ export class NodeMailerServices implements INodeMailerServices {
     return;
   }
 
-  async sendSubscriptionCanceled(user: UserAttributes): Promise<void> {
+  async sendSubscriptionCanceled(user: UserAttributes, nameShop: string): Promise<void> {
     const baseMail = `
         <div style='overflow-wrap: break-word; background-color:#ffffff; line-height: 140%; padding: 30px;'>
             <p><strong>Hi ${user.fullName}</strong></p>
-            <p>It looks like you’ve recently cancelled your Ecommerce Subscription. Our friendly support team is happy to
+            <p>It looks like you’ve recently cancelled your shop <span style="font-size: 16px;font-weight: bold">${nameShop}</span> Ecommerce Subscription. Our friendly support team is happy to
               help with any issues you may have encountered. Don’t hesitate to get in touch with us <a href='mailto:duyanh4788@gmail.com'>here<a>.</p>
             <p><strong> We’d love you to stick around.</strong> </p>
         </div>
@@ -98,13 +98,14 @@ export class NodeMailerServices implements INodeMailerServices {
     return;
   }
 
-  async sendSubscriptionSuspended(user: UserAttributes) {
+  async sendSubscriptionSuspended(user: UserAttributes, nameShop: string) {
     const baseMail = `
         <div style='overflow-wrap: break-word; background-color:#ffffff; line-height: 140%; padding: 30px;'>
             <p><strong>Hi ${user.fullName}</strong></p>
             <p>It looks like you’ve have a payment problem with Paypal. Our friendly support team is happy to
               help with any issues you may have encountered. Don’t hesitate to get in touch with us <a href='mailto:duyanh4788@gmail.com'>here<a>.</p>
-            <p><strong> We’d love you to stick around.</strong> </p>
+            <p><strong>Current your shop <span style="font-size: 16px;font-weight: bold">${nameShop}</span> is disabled.</strong> </p>
+            <p><strong>We’d love you to stick around.</strong> </p>
         </div>
         `;
     await this.sendMail(user.email as string, 'Subscription Suspend', this.renderHtmlMailServices(baseMail, 'We’re Sorry to See You Go'));
@@ -113,6 +114,7 @@ export class NodeMailerServices implements INodeMailerServices {
 
   async sendInvoices(requestEmail: RequestEmail) {
     const {
+      nameShop,
       billingName,
       addressLine1,
       addressLine2,
@@ -240,6 +242,9 @@ export class NodeMailerServices implements INodeMailerServices {
                           Invoice Number
                       </h1>
                       <h1 style="color:#000000; font-size: 16px;font-weight: bold;">
+                          Shop Name
+                      </h1>
+                      <h1 style="color:#000000; font-size: 16px;font-weight: bold;">
                           Invoice Issue Date
                       </h1>
                       <h1 style="color:#000000; font-size: 16px;font-weight: bold;">
@@ -258,6 +263,9 @@ export class NodeMailerServices implements INodeMailerServices {
                   <div class="column_3">
                       <h1 style=" font-size: 16px">
                           ${invoiceNumber}
+                      </h1>
+                      <h1 style=" font-size: 16px">
+                          ${nameShop}
                       </h1>
                       <h1 style="color:#000000; font-size: 16px;">
                           ${formatYearMonthDate(invoiceIsueDate)}

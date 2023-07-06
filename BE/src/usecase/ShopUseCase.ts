@@ -5,33 +5,19 @@ import { UserRole } from '../interface/UserInterface';
 import { ISubscriptionRepository } from '../repository/ISubscriptionRepository';
 import { SubscriptionStatus } from '../interface/SubscriptionInterface';
 import { RestError } from '../services/error/error';
-import { IUsersResourcesRepository } from '../repository/IUsersResourcesRepository';
 import { Transaction } from 'sequelize';
-import { IntegerValue, TypeDecInc } from '../interface/UsersResourcesInterface';
 import { RedisSubscription } from '../redis/subscription/RedisSubscription';
+import { IntegerValue, TypeDecInc } from '../interface/ShopsResourcesInterface';
+import { IShopsResourcesRepository } from '../repository/IShopsResourcesRepository';
 export class ShopUseCase {
-  constructor(private shopUsersRepository: IShopRepository, private subscriptionRepository: ISubscriptionRepository, private usersResourcesRepository: IUsersResourcesRepository) {}
+  constructor(private shopUsersRepository: IShopRepository, private subscriptionRepository: ISubscriptionRepository, private shopsResourcesRepository: IShopsResourcesRepository) {}
 
-  async registedShopUseCase(reqBody: ShopInterface, userId: string, transactionDB: Transaction) {
-    const subs = await RedisSubscription.getInstance().getSubsByUserId(userId);
-    if (subs && subs.status === SubscriptionStatus.WAITING_SYNC) {
-      throw new RestError('Please waiting system sync with to PayPal!', 404);
+  async registedShopUseCase(reqBody: ShopInterface, userId: string) {
+    const shops = await this.shopUsersRepository.findShopDisable(userId);
+    if (shops) {
+      throw new RestError('you do not subscribe previous Shop so can not register a new shop, please subscribe to PayPal!', 404);
     }
-    if (!subs || (subs && subs.status !== SubscriptionStatus.ACTIVE)) {
-      throw new RestError('you do not subscribe so can not register a shop, please subscribe to PayPal!', 404);
-    }
-    if (!subs.usersResources.numberProduct) {
-      throw new RestError(`you have limit Product, you can upgrade subscription or waiting next payment!`, 404);
-    }
-    if (reqBody.prodcutSell.length > subs.usersResources.numberProduct) {
-      throw new RestError(
-        `with tier ${subs.paypalBillingPlans.tier}, you only registed ${subs.usersResources.numberProduct} Product, you can upgrade subscription or registed shop with only 2 Product!`,
-        404
-      );
-    }
-    const payload = { ...reqBody, numberProduct: subs.usersResources.numberProduct, numberItem: subs.usersResources.numberItem };
-    await this.usersResourcesRepository.decretIncre(userId, TypeDecInc.NUMBER_PRODUCT, IntegerValue.DECR, reqBody.prodcutSell.length, subs.subscriptionId, transactionDB);
-    return await this.shopUsersRepository.registed(payload, userId, true, transactionDB);
+    return await this.shopUsersRepository.registed(reqBody, userId);
   }
 
   async updatedShopUseCase(reqBody: ShopInterface, userId: string) {
@@ -44,7 +30,7 @@ export class ShopUseCase {
   }
 
   async deletedShopUseCase(id: string, userId: string) {
-    const subs = await RedisSubscription.getInstance().getSubsByUserId(userId);
+    const subs = await RedisSubscription.getInstance().getSubsByShopId(id);
     if (subs) throw new RestError('you have subscription so you can not delete shop, please contact admin!', 404);
     return await this.shopUsersRepository.deleted(id, userId);
   }

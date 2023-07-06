@@ -13,7 +13,7 @@ import { ProductsSequelize } from '../database/sequelize/ProductsSequelize';
 import { ShopSequelize } from '../database/sequelize/ShopSequelize';
 import { SubscriptionSequelize } from '../database/sequelize/SubscriptionSequelize';
 import { TokenUsersSequelize } from '../database/sequelize/TokenUsersSequelize';
-import { UsersResourcesSequelize } from '../database/sequelize/UsersResourcesSequelize';
+import { ShopsResourcesSequelize } from '../database/sequelize/ShopsResourcesSequelize';
 import { UserSequelize } from '../database/sequelize/UsersSequelize';
 import { AuthUserMiddleware } from '../middlewares/auth/AuthUserMiddleware';
 import { VerifyTokenMiddleware } from '../middlewares/auth/VerifyTokenMiddleware';
@@ -40,19 +40,12 @@ export class MapServices {
   public paypalBillingPlanSequelize: PaypalBillingPlanSequelize = new PaypalBillingPlanSequelize();
   public invoicesSequelize: InvoicesSequelize = new InvoicesSequelize();
   public subscriptionSequelize: SubscriptionSequelize = new SubscriptionSequelize();
-  public usersResourcesSequelize: UsersResourcesSequelize = new UsersResourcesSequelize();
+  public shopsResourcesSequelize: ShopsResourcesSequelize = new ShopsResourcesSequelize();
   public itemsSequelize: ItemsSequelize = new ItemsSequelize(this.mapItemsServices);
 
-  public subscriptionUseCase: SubscriptionUseCase = new SubscriptionUseCase(
-    this.paypalService,
-    this.userSequelize,
-    this.subscriptionSequelize,
-    this.invoicesSequelize,
-    this.usersResourcesSequelize,
-    this.shopSequelize
-  );
+  public subscriptionUseCase: SubscriptionUseCase = new SubscriptionUseCase(this.paypalService, this.subscriptionSequelize, this.invoicesSequelize, this.shopsResourcesSequelize, this.shopSequelize);
   public itemsUseCase: ItemsUseCase = new ItemsUseCase(this.itemsSequelize);
-  public shopUseCase: ShopUseCase = new ShopUseCase(this.shopSequelize, this.subscriptionSequelize, this.usersResourcesSequelize);
+  public shopUseCase: ShopUseCase = new ShopUseCase(this.shopSequelize, this.subscriptionSequelize, this.shopsResourcesSequelize);
   public productsUseCase: ProductsUseCase = new ProductsUseCase(this.productsSequelize);
   public userUseCase: UserUseCase = new UserUseCase(this.userSequelize, this.tokenUsersSequelize, this.authenticatesCodesSequelize);
   public subscriptionController: SubscriptionController = new SubscriptionController(this.subscriptionUseCase);

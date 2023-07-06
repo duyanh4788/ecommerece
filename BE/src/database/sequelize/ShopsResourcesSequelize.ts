@@ -2,44 +2,44 @@ import { Transaction } from 'sequelize';
 import { TokenUserInterface } from '../../interface/TokenUserInterface';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
 import { RestError } from '../../services/error/error';
-import { IUsersResourcesRepository } from '../../repository/IUsersResourcesRepository';
-import { IntegerValue, UsersResourcesInterface } from '../../interface/UsersResourcesInterface';
-import { UsersResourcesModel } from '../model/UsersResourcesModel';
 import { RedisSubscription } from '../../redis/subscription/RedisSubscription';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { IShopsResourcesRepository } from '../../repository/IShopsResourcesRepository';
+import { IntegerValue, ShopsResourcesInterface } from '../../interface/ShopsResourcesInterface';
+import { ShopsResourcesModel } from '../model/ShopsResourcesModel';
 
-export class UsersResourcesSequelize implements IUsersResourcesRepository {
-  async findByUserId(userId: string): Promise<UsersResourcesInterface> {
-    const resource = await UsersResourcesModel.findOne({ where: { userId: deCryptFakeId(userId) } });
+export class ShopsResourcesSequelize implements IShopsResourcesRepository {
+  async findByShopId(shopId: string): Promise<ShopsResourcesInterface> {
+    const resource = await ShopsResourcesModel.findOne({ where: { shopId: deCryptFakeId(shopId) } });
     return this.transformModelToEntity(resource);
   }
 
-  async findById(id: string): Promise<UsersResourcesInterface> {
-    const resource = await UsersResourcesModel.findByPk(deCryptFakeId(id));
+  async findById(id: string): Promise<ShopsResourcesInterface> {
+    const resource = await ShopsResourcesModel.findByPk(deCryptFakeId(id));
     return this.transformModelToEntity(resource);
   }
 
-  async create(reqBody: UsersResourcesInterface, subscriptionId: string, transactionDB?: Transaction): Promise<UsersResourcesInterface> {
-    const { userId, numberProduct, numberItem } = reqBody;
-    const [resource, created] = await UsersResourcesModel.findOrCreate({
-      where: { userId: deCryptFakeId(userId) },
+  async create(reqBody: ShopsResourcesInterface, subscriptionId: string, transactionDB?: Transaction): Promise<ShopsResourcesInterface> {
+    const { shopId, numberProduct, numberItem } = reqBody;
+    const [resource, created] = await ShopsResourcesModel.findOrCreate({
+      where: { shopId: deCryptFakeId(shopId) },
       defaults: { numberProduct, numberItem },
       transaction: transactionDB
     });
     if (!created) {
-      resource.userId = deCryptFakeId(userId);
+      resource.shopId = deCryptFakeId(shopId);
       resource.numberItem = resource.numberItem ? resource.numberItem + numberItem : numberItem;
       if (numberProduct) {
         resource.numberProduct = numberProduct;
       }
       await resource.save({ transaction: transactionDB });
     }
-    await this.handleRedis(userId, subscriptionId);
+    await this.handleRedis(shopId, subscriptionId);
     return this.transformModelToEntity(resource);
   }
 
-  async decretIncre(userId: string, value: any, type: string, num: number, subscriptionId: string, transactionDb?: Transaction): Promise<void> {
-    const resource = await UsersResourcesModel.findOne({ where: { userId: deCryptFakeId(userId) } });
+  async decretIncre(shopId: string, value: any, type: string, num: number, subscriptionId: string, transactionDb?: Transaction): Promise<void> {
+    const resource = await ShopsResourcesModel.findOne({ where: { shopId: deCryptFakeId(shopId) } });
     if (!resource) throw new RestError('resource not available', 404);
     if (type === IntegerValue.DECR) {
       await resource.decrement(value, { by: num, transaction: transactionDb });
@@ -47,12 +47,12 @@ export class UsersResourcesSequelize implements IUsersResourcesRepository {
     if (type === IntegerValue.INCR) {
       await resource.increment(value, { by: num, transaction: transactionDb });
     }
-    await this.handleRedis(userId, subscriptionId);
+    await this.handleRedis(shopId, subscriptionId);
     return;
   }
 
-  private async handleRedis(userId: string, subscriptionId: string) {
-    await RedisSubscription.getInstance().handlerDelKeys(MainkeysRedis.SUBS_USERID, userId);
+  private async handleRedis(shopId: string, subscriptionId: string) {
+    await RedisSubscription.getInstance().handlerDelKeys(MainkeysRedis.SUBS_SHOPID, shopId);
     await RedisSubscription.getInstance().handlerDelKeys(MainkeysRedis.SUBS_ID, subscriptionId);
     await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_SUBS);
     await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_INV);
@@ -62,15 +62,15 @@ export class UsersResourcesSequelize implements IUsersResourcesRepository {
    * Transforms database model into domain entity
    * @param model
    */
-  private transformModelToEntity(model: UsersResourcesModel): UsersResourcesInterface {
+  private transformModelToEntity(model: ShopsResourcesModel): ShopsResourcesInterface {
     if (!model) return;
-    const entity: TokenUserInterface = {};
+    const entity: ShopsResourcesInterface = {};
     const keysObj = Object.keys(model.dataValues);
     for (let key of keysObj) {
       entity[key] = model[key];
     }
     entity.id = enCryptFakeId(entity.id);
-    entity.userId = enCryptFakeId(entity.userId);
+    entity.shopId = enCryptFakeId(entity.shopId);
     return entity;
   }
 }
