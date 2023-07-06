@@ -1,102 +1,19 @@
 @import "../extend/index.scss";
 
 .card_profile {
+    @include card_profile;
+}
+
+.card_registed {
     width: 100%;
-    input {
-        margin: 2px 0 !important;
-        padding: 5px 0 !important;
-        @include input_form;
-    }
-    li {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    .status {
-        border: $border1;
-        padding: 5px;
-        border-radius: 5px;
-    }
-    .subs {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        .btn_img {
-            cursor: pointer;
-        }
-        .btn_unsub {
-            background: $color-un-subs;
-        }
-        .btn_change {
-            background: $color-gray;
-        }
-        button,
-        strong {
-            @include buttonSubs;
-        }
-    }
-}
-
-.box_subs {
-    background: $background-main;
-    text-align: center;
     height: 100%;
-    padding: 010px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    border-radius: 20px;
-    p {
-        font-size: 14px;
-        color: #00000099;
-    }
-    button {
-        margin-top: 10px;
-        @include buttonSubs;
-    }
+    align-items: center;
+    opacity: 0.5;
+    display: flex;
+    flex-direction: column;
 }
-
-.cell_tier {
-    background: $background-main;
-    padding: 5px 10px;
-    font-size: 13px;
-    border: $border1;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.modal_plans {
-    .box_1 {
-        display: flex;
-        justify-content: space-between;
-    }
-    .dglog_conntent {
-        border: 1px solid #ebebec;
-    }
-    .box_2 {
-        display: flex;
-        .card {
-            max-width: 200px;
-            margin: 5px;
-            padding: 5px;
-            background: $background-main !important;
-        }
-        .box_fab {
-            text-align: center;
-            margin-bottom: 15px;
-            .fab {
-                background: none !important;
-                font-size: 10px;
-                font-weight: bolder;
-            }
-        }
-        .action {
-            margin-top: 0 !important;
-            margin-bottom: 5px;
-            @include btn_paypal;
-            span {
-                font-size: 12px;
-                padding: 10px;
-            }
-        }
-    }
+.card_registed:hover {
+    opacity: 1;
 }

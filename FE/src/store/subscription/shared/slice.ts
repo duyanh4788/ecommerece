@@ -34,67 +34,67 @@ const AuthSlice = createSlice({
     },
     getPlansFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
-    userGetSubscription(state) {
+    shopGetSubscription(state, action) {
       state.loading = true;
     },
-    userGetSubscriptionSuccess(state, action) {
+    shopGetSubscriptionSuccess(state, action) {
       state.loading = false;
       state.subscription = action.payload.data;
     },
-    userGetSubscriptionFail(state, action) {
+    shopGetSubscriptionFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
-    userGetInvoices(state) {
+    shopGetInvoices(state, action) {
       state.loading = true;
     },
-    userGetInvoicesSuccess(state, action) {
+    shopGetInvoicesSuccess(state, action) {
       state.loading = false;
       state.invoices = action.payload.data;
     },
-    userGetInvoicesFail(state, action) {
+    shopGetInvoicesFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
-    userSubscriber(state, action) {
+    shopSubscriber(state, action) {
       state.loading = true;
     },
-    userSubscriberSuccess(state, action) {
+    shopSubscriberSuccess(state, action) {
       state.loading = false;
       state.links = action.payload.data;
     },
-    userSubscriberFail(state, action) {
+    shopSubscriberFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
-    userChanged(state, action) {
+    shopChanged(state, action) {
       state.loading = true;
     },
-    userChangedSuccess(state, action) {
+    shopChangedSuccess(state, action) {
       state.loading = false;
       state.links = action.payload.data;
     },
-    userChangedFail(state, action) {
+    shopChangedFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
-    userCanceled(state, action) {
+    shopCanceled(state, action) {
       state.loading = true;
     },
-    userCanceledSuccess(state, action) {
+    shopCanceledSuccess(state, action) {
       state.loading = false;
       state.success = action.payload.data;
     },
-    userCanceledFail(state, action) {
+    shopCanceledFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     clearSubscription(state) {

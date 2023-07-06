@@ -7,9 +7,8 @@ export const refreshAuthToken = store => {
   let isRefreshingToken: boolean = false;
   let actionQueue: any[] = [];
 
-  return next => async action => {
+  return next => action => {
     const userStore = localStorage(TypeLocal.GET, LocalStorageKey.user);
-    const refreshToken = store.getState().auth.refreshToken;
 
     if (userStore && !AppHelper.validateExpired(Number(userStore?.expired)) && isRefreshingToken) {
       isRefreshingToken = false;
@@ -17,8 +16,14 @@ export const refreshAuthToken = store => {
 
     if (userStore && AppHelper.validateExpired(Number(userStore?.expired))) {
       if (!isRefreshingToken) {
-        isRefreshingToken = true;
-        await store.dispatch(AuthSlice.actions.refreshToken());
+        if (action.type !== AuthSlice.actions.refreshToken.type) {
+          action = {
+            type: AuthSlice.actions.refreshToken.type,
+            payload: undefined,
+          };
+          isRefreshingToken = true;
+          return next(action);
+        }
       } else {
         if (action.type !== AuthSlice.actions.refreshToken.type) {
           actionQueue.push(action);
@@ -28,18 +33,27 @@ export const refreshAuthToken = store => {
       return next(action);
     }
 
-    const updateLocalStorageFromTemp = () => {
-      if (refreshToken) {
-        localStorage(TypeLocal.SET, LocalStorageKey.user, refreshToken);
+    if (action.type === AuthSlice.actions.refreshTokenSuccess.type) {
+      localStorage(TypeLocal.SET, LocalStorageKey.user, action.payload.data);
+      const find = actionQueue.find(
+        item => item.type === AuthSlice.actions.refreshTokenSuccess.type,
+      );
+      if (find) {
+        actionQueue = actionQueue.filter(
+          item => item.type !== AuthSlice.actions.refreshTokenSuccess.type,
+        );
         store.dispatch(AuthSlice.actions.clearRefreshToKen());
+        next(find);
       }
-    };
+      while (actionQueue.length > 0) {
+        const queuedAction = actionQueue.shift();
+        next(queuedAction);
+      }
+      return;
+    }
 
-    updateLocalStorageFromTemp();
-
-    while (actionQueue.length > 0) {
-      const queuedAction = actionQueue.shift();
-      next(queuedAction);
+    if (action.type === AuthSlice.actions.refreshTokenFail.type) {
+      return next(action);
     }
   };
 };

@@ -1,4 +1,5 @@
 export interface Subscription {
+  shopId?: string | number | any;
   userId?: string | number | any;
   subscriptionId?: string;
   lastPaymentsFetch?: Date;
@@ -9,11 +10,12 @@ export interface Subscription {
   createdAt?: Date;
   reason?: string;
   paypalBillingPlans?: PaypalBillingPlans;
-  usersResources: UsersResources;
+  shopsResources: ShopsResources;
 }
 
 export interface PaypalBillingPlans {
   tier?: string;
+  shopId?: string;
   frequency?: string;
   planId?: string;
   amount?: number;
@@ -23,7 +25,7 @@ export interface PaypalBillingPlans {
   createdAt?: Date;
 }
 
-export interface UsersResources {
+export interface ShopsResources {
   numberProduct?: number;
   numberItem?: number;
 }

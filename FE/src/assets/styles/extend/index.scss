@@ -124,3 +124,16 @@
         background: #fda605 !important;
     }
 }
+
+@mixin card_profile {
+    width: 100%;
+    input {
+        margin: 2px 0 !important;
+        padding: 5px 0 !important;
+        @include input_form;
+    }
+    li {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}

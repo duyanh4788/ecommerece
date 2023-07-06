@@ -98,4 +98,8 @@ export class AuthHttp {
   public uploadFile = (data: any): Promise<any> => {
     return httpRequest().post(AuthApi.UPLOAD_FILE, data);
   };
+
+  public removeFile = (data: any): Promise<any> => {
+    return httpRequest().post(AuthApi.REMOVE_FILE, data);
+  };
 }

@@ -14,14 +14,20 @@ export const request: AxiosInstance = axios.create({
   timeout: 25000,
 });
 
-export const httpRequest = (isRefreshToken: boolean = false) => {
+export const httpRequest = (isRefreshToken: boolean = false, dataRefreshToken?: any) => {
   const user: any = localStorage(TypeLocal.GET, LocalStorageKey.user);
-  if (user) {
+  if (user && !dataRefreshToken) {
     request.defaults.headers.common['Authorization'] = user.token;
     request.defaults.headers.common['Client_Id'] = user.userId;
+    request.defaults.headers.common['Refreshtoken'] = null;
     if (isRefreshToken) {
       request.defaults.headers.common['Refreshtoken'] = user.refreshToKen;
     }
+  }
+  if (dataRefreshToken) {
+    request.defaults.headers.common['Authorization'] = dataRefreshToken.token;
+    request.defaults.headers.common['Client_Id'] = dataRefreshToken.userId;
+    request.defaults.headers.common['Refreshtoken'] = null;
   }
   return request;
 };

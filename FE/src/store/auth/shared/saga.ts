@@ -105,6 +105,16 @@ export function* uploadFile(api, action) {
   }
 }
 
+export function* removeFile(api, action) {
+  try {
+    const resPonse = yield call(api.removeFile, action.payload);
+    const data = yield configResponse(resPonse);
+    yield put(actions.removeFileSuccess(data));
+  } catch (error) {
+    yield put(actions.removeFileFail(configResponseError(error)));
+  }
+}
+
 export function* AuthSaga() {
   yield all([
     yield takeLatest(actions.signIn.type, signIn, authRequest),
@@ -117,5 +127,6 @@ export function* AuthSaga() {
     yield takeLatest(actions.resetForgotPassword.type, resetForgotPassword, authRequest),
     yield takeLatest(actions.updateProfile.type, updateProfile, authRequest),
     yield takeLatest(actions.uploadFile.type, uploadFile, authRequest),
+    yield takeLatest(actions.removeFile.type, removeFile, authRequest),
   ]);
 }

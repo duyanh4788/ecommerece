@@ -37,12 +37,12 @@ export const Subscriber = () => {
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
       const { type, payload } = RootStore.getState().lastAction;
       switch (type) {
-        case SubscriptionSlice.actions.userSubscriberSuccess.type:
-        case SubscriptionSlice.actions.userChangedSuccess.type:
+        case SubscriptionSlice.actions.shopSubscriberSuccess.type:
+        case SubscriptionSlice.actions.shopChangedSuccess.type:
           window.location.replace(payload.data);
           break;
-        case SubscriptionSlice.actions.userSubscriberFail.type:
-        case SubscriptionSlice.actions.userChangedFail.type:
+        case SubscriptionSlice.actions.shopSubscriberFail.type:
+        case SubscriptionSlice.actions.shopChangedFail.type:
           toast.error(payload.message);
           break;
         default:
@@ -58,11 +58,15 @@ export const Subscriber = () => {
 
   const handleSubscriber = () => {
     if (planUser?.type === TypeSubscriber.SUBSCRIBER) {
-      dispatch(SubscriptionSlice.actions.userSubscriber({ tier: planUser.tier }));
+      dispatch(
+        SubscriptionSlice.actions.shopSubscriber({ tier: planUser.tier, shopId: planUser.shopId }),
+      );
       return;
     }
     if (planUser?.type === TypeSubscriber.CHANGED) {
-      dispatch(SubscriptionSlice.actions.userChanged({ tier: planUser.tier }));
+      dispatch(
+        SubscriptionSlice.actions.shopChanged({ tier: planUser.tier, shopId: planUser.shopId }),
+      );
       return;
     }
   };

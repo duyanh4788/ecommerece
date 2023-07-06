@@ -17,11 +17,12 @@ import * as SubscriptionSelector from 'store/subscription/shared/selectors';
 import { Loading } from 'commom/loading';
 interface Props {
   modalCancel: boolean;
+  shopId: string;
   handleClose: (e: boolean) => void;
   subscriptionId: string | null;
 }
 
-export const ModalCancel = ({ modalCancel, handleClose, subscriptionId }: Props) => {
+export const ModalCancel = ({ modalCancel, handleClose, subscriptionId, shopId }: Props) => {
   const dispatch = useDispatch();
   const loadingSubs = useSelector(SubscriptionSelector.selectLoading);
   const [reason, setReson] = useState<string>('');
@@ -63,7 +64,7 @@ export const ModalCancel = ({ modalCancel, handleClose, subscriptionId }: Props)
         <IconButton
           disabled={!reason}
           onClick={() =>
-            dispatch(SubscriptionSile.actions.userCanceled({ subscriptionId, reason }))
+            dispatch(SubscriptionSile.actions.shopCanceled({ subscriptionId, shopId, reason }))
           }>
           <CheckCircle color={!reason ? 'disabled' : 'success'} />
         </IconButton>

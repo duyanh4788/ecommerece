@@ -14,13 +14,12 @@ import {
 } from '@mui/material';
 import { ExitToApp, Mail, PersonOutline, PhoneIphone, Settings, Today } from '@mui/icons-material';
 import * as AuthSlice from 'store/auth/shared/slice';
+import * as AuthSelector from 'store/auth/shared/selectors';
 import { AppHelper } from 'utils/app.helper';
-import { useDispatch } from 'react-redux';
-import { LocalStorageKey, TypeLocal } from 'services/localStorage';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { BG_MAIN_2, BG_MAIN_1, CL_GR, PATH_PARAMS } from 'commom/common.contants';
-import { localStorage } from 'hooks/localStorage/LocalStorage';
 
 interface Props {
   userInfor: Users | null;
@@ -47,7 +46,7 @@ export const UserInforResponsive = (props: Props) => {
   const { userInfor } = props;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userStore = localStorage(TypeLocal.GET, LocalStorageKey.user);
+  const error = useSelector(AuthSelector.selectError);
   const handleLogout = (primary: string) => {
     if (primary !== 'Log out') return;
     dispatch(AuthSlice.actions.signOut());
@@ -103,7 +102,6 @@ export const UserInforResponsive = (props: Props) => {
                     sx={{
                       position: 'absolute',
                       top: 5,
-                      right: 92,
                       height: '0 px !important',
                       zIndex: 1,
                     }}
@@ -120,9 +118,11 @@ export const UserInforResponsive = (props: Props) => {
               )}
               {renderListItemButton(<ExitToApp color="warning" />, 'Log out')}
             </React.Fragment>
-          ) : userStore ? (
+          ) : error && error.code === 402 ? (
             <ListItemText
-              primary="you are limited request, please try again after some minutes!"
+              primary={
+                error.message || 'you are limited request, please try again after some minutes!'
+              }
               primaryTypographyProps={{ fontSize: 12, color: '#ff0000', fontWeight: 'bold' }}
             />
           ) : (

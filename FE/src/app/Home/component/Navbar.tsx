@@ -27,15 +27,14 @@ import { BG_MAIN_1, CL_GR, CL_GRE, NODEJS1, PATH_PARAMS } from 'commom/common.co
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
 import * as AuthSlice from 'store/auth/shared/slice';
+import * as AuthSelector from 'store/auth/shared/selectors';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import * as AuthSelector from 'store/auth/shared/selectors';
 import { Loading } from 'commom/loading';
 import { toast } from 'react-toastify';
 import { Notification } from 'commom/notification';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
-import { RealoadPage } from './ReloadPage';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -76,27 +75,18 @@ export const Navbar = () => {
   const dispatch = useDispatch();
   const loading = useSelector(AuthSelector.selectLoading);
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [reloadPage, setReloadPage] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
       const { type, payload } = RootStore.getState().lastAction;
       if (payload && payload.code === 401) {
-        toast.error(payload.message);
-        resetData();
-        navigate(PATH_PARAMS.SIGNIN);
-        return;
-      }
-      if (payload && payload.code === 406) {
-        setReloadPage(true);
+        resetAuthentica(payload.message, payload.code);
         return;
       }
       switch (type) {
         case AuthSlice.actions.signOutSuccess.type:
-          toast.success(payload.message);
-          resetData();
-          navigate(PATH_PARAMS.SIGNIN);
+          resetAuthentica(payload.message, payload.code);
           break;
         case AuthSlice.actions.signOutFail.type:
         case AuthSlice.actions.getUserByIdFail.type:
@@ -114,12 +104,22 @@ export const Navbar = () => {
   }, []);
 
   const resetData = () => {
-    localStorage(TypeLocal.CLEAR);
-    setReloadPage(false);
     setAnchorEl(null);
-    dispatch(AuthSlice.actions.clearUserInfo());
     dispatch(AuthSlice.actions.clearData());
     return;
+  };
+
+  const resetAuthentica = (message: string, code: number) => {
+    if (code >= 400) {
+      toast.error(message);
+    }
+    if (code < 300 && code >= 200) {
+      toast.success(message);
+    }
+    localStorage(TypeLocal.CLEAR);
+    resetData();
+    dispatch(AuthSlice.actions.clearUserInfo());
+    navigate(PATH_PARAMS.SIGNIN);
   };
 
   const handleDrawerToggle = () => {
@@ -150,7 +150,6 @@ export const Navbar = () => {
   return (
     <Stack sx={{ flexGrow: 1, marginBottom: '100px' }}>
       {loading && <Loading />}
-      <RealoadPage open={reloadPage} handleClose={setReloadPage} />
       <Notification />
       <CssBaseline />
       <ThemeProvider theme={darkTheme}>

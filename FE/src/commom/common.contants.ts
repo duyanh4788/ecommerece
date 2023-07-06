@@ -57,6 +57,12 @@ export const TITLE_ITEM =
 
 export const TITLE_SUBS = 'Please subscribe and registed Shop.';
 
+export const TITLE_STATUS_SHOP =
+  'The shop is disabled for not subscription, please view it in the dashboard and subscribe, you can work and upload products!';
+
+export const TITLE_REGISTED_SHOP =
+  '*Note: To register to Shop, You need to subscribe subscription!';
+
 export const renderTitleResource = (num: number) => {
   return `In lifecycle, your can only register ${num} products in Shop`;
 };

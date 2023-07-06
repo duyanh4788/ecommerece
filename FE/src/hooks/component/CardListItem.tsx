@@ -28,11 +28,13 @@ export const CardListItem = (props: Props) => {
     function initProduct(dataSell: any[], data: any[]) {
       if (!dataSell.length) {
         setParseProduct(data);
+        return;
       }
       if (dataSell.length === data.length) {
         setParseProduct(dataSell);
+        return;
       }
-      if (dataSell.length && dataSell.length !== data.length) {
+      if (dataSell.length !== data.length) {
         let result: any[] = [];
         for (let itemA of data as any[]) {
           const find = dataSell.find((itemB: any) => itemB.id === itemA.id);
@@ -41,6 +43,7 @@ export const CardListItem = (props: Props) => {
           }
         }
         setParseProduct([...dataSell, ...result]);
+        return;
       }
     }
     if (selectData) {

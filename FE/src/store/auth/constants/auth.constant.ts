@@ -13,6 +13,7 @@ export const AuthApi = {
   REGISTER_OWNER_SHOP: userPath('register-owner-shop'),
   UPDATE_PROFILE: userPath('update-profile'),
   UPLOAD_FILE: uploadPath('upload-file'),
+  REMOVE_FILE: uploadPath('remove-file'),
 };
 
 export const REPONSE_CONSTANT = {

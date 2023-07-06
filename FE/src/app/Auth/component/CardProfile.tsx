@@ -3,43 +3,22 @@ import React, { ChangeEvent, RefObject, useEffect, useState } from 'react';
 import {
   Avatar,
   Box,
-  Button,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   CardMedia,
-  Chip,
   Grid,
   IconButton,
-  Tooltip,
   Typography,
 } from '@mui/material';
-import { Done, Edit, HelpOutline } from '@mui/icons-material';
+import { Done, Edit } from '@mui/icons-material';
 import { AppHelper } from 'utils/app.helper';
 import { useDispatch, useSelector } from 'react-redux';
 import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
-import * as SubscriptionSlice from 'store/subscription/shared/slice';
-import * as SubscriptionSelector from 'store/subscription/shared/selectors';
-import { FileUpload, FileUploadProps } from './FileUpload';
-import { CardListItem } from './CardListItem';
-import { SubscriptionStatus, TypeSubscriber } from 'interface/Subscriptions.model';
-import {
-  BG_MAIN_1,
-  FREE_TRIAL,
-  PAYPAL_LOGO,
-  PROFILE,
-  TITLE_ITEM,
-  TITLE_SUBS,
-  TITLE_WAITING,
-  renderTitleResource,
-} from 'commom/common.contants';
-import { handleColorStatus, handleColorTier } from 'utils/color';
-import { ModalPlans } from './ModalPlans';
-import { ModalInvoices } from './ModalInvoices';
-import { ModalCancel } from './ModalCancel';
-
+import { FileUpload, FileUploadProps } from '../../../hooks/component/FileUpload';
+import { CardListItem } from '../../../hooks/component/CardListItem';
+import { PROFILE } from 'commom/common.contants';
 interface Props {
   resetDataRef: RefObject<boolean | null>;
 }
@@ -48,27 +27,13 @@ export const CardProfile = ({ resetDataRef }: Props) => {
   const dispatch = useDispatch();
   const userInfor = useSelector(AuthSelector.selectUserInfor);
   const url = useSelector(AuthSelector.selectUrl);
-  const plans = useSelector(SubscriptionSelector.selectPlans);
-  const invoices = useSelector(SubscriptionSelector.selectInvoices);
-  const subscriptions = useSelector(SubscriptionSelector.selectSubscription);
   const [user, setUser] = useState(userInfor);
   const [errors, setErrors] = useState(userInfor);
   const [editProfile, setEditProfile] = useState<boolean>(false);
-  const [modalPlans, setModalPlans] = useState<boolean>(false);
-  const [modalInvoice, setModalInvoice] = useState<boolean>(false);
-  const [modalCancel, setModalCancel] = useState<boolean>(false);
-  const [typeSubscriber, setTypeSubscriber] = useState<string>(TypeSubscriber.SUBSCRIBER);
-
-  useEffect(() => {
-    dispatch(SubscriptionSlice.actions.userGetSubscription());
-    dispatch(SubscriptionSlice.actions.getPlans());
-    dispatch(SubscriptionSlice.actions.userGetInvoices());
-  }, []);
 
   useEffect(() => {
     if (resetDataRef.current) {
-      handleResetUserProfile();
-      handleResetSubscription();
+      handleResetData();
       const newResetData = false;
       Object.assign(resetDataRef, { current: newResetData });
     }
@@ -92,6 +57,7 @@ export const CardProfile = ({ resetDataRef }: Props) => {
       return url[0];
     }
   };
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     if (name === 'phone' && value.length > 10) {
@@ -121,229 +87,79 @@ export const CardProfile = ({ resetDataRef }: Props) => {
     },
   };
 
-  const handleResetUserProfile = () => {
+  const handleResetData = () => {
     setEditProfile(false);
     setUser(userInfor);
     setErrors(userInfor);
   };
 
-  const handleResetSubscription = () => {
-    setModalPlans(false);
-    setModalInvoice(false);
-    setModalCancel(false);
-    setTypeSubscriber(TypeSubscriber.SUBSCRIBER);
-  };
-
   return (
-    <Grid container columns={{ xs: 6, sm: 12, md: 12 }} spacing={2}>
-      <Grid item xs={12} sm={6} md={5}>
-        <Card className="card_profile">
-          <CardHeader
-            avatar={
-              <Avatar aria-label="recipe" src={userInfor?.avatar}>
-                {AppHelper.convertFullName(userInfor?.fullName)}
-              </Avatar>
-            }
-            action={
-              <React.Fragment>
-                {editProfile && (
-                  <IconButton
-                    aria-label="settings"
-                    disabled={!validate()}
-                    style={{ cursor: !validate() ? 'no-drop' : 'pointer' }}
-                    onClick={handlerUpdateProfile}>
-                    <Done />
-                  </IconButton>
-                )}
+    <Grid item xs={12} sm={6} md={5}>
+      <Card className="card_profile">
+        <CardHeader
+          avatar={
+            <Avatar aria-label="recipe" src={userInfor?.avatar}>
+              {AppHelper.convertFullName(userInfor?.fullName)}
+            </Avatar>
+          }
+          action={
+            <React.Fragment>
+              {editProfile && (
                 <IconButton
                   aria-label="settings"
-                  onClick={() => {
-                    if (!editProfile) {
-                      handleResetUserProfile();
-                    }
-                    setEditProfile(!editProfile);
-                  }}>
-                  <Edit />
+                  disabled={!validate()}
+                  style={{ cursor: !validate() ? 'no-drop' : 'pointer' }}
+                  onClick={handlerUpdateProfile}>
+                  <Done />
                 </IconButton>
-              </React.Fragment>
-            }
-            title={
-              editProfile ? (
-                <input type="text" name="fullName" value={user?.fullName} onChange={handleChange} />
-              ) : (
-                <Typography sx={{ fontWeight: 'bold' }} variant="inherit">
-                  {userInfor?.fullName}
-                </Typography>
-              )
-            }
-            subheader={AppHelper.formmatDateTime(userInfor?.createdAt)}
-          />
-          <CardMedia component="img" height="194" image={renderAvatar()} alt={renderAvatar()} />
-          {!editProfile && <FileUpload {...fileUploadProp} />}
-          <CardContent sx={{ fontWeight: 'bold' }}>
-            <Typography variant="inherit">Email: {userInfor?.email}</Typography>
-            {editProfile ? (
-              <CardListItem
-                title={'Phone'}
-                name={'phone'}
-                value={user?.phone}
-                handleOnChange={handleChange}
-              />
-            ) : (
-              <Box>Phone: {userInfor?.phone}</Box>
-            )}
-            {editProfile && (
-              <CardListItem
-                title={'Password'}
-                name={'password'}
-                value={user?.password}
-                handleOnChange={handleChange}
-              />
-            )}
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12} sm={6} md={7}>
-        {subscriptions ? (
-          <Card className="card_profile" style={{ height: '100%' }}>
-            <CardHeader
-              title={
-                <Typography sx={{ fontWeight: 'bold' }} variant="inherit">
-                  Tier:{' '}
-                  <span
-                    style={{
-                      color: handleColorTier(subscriptions.paypalBillingPlans?.tier as string),
-                    }}>
-                    {AppHelper.capitalizeFirstLetter(
-                      subscriptions.paypalBillingPlans?.tier as string,
-                    )}
-                  </span>
-                </Typography>
-              }
-              action={
-                subscriptions.isTrial ? (
-                  <Tooltip title="You are on a free trial in 30 days">
-                    <img width={'50px'} src={FREE_TRIAL} alt={FREE_TRIAL} />
-                  </Tooltip>
-                ) : null
-              }
-              subheader={AppHelper.formmatDateTime(subscriptions.lastPaymentsFetch)}
-            />
-            <Box sx={{ background: BG_MAIN_1, textAlign: 'center', padding: '0 10px' }}>
-              <img style={{ maxHeight: '100px' }} src={PAYPAL_LOGO} alt={PAYPAL_LOGO} />
-            </Box>
-            <CardContent sx={{ lineHeight: '35px' }}>
-              <Typography variant="inherit">
-                Status:{' '}
-                <span
-                  className="status"
-                  style={{ color: handleColorStatus(subscriptions.status as string) }}>
-                  {subscriptions.status?.split('_').join(' ')}
-                </span>
-                {subscriptions.status === 'WAITING_SYNC' ? (
-                  <Tooltip title={TITLE_WAITING}>
-                    <HelpOutline sx={{ fontSize: '12px' }} color="success" />
-                  </Tooltip>
-                ) : null}
-              </Typography>
-              <Typography variant="inherit">
-                Resouce Product: {subscriptions.usersResources?.numberProduct}{' '}
-                <Tooltip
-                  title={
-                    subscriptions.usersResources
-                      ? renderTitleResource(
-                          subscriptions.paypalBillingPlans?.numberProduct as number,
-                        )
-                      : TITLE_SUBS
-                  }>
-                  <HelpOutline sx={{ fontSize: '12px' }} color="success" />
-                </Tooltip>
-              </Typography>
-              <Typography variant="inherit">
-                Resouce Item:{' '}
-                {subscriptions.usersResources
-                  ? `${subscriptions.usersResources?.numberItem}/month`
-                  : null}
-                <Tooltip title={subscriptions.usersResources ? TITLE_ITEM : TITLE_SUBS}>
-                  <HelpOutline sx={{ fontSize: '12px' }} color="success" />
-                </Tooltip>
-              </Typography>
-              <Chip
-                label="Invoices"
-                color="success"
-                variant="outlined"
-                size="small"
-                sx={{ cursor: 'pointer' }}
-                onClick={() => setModalInvoice(true)}
-              />
-            </CardContent>
-            <CardActions className="subs">
-              {subscriptions.status === SubscriptionStatus.ACTIVE ? (
-                <Button className="btn_unsub" onClick={() => setModalCancel(true)}>
-                  UnSubscribe
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => {
-                    setModalPlans(true);
-                    setTypeSubscriber(TypeSubscriber.SUBSCRIBER);
-                  }}>
-                  Subscribe
-                </Button>
               )}
-              {subscriptions.status === SubscriptionStatus.ACTIVE ||
-              subscriptions.status === SubscriptionStatus.APPROVAL_PENDING ? (
-                <Button
-                  className="btn_change"
-                  onClick={() => {
-                    setModalPlans(true);
-                    setTypeSubscriber(TypeSubscriber.CHANGED);
-                  }}>
-                  Changed
-                </Button>
-              ) : null}
-            </CardActions>
-          </Card>
-        ) : (
-          <div className="box_subs">
-            <Box>
-              <Typography>30 DAYS ACCESS TO ALL FEATURES on your selected subscription.</Typography>
-              <Typography>Change and/or cancel your subscription at any time</Typography>
-              <Button
+              <IconButton
+                aria-label="settings"
                 onClick={() => {
-                  setModalPlans(true);
-                  setTypeSubscriber(TypeSubscriber.SUBSCRIBER);
+                  if (!editProfile) {
+                    handleResetData();
+                  }
+                  setEditProfile(!editProfile);
                 }}>
-                Subscribe
-              </Button>
-            </Box>
-          </div>
-        )}
-      </Grid>
-      {modalPlans ? (
-        <ModalPlans
-          plans={plans}
-          subscriptions={subscriptions}
-          modalPlans={modalPlans}
-          handleClose={setModalPlans}
-          typeSubscriber={typeSubscriber}
+                <Edit />
+              </IconButton>
+            </React.Fragment>
+          }
+          title={
+            editProfile ? (
+              <input type="text" name="fullName" value={user?.fullName} onChange={handleChange} />
+            ) : (
+              <Typography sx={{ fontWeight: 'bold' }} variant="inherit">
+                {userInfor?.fullName}
+              </Typography>
+            )
+          }
+          subheader={AppHelper.formmatDateTime(userInfor?.createdAt)}
         />
-      ) : null}
-      {modalInvoice ? (
-        <ModalInvoices
-          modalInvoice={modalInvoice}
-          handleClose={setModalInvoice}
-          invoices={invoices}
-          userInfor={userInfor}
-        />
-      ) : null}
-      {modalCancel ? (
-        <ModalCancel
-          modalCancel={modalCancel}
-          handleClose={setModalCancel}
-          subscriptionId={subscriptions?.subscriptionId as string}
-        />
-      ) : null}
+        <CardMedia component="img" height="194" image={renderAvatar()} alt={renderAvatar()} />
+        {!editProfile && <FileUpload {...fileUploadProp} />}
+        <CardContent sx={{ fontWeight: 'bold' }}>
+          <Typography variant="inherit">Email: {userInfor?.email}</Typography>
+          {editProfile ? (
+            <CardListItem
+              title={'Phone'}
+              name={'phone'}
+              value={user?.phone}
+              handleOnChange={handleChange}
+            />
+          ) : (
+            <Box>Phone: {userInfor?.phone}</Box>
+          )}
+          {editProfile && (
+            <CardListItem
+              title={'Password'}
+              name={'password'}
+              value={user?.password}
+              handleOnChange={handleChange}
+            />
+          )}
+        </CardContent>
+      </Card>
     </Grid>
   );
 };

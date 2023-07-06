@@ -15,63 +15,63 @@ export function* getPlans(api, action) {
   }
 }
 
-export function* userGetSubscription(api, action) {
+export function* shopGetSubscription(api, action) {
   try {
-    const resPonse = yield call(api.userGetSubscription, action.payload);
+    const resPonse = yield call(api.shopGetSubscription, action.payload);
     const data = yield configResponse(resPonse);
-    yield put(actions.userGetSubscriptionSuccess(data));
+    yield put(actions.shopGetSubscriptionSuccess(data));
   } catch (error) {
-    yield put(actions.userGetSubscriptionFail(configResponseError(error)));
+    yield put(actions.shopGetSubscriptionFail(configResponseError(error)));
   }
 }
 
-export function* userGetInvoices(api, action) {
+export function* shopGetInvoices(api, action) {
   try {
-    const resPonse = yield call(api.userGetInvoices, action.payload);
+    const resPonse = yield call(api.shopGetInvoices, action.payload);
     const data = yield configResponse(resPonse);
-    yield put(actions.userGetInvoicesSuccess(data));
+    yield put(actions.shopGetInvoicesSuccess(data));
   } catch (error) {
-    yield put(actions.userGetInvoicesFail(configResponseError(error)));
+    yield put(actions.shopGetInvoicesFail(configResponseError(error)));
   }
 }
 
-export function* userSubscriber(api, action) {
+export function* shopSubscriber(api, action) {
   try {
-    const resPonse = yield call(api.userSubscriber, action.payload);
+    const resPonse = yield call(api.shopSubscriber, action.payload);
     const data = yield configResponse(resPonse);
-    yield put(actions.userSubscriberSuccess(data));
+    yield put(actions.shopSubscriberSuccess(data));
   } catch (error) {
-    yield put(actions.userSubscriberFail(configResponseError(error)));
+    yield put(actions.shopSubscriberFail(configResponseError(error)));
   }
 }
 
-export function* userChanged(api, action) {
+export function* shopChanged(api, action) {
   try {
-    const resPonse = yield call(api.userChanged, action.payload);
+    const resPonse = yield call(api.shopChanged, action.payload);
     const data = yield configResponse(resPonse);
-    yield put(actions.userChangedSuccess(data));
+    yield put(actions.shopChangedSuccess(data));
   } catch (error) {
-    yield put(actions.userChangedFail(configResponseError(error)));
+    yield put(actions.shopChangedFail(configResponseError(error)));
   }
 }
 
-export function* userCanceled(api, action) {
+export function* shopCanceled(api, action) {
   try {
-    const resPonse = yield call(api.userCanceled, action.payload);
+    const resPonse = yield call(api.shopCanceled, action.payload);
     const data = yield configResponse(resPonse);
-    yield put(actions.userCanceledSuccess(data));
+    yield put(actions.shopCanceledSuccess(data));
   } catch (error) {
-    yield put(actions.userCanceledFail(configResponseError(error)));
+    yield put(actions.shopCanceledFail(configResponseError(error)));
   }
 }
 
 export function* SubscriptionSaga() {
   yield all([
     yield takeLatest(actions.getPlans.type, getPlans, subscriptionRequest),
-    yield takeLatest(actions.userGetSubscription.type, userGetSubscription, subscriptionRequest),
-    yield takeLatest(actions.userGetInvoices.type, userGetInvoices, subscriptionRequest),
-    yield takeLatest(actions.userSubscriber.type, userSubscriber, subscriptionRequest),
-    yield takeLatest(actions.userChanged.type, userChanged, subscriptionRequest),
-    yield takeLatest(actions.userCanceled.type, userCanceled, subscriptionRequest),
+    yield takeLatest(actions.shopGetSubscription.type, shopGetSubscription, subscriptionRequest),
+    yield takeLatest(actions.shopGetInvoices.type, shopGetInvoices, subscriptionRequest),
+    yield takeLatest(actions.shopSubscriber.type, shopSubscriber, subscriptionRequest),
+    yield takeLatest(actions.shopChanged.type, shopChanged, subscriptionRequest),
+    yield takeLatest(actions.shopCanceled.type, shopCanceled, subscriptionRequest),
   ]);
 }

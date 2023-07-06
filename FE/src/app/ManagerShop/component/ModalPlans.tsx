@@ -32,6 +32,7 @@ import { HelpOutline, NoteAlt } from '@mui/icons-material';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 interface Props {
   modalPlans: boolean;
+  shopId: string;
   plans: PaypalBillingPlans[];
   subscriptions: Subscription | null;
   typeSubscriber: string;
@@ -40,6 +41,7 @@ interface Props {
 
 export const ModalPlans = ({
   plans,
+  shopId,
   subscriptions,
   modalPlans,
   typeSubscriber,
@@ -49,6 +51,7 @@ export const ModalPlans = ({
 
   const handleSubscriber = (item: any) => {
     const value = {
+      shopId,
       tier: item.tier.split('_')[0],
       amout: item.amount,
       isTrial: subscriptions?.isTrial,

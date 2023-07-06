@@ -19,169 +19,27 @@
   padding: 0 !important;
 }
 
-.card_profile .status {
-  border: 1px solid #ebebec;
-  padding: 5px;
-  border-radius: 5px;
-}
-
-.card_profile .subs {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-}
-
-.card_profile .subs .btn_img {
-  cursor: pointer;
-}
-
-.card_profile .subs .btn_unsub {
-  background: #c45648;
-}
-
-.card_profile .subs .btn_change {
-  background: #919191;
-}
-
-.card_profile .subs button,
-.card_profile .subs strong {
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 30px;
-  background: #56ab2f;
-  outline: none;
-  border: none;
-  color: #ffffff;
-  margin-left: 5px;
-  text-transform: uppercase;
-  -webkit-box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
-          box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
-  -webkit-transform: translateY(-2px);
-          transform: translateY(-2px);
-  -webkit-transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
-  transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
-  transition: box-shadow 0.3s, transform 0.3s;
-  transition: box-shadow 0.3s, transform 0.3s, -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
-}
-
-.box_subs {
-  background: #d6cfc957;
-  text-align: center;
+.card_registed {
+  width: 100%;
   height: 100%;
-  padding: 010px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
-  border-radius: 20px;
-}
-
-.box_subs p {
-  font-size: 14px;
-  color: #00000099;
-}
-
-.box_subs button {
-  margin-top: 10px;
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 30px;
-  background: #56ab2f;
-  outline: none;
-  border: none;
-  color: #ffffff;
-  margin-left: 5px;
-  text-transform: uppercase;
-  -webkit-box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
-          box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
-  -webkit-transform: translateY(-2px);
-          transform: translateY(-2px);
-  -webkit-transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
-  transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
-  transition: box-shadow 0.3s, transform 0.3s;
-  transition: box-shadow 0.3s, transform 0.3s, -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
-}
-
-.cell_tier {
-  background: #d6cfc957;
-  padding: 5px 10px;
-  font-size: 13px;
-  border: 1px solid #ebebec;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.modal_plans .box_1 {
-  display: -webkit-box;
-  display: -ms-flexbox;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  opacity: 0.5;
   display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 
-.modal_plans .dglog_conntent {
-  border: 1px solid #ebebec;
-}
-
-.modal_plans .box_2 {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-.modal_plans .box_2 .card {
-  max-width: 200px;
-  margin: 5px;
-  padding: 5px;
-  background: #d6cfc957 !important;
-}
-
-.modal_plans .box_2 .box_fab {
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-.modal_plans .box_2 .box_fab .fab {
-  background: none !important;
-  font-size: 10px;
-  font-weight: bolder;
-}
-
-.modal_plans .box_2 .action {
-  margin-top: 0 !important;
-  margin-bottom: 5px;
-  text-align: center;
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-.modal_plans .box_2 .action span {
-  padding: 20px;
-  background: #ffc14c;
-  border-radius: 20px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.modal_plans .box_2 .action span:hover {
-  background: #fda605 !important;
-}
-
-.modal_plans .box_2 .action span {
-  font-size: 12px;
-  padding: 10px;
+.card_registed:hover {
+  opacity: 1;
 }
 /*# sourceMappingURL=index.css.map */

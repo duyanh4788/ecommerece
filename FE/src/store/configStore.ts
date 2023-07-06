@@ -26,9 +26,10 @@ export function configureAppstore() {
     serializableCheck: false,
     immutableCheck: false,
   });
+
   const store = configureStore({
     reducer: createReducer(),
-    middleware: [...defaultMiddelWare, ...middlewares, refreshAuthToken],
+    middleware: [...defaultMiddelWare, refreshAuthToken, ...middlewares],
     devTools: process.env.NODE_ENV !== 'production' || process.env.PUBLIC_URL.length > 0,
     enhancers,
   });

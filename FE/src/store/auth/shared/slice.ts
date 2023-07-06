@@ -32,7 +32,7 @@ const AuthSlice = createSlice({
     },
     signInFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     refreshToken(state) {
@@ -44,7 +44,7 @@ const AuthSlice = createSlice({
     },
     refreshTokenFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     signUp(state, action) {
@@ -56,7 +56,7 @@ const AuthSlice = createSlice({
     },
     signUpFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     signOut(state) {
@@ -68,7 +68,7 @@ const AuthSlice = createSlice({
     },
     signOutFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     getUserById(state) {
@@ -92,7 +92,7 @@ const AuthSlice = createSlice({
     },
     forgotPasswordFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     resendForgotPassword(state, action) {
@@ -104,7 +104,7 @@ const AuthSlice = createSlice({
     },
     resendForgotPasswordFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     resetForgotPassword(state, action) {
@@ -116,7 +116,7 @@ const AuthSlice = createSlice({
     },
     resetForgotPasswordFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     updateProfile(state, action) {
@@ -128,7 +128,7 @@ const AuthSlice = createSlice({
     },
     updateProfileFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     uploadFile(state, action) {
@@ -140,7 +140,19 @@ const AuthSlice = createSlice({
     },
     uploadFileFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
+    },
+
+    removeFile(state, action) {
+      state.loading = true;
+    },
+    removeFileSuccess(state, action) {
+      state.loading = false;
+      state.success = action.payload.data;
+    },
+    removeFileFail(state, action) {
+      state.loading = false;
+      state.error = action.payload;
     },
 
     clearUserInfo(state) {

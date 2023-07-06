@@ -1,10 +1,100 @@
-.outstanding {
-    color: mix(#fff, #919191, 20%);
-    text-align: center;
-    font-size: 100px;
-    font-weight: 900;
-    text-shadow: -0.0075em 0.0075em 0 mix(#fff, #919191, 94%), 0.005em 0.005em 0 mix(#fff, #919191, 60%),
-        0.01em 0.01em 0 mix(#fff, #919191, 62%), 0.015em 0.015em mix(#fff, #919191, 64%),
-        0.02em 0.02em 0 mix(#fff, #919191, 66%), 0.025em 0.025em 0 mix(#fff, #919191, 68%),
-        0.03em 0.03em 0 mix(#fff, #919191, 70%), 0.035em 0.035em 0 mix(#fff, #919191, 72%);
+@import "../extend/index.scss";
+
+.manager_shop {
+    background-color: $background-main !important;
+    margin: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    .box_subs {
+        background: $background-main;
+        text-align: center;
+        height: 100%;
+        padding: 010px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        p {
+            font-size: 14px;
+            color: #00000099;
+        }
+        button {
+            margin-top: 10px;
+            @include buttonSubs;
+        }
+    }
+
+    .cell_tier {
+        background: $background-main;
+        padding: 5px 10px;
+        font-size: 13px;
+        border: $border1;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .card_profile {
+        @include card_profile;
+    }
+
+    .status {
+        border: $border1;
+        padding: 5px;
+        border-radius: 5px;
+    }
+    .subs {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .btn_img {
+            cursor: pointer;
+        }
+        .btn_unsub {
+            background: $color-un-subs;
+        }
+        .btn_change {
+            background: $color-gray;
+        }
+        button,
+        strong {
+            @include buttonSubs;
+        }
+    }
+}
+
+.modal_plans {
+    .box_1 {
+        display: flex;
+        justify-content: space-between;
+    }
+    .dglog_conntent {
+        border: 1px solid #ebebec;
+    }
+    .box_2 {
+        display: flex;
+        .card {
+            max-width: 200px;
+            margin: 5px;
+            padding: 5px;
+            background: $background-main !important;
+        }
+        .box_fab {
+            text-align: center;
+            margin-bottom: 15px;
+            .fab {
+                background: none !important;
+                font-size: 10px;
+                font-weight: bolder;
+            }
+        }
+        .action {
+            margin-top: 0 !important;
+            margin-bottom: 5px;
+            @include btn_paypal;
+            span {
+                font-size: 12px;
+                padding: 10px;
+            }
+        }
+    }
 }

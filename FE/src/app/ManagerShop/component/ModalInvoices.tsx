@@ -8,8 +8,8 @@ import { saveAs } from 'file-saver';
 import { PAYPAL_BANNER } from 'commom/common.contants';
 import { handleColorTier } from 'utils/color';
 import { AppHelper } from 'utils/app.helper';
-import { InvoiceTemplate } from './InvoicesTemplate';
 import { Users } from 'interface/Users.model';
+import { InvoiceTemplate } from 'hooks/component/InvoicesTemplate';
 
 interface Props {
   modalInvoice: boolean;

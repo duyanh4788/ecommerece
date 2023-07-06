@@ -1,12 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import * as ShopSlice from 'store/shops/shared/slice';
-import * as ShopSelector from 'store/shops/shared/selectors';
-import { toast } from 'react-toastify';
-import { Unsubscribe } from 'redux';
-import { RootStore } from 'store/configStore';
+import { DeleteForever, DisabledByDefault, Edit } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -15,41 +11,33 @@ import {
   ImageList,
   ImageListItem,
   ImageListItemBar,
-  Paper,
-  ToggleButton,
-  ToggleButtonGroup,
 } from '@mui/material';
-import { BG_MAIN_1, BG_MAIN_2, PATH_PARAMS } from 'commom/common.contants';
-import { Loading } from 'commom/loading';
+import { BG_MAIN_2 } from 'commom/common.contants';
+import { SwipersList } from 'hooks/component/SwipersList';
+import { FileUpload, FileUploadProps } from 'hooks/component/FileUpload';
+import { toast } from 'react-toastify';
+import { Unsubscribe } from 'redux';
+import { RootStore } from 'store/configStore';
+import { Shops } from 'interface/Shops.model';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
-import { SwipersList } from '../component/SwipersList';
-import { DeleteForever, DisabledByDefault, Edit, Undo } from '@mui/icons-material';
-import { FileUpload, FileUploadProps } from '../component/FileUpload';
 
-export const ManagerShop = () => {
+interface Props {
+  shopInfor: Shops | null;
+  PAGE: string | null;
+  handleEvent: (e: any) => void;
+}
+
+export const SlidersShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
   const dispatch = useDispatch();
+  const currentPage: string = 'SLIDER';
   const shopId = localStorage(TypeLocal.GET, LocalStorageKey.shopId);
-  const navigate = useNavigate();
-  const loading = useSelector(ShopSelector.selectLoading);
-  const shopInfor = useSelector(ShopSelector.selectShopInfor);
   const [editSlides, setEditSlides] = useState<boolean>(false);
-  const [alignment, setAlignment] = React.useState<string | null>('ALL');
   const slidesUpdateRef = useRef<string[]>([]);
 
   useEffect(() => {
-    function initShop(id) {
-      if (!id) {
-        navigate(PATH_PARAMS.PROFILE);
-        return;
-      }
-      dispatch(ShopSlice.actions.getShopById(id));
-    }
-    initShop(shopId);
-  }, [shopId]);
-
-  useEffect(() => {
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
+      if (PAGE !== currentPage) return;
       const { type, payload } = RootStore.getState().lastAction;
       switch (type) {
         case ShopSlice.actions.updatedShopSuccess.type:
@@ -64,21 +52,27 @@ export const ManagerShop = () => {
               id: shopId,
               sliders: payload.data,
             };
+            slidesUpdateRef.current = payload.data;
             dispatch(ShopSlice.actions.updatedShop(result));
           }
           break;
         case ShopSlice.actions.removeFileSuccess.type:
-          const result = {
-            id: shopId,
-            sliders: slidesUpdateRef.current,
-          };
-          dispatch(ShopSlice.actions.updatedSliders(result));
+          if (slidesUpdateRef.current?.length) {
+            const result = {
+              id: shopId,
+              sliders: slidesUpdateRef.current,
+            };
+            dispatch(ShopSlice.actions.updatedSliders(result));
+          }
           break;
-        case ShopSlice.actions.registedShopFail.type:
         case ShopSlice.actions.updatedShopFail.type:
         case ShopSlice.actions.updatedSlidersFail.type:
         case ShopSlice.actions.uploadFileFail.type:
           toast.error(payload.message);
+          if (slidesUpdateRef.current && slidesUpdateRef.current.length) {
+            dispatch(ShopSlice.actions.removeFile({ idImage: slidesUpdateRef.current }));
+            slidesUpdateRef.current = [];
+          }
           break;
         default:
           break;
@@ -86,16 +80,14 @@ export const ManagerShop = () => {
     });
     return () => {
       storeSub$();
-      dispatch(ShopSlice.actions.clearData());
       slidesUpdateRef.current = [];
     };
-  }, []);
+  }, [PAGE]);
 
   const fileUploadProp: FileUploadProps = {
     accept: 'image/*',
     idInput: 'input-shop',
     onChange: (newFormData: FormData | null) => {
-      console.log(newFormData);
       dispatch(ShopSlice.actions.uploadFile(newFormData));
     },
     onDrop: (event: React.DragEvent<HTMLElement>) => {
@@ -157,57 +149,16 @@ export const ManagerShop = () => {
     );
   };
 
-  return (
-    <Paper sx={{ background: BG_MAIN_1, margin: '20px', padding: '10px', borderRadius: '5px' }}>
-      <IconButton onClick={() => navigate(-1)}>
-        <Undo />
+  return shopInfor?.sliders && shopInfor.sliders.length && !editSlides ? (
+    <Box component={'div'} my={2} onClick={() => handleEvent('SLIDER')}>
+      <SwipersList data={shopInfor.sliders} />
+      <IconButton onClick={() => setEditSlides(true)}>
+        <Edit />
       </IconButton>
-      {loading && <Loading />}
-      <Box component={'div'} className="outstanding">
-        {shopInfor?.nameShop}
-      </Box>
-      <Divider sx={{ margin: '5px 0' }} />
-      {shopInfor?.sliders && shopInfor.sliders.length && !editSlides ? (
-        <Box component={'div'}>
-          <SwipersList data={shopInfor.sliders} />
-          <IconButton onClick={() => setEditSlides(true)}>
-            <Edit />
-          </IconButton>
-        </Box>
-      ) : (
-        <Card sx={{ background: BG_MAIN_2 }}>
-          {renderImagesList(shopInfor?.sliders as string[])}
-        </Card>
-      )}
-      <Divider sx={{ margin: '5px 0' }} />
-      <ToggleButtonGroup
-        color="success"
-        value={alignment}
-        exclusive
-        onChange={(e, newAlignment) => setAlignment(newAlignment)}
-        aria-label="Platform">
-        <ToggleButton
-          value={'ALL'}
-          sx={{
-            borderRadius: '50% !important',
-            marginRight: '5px',
-            marginLeft: '0 !important',
-          }}>
-          All
-        </ToggleButton>
-        {shopInfor?.prodcutSell?.map(item => (
-          <ToggleButton
-            value={item.id}
-            sx={{
-              borderRadius: '20px !important',
-              marginRight: '5px',
-              marginLeft: '0 !important',
-              border: '1px solid rgba(0, 0, 0, 0.12) !important',
-            }}>
-            {item.nameProduct}
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
-    </Paper>
+    </Box>
+  ) : (
+    <Card sx={{ background: BG_MAIN_2, margin: '10px 0' }} onClick={() => handleEvent('SLIDER')}>
+      {renderImagesList(shopInfor?.sliders as string[])}
+    </Card>
   );
 };

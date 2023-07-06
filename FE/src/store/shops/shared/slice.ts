@@ -34,7 +34,7 @@ const ShopSlice = createSlice({
     },
     registedShopFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     updatedShop(state, action) {
@@ -46,7 +46,7 @@ const ShopSlice = createSlice({
     },
     updatedShopFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     updatedSliders(state, action) {
@@ -58,7 +58,7 @@ const ShopSlice = createSlice({
     },
     updatedSlidersFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     deletedShop(state) {
@@ -70,7 +70,7 @@ const ShopSlice = createSlice({
     },
     deletedShopFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     getListsShop(state) {
@@ -82,7 +82,7 @@ const ShopSlice = createSlice({
     },
     getListsShopFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     getShopById(state, action) {
@@ -94,7 +94,7 @@ const ShopSlice = createSlice({
     },
     getShopByIdFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     prodGetLists(state) {
@@ -106,7 +106,7 @@ const ShopSlice = createSlice({
     },
     prodGetListsFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     uploadFile(state, action) {
@@ -118,7 +118,7 @@ const ShopSlice = createSlice({
     },
     uploadFileFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     removeFile(state, action) {
@@ -130,7 +130,7 @@ const ShopSlice = createSlice({
     },
     removeFileFail(state, action) {
       state.loading = false;
-      state.error = action.payload.data;
+      state.error = action.payload;
     },
 
     clearShops(state) {

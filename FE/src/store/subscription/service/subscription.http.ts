@@ -6,12 +6,14 @@ export class SubscriptionHttp {
   private configTier = (subs: PaypalBillingPlans) => {
     return {
       tier: subs.tier,
+      shopId: subs.shopId,
     };
   };
 
   private configCancel = (subs: Subscription) => {
     return {
       subscriptionId: subs.subscriptionId,
+      shopId: subs.shopId,
       reason: subs.reason,
     };
   };
@@ -19,23 +21,23 @@ export class SubscriptionHttp {
     return httpRequest().get(SubScriptionApi.GET_PLANS);
   };
 
-  public userGetSubscription = (): Promise<any> => {
-    return httpRequest().get(SubScriptionApi.USER_GET_SUBSCRIPTION);
+  public shopGetSubscription = (shopId: string): Promise<any> => {
+    return httpRequest().get(SubScriptionApi.SHOP_GET_SUBSCRIPTION + shopId);
   };
 
-  public userGetInvoices = (): Promise<any> => {
-    return httpRequest().get(SubScriptionApi.USER_GET_INVOICES);
+  public shopGetInvoices = (shopId: string): Promise<any> => {
+    return httpRequest().get(SubScriptionApi.SHOP_GET_INVOICES + shopId);
   };
 
-  public userSubscriber = (data: any): Promise<any> => {
-    return httpRequest().post(SubScriptionApi.USER_SUBSCRIBER, this.configTier(data));
+  public shopSubscriber = (data: any): Promise<any> => {
+    return httpRequest().post(SubScriptionApi.SHOP_SUBSCRIBER, this.configTier(data));
   };
 
-  public userChanged = (data: any): Promise<any> => {
-    return httpRequest().post(SubScriptionApi.USER_CHANGE_SUBS, this.configTier(data));
+  public shopChanged = (data: any): Promise<any> => {
+    return httpRequest().post(SubScriptionApi.SHOP_CHANGE_SUBS, this.configTier(data));
   };
 
-  public userCanceled = (data: any): Promise<any> => {
-    return httpRequest().post(SubScriptionApi.USER_CANCELED_SUBS, this.configCancel(data));
+  public shopCanceled = (data: any): Promise<any> => {
+    return httpRequest().post(SubScriptionApi.SHOP_CANCELED_SUBS, this.configCancel(data));
   };
 }
