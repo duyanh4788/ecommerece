@@ -8,6 +8,7 @@ export enum MainkeysRedis {
   ADMIN_SHOP_ID = 'admin_shop_id:',
   ADMIN_SHOPS = 'admin_shops:',
   PRODUCTS = 'products:',
+  PRODUCT_ID = 'productid:',
   PLANS = 'plans:',
   PLAN_ID = 'plan_id:',
   TIER = 'tier:',
@@ -16,5 +17,7 @@ export enum MainkeysRedis {
   SUBS_USERID = 'subs_userid:',
   SUBS_SHOPID = 'subs_shopid:',
   SUBS_ID = 'subs_subid:',
+  SHOP_RESOURCE_SHOPID = 'shop_resource_shopid:',
+  SHOP_RESOURCE_ID = 'shop_resource_id:',
   INVS_ID = 'invs_subid:'
 }

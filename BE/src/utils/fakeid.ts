@@ -1,4 +1,5 @@
 import { SECRETKEY_FAKEID } from '../common/common.constants';
+import { RestError } from '../services/error/error';
 
 export const enCryptFakeId = (value: number) => {
   const valueBuffer = Buffer.from(value.toString());
@@ -12,13 +13,17 @@ export const enCryptFakeId = (value: number) => {
 };
 
 export const deCryptFakeId = (id: string) => {
-  const decodedString = id.replace(/_/g, '/').padEnd(id.length + (id.length % 4), '=');
-  const encryptedBuffer = Buffer.from(decodedString, 'base64');
-  const keyBuffer = Buffer.from(SECRETKEY_FAKEID, 'base64');
-  const decryptedBuffer = Buffer.alloc(encryptedBuffer.length - keyBuffer.length);
-  for (let i = 0; i < decryptedBuffer.length; i++) {
-    decryptedBuffer[i] = encryptedBuffer[i + keyBuffer.length] ^ keyBuffer[i % keyBuffer.length];
+  try {
+    const decodedString = id.replace(/_/g, '/').padEnd(id.length + (id.length % 4), '=');
+    const encryptedBuffer = Buffer.from(decodedString, 'base64');
+    const keyBuffer = Buffer.from(SECRETKEY_FAKEID, 'base64');
+    const decryptedBuffer = Buffer.alloc(encryptedBuffer.length - keyBuffer.length);
+    for (let i = 0; i < decryptedBuffer.length; i++) {
+      decryptedBuffer[i] = encryptedBuffer[i + keyBuffer.length] ^ keyBuffer[i % keyBuffer.length];
+    }
+    const decryptedValue = parseInt(decryptedBuffer.toString(), 10);
+    return decryptedValue;
+  } catch (error) {
+    throw new RestError('id not available!', 404);
   }
-  const decryptedValue = parseInt(decryptedBuffer.toString(), 10);
-  return decryptedValue;
 };

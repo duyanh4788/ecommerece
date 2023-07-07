@@ -3,6 +3,14 @@ import { EntityCosmesticsModel } from '../database/model/EAV/EntityCosmesticsMod
 import { EntityElectronicsModel } from '../database/model/EAV/EntityElectronicsModel';
 import { EntityFunituresModel } from '../database/model/EAV/EntityFunituresModel';
 
+export interface ListItemsInterface {
+  total?: number;
+  currentPage?: number;
+  nextPage?: number;
+  pageSize?: number;
+  items?: ItemsInterface[];
+}
+
 export interface ItemsInterface {
   id?: string | number | any;
   shopId?: string | number | any;
@@ -25,6 +33,10 @@ export interface EntityValuesInterface {
   id?: string | number | any;
   itemId?: string | number | any;
   createdAt?: Date;
+  entityElectronics?: EntityElectronicsInterface;
+  entityClothers?: EntityElectronicsInterface;
+  entityCosmestics?: EntityElectronicsInterface;
+  entityFunitures?: EntityElectronicsInterface;
   attributes?: EntityCosmeticsInterface | EntityFunituresInterface | EntityElectronicsInterface | EntityClothesIntersface;
 }
 
@@ -73,17 +85,24 @@ export interface EntityClothesIntersface {
 }
 
 export enum ItemsType {
-  CLOTHERS = 'CLOTHERS',
+  CLOTHES = 'CLOTHES',
   COSMETICS = 'COSMETICS',
   ELECTRONICS = 'ELECTRONICS',
   FUNITURES = 'FUNITURES'
 }
 
 export const MapItemsType = [
-  { key: 'CLOTHERS', value: EntityClothersModel },
+  { key: 'CLOTHES', value: EntityClothersModel },
   { key: 'COSMETICS', value: EntityCosmesticsModel },
   { key: 'ELECTRONICS', value: EntityElectronicsModel },
   { key: 'FUNITURES', value: EntityFunituresModel }
 ];
 
 export type PayloadEntity = EntityClothersModel | EntityCosmeticsInterface | EntityFunituresInterface | EntityElectronicsInterface;
+
+export enum EntityType {
+  entityElectronics = 'entityElectronics',
+  entityClothers = 'entityElectronics',
+  entityCosmestics = 'entityElectronics',
+  entityFunitures = 'entityElectronics'
+}

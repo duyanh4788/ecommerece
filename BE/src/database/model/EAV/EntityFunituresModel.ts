@@ -18,23 +18,18 @@ export class EntityFunituresModel extends Model<EntityFunituresModel> {
   @BelongsTo(() => EntityValuesModel)
   entityValues: EntityValuesModel;
 
-  @AllowNull
   @Column
   public size: string;
 
-  @AllowNull
   @Column
   public material: string;
 
-  @AllowNull
   @Column
   public warranty: boolean;
 
-  @AllowNull
   @Column
   public manufactury: string;
 
-  @AllowNull
   @Column
   public funtion: string;
 

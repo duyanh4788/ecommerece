@@ -18,7 +18,6 @@ export class EntityElectronicsModel extends Model<EntityElectronicsModel> {
   @BelongsTo(() => EntityValuesModel)
   entityValues: EntityValuesModel;
 
-  @AllowNull
   @Column
   public color: string;
 
@@ -28,15 +27,12 @@ export class EntityElectronicsModel extends Model<EntityElectronicsModel> {
   @Column
   public screenSize: string;
 
-  @AllowNull
   @Column
   public weight: string;
 
-  @AllowNull
   @Column
   public technology: string;
 
-  @AllowNull
   @Column
   public warranty: boolean;
 

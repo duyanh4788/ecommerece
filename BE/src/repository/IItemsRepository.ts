@@ -1,12 +1,12 @@
 import { Transaction } from 'sequelize';
-import { PayloadEntity, ItemsInterface } from '../interface/ItemsInterface';
+import { PayloadEntity, ItemsInterface, ListItemsInterface } from '../interface/ItemsInterface';
 
 export interface IItemsRepository {
   /**
    * get items by shop id
    * @param shopId
    */
-  getListsItems(shopId: string): Promise<ItemsInterface[]>;
+  getListsItems(shopId: string, page: number, pageSize: number, options: string): Promise<ListItemsInterface>;
 
   /**
    * get items by id
@@ -18,7 +18,7 @@ export interface IItemsRepository {
    * @param payload
    * @param transactionDB
    */
-  createdItems(payload: ItemsInterface, payloadEntity: PayloadEntity, transactionDB?: Transaction): Promise<ItemsInterface>;
+  createdItems(payload: ItemsInterface, payloadEntity: PayloadEntity, transactionDB?: Transaction): Promise<void>;
 
   /**
    * @param payload

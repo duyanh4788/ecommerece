@@ -18,19 +18,15 @@ export class EntityClothersModel extends Model<EntityClothersModel> {
   @BelongsTo(() => EntityValuesModel)
   entityValues: EntityValuesModel;
 
-  @AllowNull
   @Column
   public color: string;
 
-  @AllowNull
   @Column
   public material: string;
 
-  @AllowNull
   @Column
   public size: string;
 
-  @AllowNull
   @Column
   public styleList: string;
 

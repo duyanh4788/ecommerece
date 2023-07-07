@@ -18,19 +18,15 @@ export class EntityCosmesticsModel extends Model<EntityCosmesticsModel> {
   @BelongsTo(() => EntityValuesModel)
   entityValues: EntityValuesModel;
 
-  @AllowNull
   @Column
   public volume: string;
 
-  @AllowNull
   @Column
   public weight: string;
 
-  @AllowNull
   @Column
   public activesIngredients: string;
 
-  @AllowNull
   @Column
   public expiry: string;
 

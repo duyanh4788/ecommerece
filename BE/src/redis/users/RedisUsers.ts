@@ -2,7 +2,9 @@ import { ShopSequelize } from '../../database/sequelize/ShopSequelize';
 import { TokenUsersSequelize } from '../../database/sequelize/TokenUsersSequelize';
 import { UserSequelize } from '../../database/sequelize/UsersSequelize';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { ShopInterface } from '../../interface/ShopInterface';
 import { TokenUserInterface } from '../../interface/TokenUserInterface';
+import { UserAttributes } from '../../interface/UserInterface';
 import { redisController } from '../RedisController';
 export class RedisUsers {
   private tokenUsersRepository: TokenUsersSequelize = new TokenUsersSequelize();
@@ -19,7 +21,7 @@ export class RedisUsers {
     return RedisUsers.instance;
   }
 
-  public async handlerGetUserByEmail(email: string) {
+  public async handlerGetUserByEmail(email: string): Promise<UserAttributes> {
     let userRedis = await redisController.getRedis(email);
     if (!userRedis) {
       const user = await this.usersRepository.findByEmail(email);
@@ -33,7 +35,7 @@ export class RedisUsers {
     await redisController.delRedis(email);
   }
 
-  public async handlerGetUserById(userId: string) {
+  public async handlerGetUserById(userId: string): Promise<UserAttributes> {
     let userRedis = await redisController.getRedis(`${MainkeysRedis.USER_ID}${userId}`);
     if (!userRedis) {
       const user = await this.usersRepository.findById(userId);
@@ -43,7 +45,7 @@ export class RedisUsers {
     return userRedis;
   }
 
-  public async handlerGetTokenUserByUserId(userId: string) {
+  public async handlerGetTokenUserByUserId(userId: string): Promise<TokenUserInterface> {
     let userRedis = await redisController.getRedis(`${MainkeysRedis.TOKEN}${userId}`);
     if (!userRedis) {
       const tokenUser = await this.tokenUsersRepository.findByUserId(userId);
@@ -53,7 +55,7 @@ export class RedisUsers {
     return userRedis;
   }
 
-  public async handlerGetShopsUserId(userId: string) {
+  public async handlerGetShopsUserId(userId: string): Promise<ShopInterface[]> {
     let shopsRedis = await redisController.getRedis(`${MainkeysRedis.SHOPS_USERID}${userId}`);
     if (!shopsRedis) {
       const shops = await this.shopSequelize.getLists(userId);
@@ -63,7 +65,7 @@ export class RedisUsers {
     return shopsRedis;
   }
 
-  public async handlerGetShopId(userId: string, shopId: string) {
+  public async handlerGetShopId(userId: string, shopId: string): Promise<ShopInterface> {
     let shopRedis = await redisController.getRedis(`${MainkeysRedis.SHOP_ID}${shopId}`);
     if (!shopRedis) {
       const shop = await this.shopSequelize.getShopById(shopId, userId);
@@ -73,19 +75,19 @@ export class RedisUsers {
     return shopRedis;
   }
 
-  public async handlerUpdateKeys(mainKeys: string, userId: string, tokenUser: TokenUserInterface) {
+  public async handlerUpdateKeys(mainKeys: string, userId: string, tokenUser: TokenUserInterface): Promise<void> {
     await redisController.setRedis({ keyValue: `${mainKeys}${userId}`, value: tokenUser });
   }
 
-  public async handlerDelKeys(mainKeys: string, userId: string) {
+  public async handlerDelKeys(mainKeys: string, userId: string): Promise<void> {
     await redisController.delRedis(`${mainKeys}${userId}`);
   }
 
-  public async detelteToken(userId: string) {
+  public async detelteToken(userId: string): Promise<void> {
     return await this.tokenUsersRepository.deleteTokenUserByUserId(userId);
   }
 
-  public async updateResfAndTokenUserByUserId(id: string, refreshToKen: string, token: string) {
+  public async updateResfAndTokenUserByUserId(id: string, refreshToKen: string, token: string): Promise<void> {
     return await this.tokenUsersRepository.updateResfAndTokenUserByUserId(id, refreshToKen, token);
   }
 }

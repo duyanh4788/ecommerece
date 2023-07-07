@@ -9,7 +9,7 @@ export interface ShopsResourcesInterface {
 
 export enum TypeDecInc {
   NUMBER_PRODUCT = 'numberProduct',
-  NUMBER_INDEX = 'numberItem'
+  NUMBER_ITEM = 'numberItem'
 }
 
 export enum IntegerValue {

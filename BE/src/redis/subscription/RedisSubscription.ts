@@ -1,7 +1,7 @@
 import { InvoicesSequelize } from '../../database/sequelize/InvoicesSequelize';
 import { SubscriptionSequelize } from '../../database/sequelize/SubscriptionSequelize';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
-import { Subscription } from '../../interface/SubscriptionInterface';
+import { Invoices, Subscription } from '../../interface/SubscriptionInterface';
 import { redisController } from '../RedisController';
 
 export class RedisSubscription {
@@ -38,7 +38,7 @@ export class RedisSubscription {
     return invRedis;
   }
 
-  public async getSubsByShopId(shopId: string) {
+  public async getSubsByShopId(shopId: string): Promise<Subscription> {
     let subRedis = await redisController.getRedis(`${MainkeysRedis.SUBS_SHOPID}${shopId}`);
     if (!subRedis) {
       const sub = await this.subscriptionSequelize.findByShopId(shopId);
@@ -48,7 +48,7 @@ export class RedisSubscription {
     return subRedis;
   }
 
-  public async getSubsBySubsId(subscriptionId: string) {
+  public async getSubsBySubsId(subscriptionId: string): Promise<Subscription> {
     let subsRedis = await redisController.getRedis(`${MainkeysRedis.SUBS_ID}${subscriptionId}`);
     if (!subsRedis) {
       const subs = await this.subscriptionSequelize.findBySubscriptionId(subscriptionId);
@@ -58,7 +58,7 @@ export class RedisSubscription {
     return subsRedis;
   }
 
-  public async getInvsByShopId(shopId: string) {
+  public async getInvsByShopId(shopId: string): Promise<Invoices[]> {
     let invsRedis = await redisController.getRedis(`${MainkeysRedis.INVS_ID}${shopId}`);
     if (!invsRedis) {
       const invs = await this.invoicesSequelize.findByShopId(shopId);
@@ -68,15 +68,15 @@ export class RedisSubscription {
     return invsRedis;
   }
 
-  public async handlerUpdateKeys(mainKeys: string, id: string, subscription: Subscription) {
+  public async handlerUpdateKeys(mainKeys: string, id: string, subscription: Subscription): Promise<void> {
     await redisController.setRedis({ keyValue: `${mainKeys}${id}`, value: subscription });
   }
 
-  public async handlerDelKeys(mainKeys: string, id: string) {
+  public async handlerDelKeys(mainKeys: string, id: string): Promise<void> {
     await redisController.delRedis(`${mainKeys}${id}`);
   }
 
-  public async adminDelKeys(mainKeys: string) {
+  public async adminDelKeys(mainKeys: string): Promise<void> {
     await redisController.delRedis(mainKeys);
   }
 }

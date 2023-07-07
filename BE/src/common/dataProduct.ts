@@ -1,4 +1,4 @@
-const DOMAIN = 'https://dv19cu1ukmppw.cloudfront.net/ecommerce';
+const DOMAIN = 'https://dv19cu1ukmppw.cloudfront.net/img';
 
 export const dataProducts = [
   { nameProduct: 'Electronic', avatar: DOMAIN + '/electronic.png' },

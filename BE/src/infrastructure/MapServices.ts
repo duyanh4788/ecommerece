@@ -44,7 +44,7 @@ export class MapServices {
   public itemsSequelize: ItemsSequelize = new ItemsSequelize(this.mapItemsServices);
 
   public subscriptionUseCase: SubscriptionUseCase = new SubscriptionUseCase(this.paypalService, this.subscriptionSequelize, this.invoicesSequelize, this.shopsResourcesSequelize, this.shopSequelize);
-  public itemsUseCase: ItemsUseCase = new ItemsUseCase(this.itemsSequelize);
+  public itemsUseCase: ItemsUseCase = new ItemsUseCase(this.itemsSequelize, this.shopsResourcesSequelize);
   public shopUseCase: ShopUseCase = new ShopUseCase(this.shopSequelize, this.subscriptionSequelize, this.shopsResourcesSequelize);
   public productsUseCase: ProductsUseCase = new ProductsUseCase(this.productsSequelize);
   public userUseCase: UserUseCase = new UserUseCase(this.userSequelize, this.tokenUsersSequelize, this.authenticatesCodesSequelize);

@@ -76,7 +76,7 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
       }
     }
     const result = this.transformModelToEntity(subs);
-    await this.handleRedis(result.shopId, result.subscriptionId);
+    await this.handleRedis(result.shopId, result.subscriptionId, result.userId);
     return result;
   }
 
@@ -91,12 +91,13 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
     find.status = SubscriptionStatus.WAITING_SYNC;
     await find.save();
     const result = this.transformModelToEntity(find);
-    await this.handleRedis(result.shopId, subscriptionId);
+    await this.handleRedis(result.shopId, subscriptionId, result.userId);
     return;
   }
 
-  private async handleRedis(shopId: string, subscriptionId: string) {
+  private async handleRedis(shopId: string, subscriptionId: string, userId: string) {
     await RedisSubscription.getInstance().adminDelKeys(`${MainkeysRedis.SUBS_SHOPID}${shopId}`);
+    await RedisSubscription.getInstance().adminDelKeys(`${MainkeysRedis.SHOPS_USERID}${userId}`);
     await RedisSubscription.getInstance().adminDelKeys(`${MainkeysRedis.SUBS_ID}${subscriptionId}`);
     await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_SUBS);
     await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_INV);

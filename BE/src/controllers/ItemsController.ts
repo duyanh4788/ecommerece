@@ -13,7 +13,10 @@ export class ItemsController {
       if (!shopId) {
         throw new RestError('shop not available', 404);
       }
-      const items = await this.itemsUseCase.getListsItemsUseCase(shopId);
+      const { page, pageSize, options } = req.query;
+      const configPage = Number(page) || 1;
+      const configPageSzie = Number(pageSize) || 10;
+      const items = await this.itemsUseCase.getListsItemsUseCase(shopId, configPage, configPageSzie, String(options));
       return new SendRespone({ data: items }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
@@ -26,8 +29,8 @@ export class ItemsController {
       if (!id) {
         throw new RestError('items not available', 404);
       }
-      await this.itemsUseCase.getItemsByIdUseCase(id);
-      return new SendRespone({ message: 'updated successfullly.' }).send(res);
+      const item = await this.itemsUseCase.getItemsByIdUseCase(id);
+      return new SendRespone({ data: item }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
@@ -36,7 +39,7 @@ export class ItemsController {
   public createdItems = async (req: Request, res: Response) => {
     const transactionDB = await sequelize.transaction();
     try {
-      const { items, payloadEntity } = new ItemRequest(req);
+      const [items, payloadEntity] = await new ItemRequest().validateObject(req.body.items, req.body.payloadEntity);
       await this.itemsUseCase.createdItemsUseCase(items, payloadEntity, transactionDB);
       await transactionDB.commit();
       return new SendRespone({ message: 'created successfullly.' }).send(res);
@@ -49,7 +52,7 @@ export class ItemsController {
   public updatedItems = async (req: Request, res: Response) => {
     const transactionDB = await sequelize.transaction();
     try {
-      const { items, payloadEntity } = new ItemRequest(req);
+      const [items, payloadEntity] = await new ItemRequest().validateObject(req.body.items, req.body.payloadEntity);
       await this.itemsUseCase.updatedItemsUseCase(items, payloadEntity, transactionDB);
       await transactionDB.commit();
       return new SendRespone({ message: 'updated successfullly.' }).send(res);
@@ -62,7 +65,7 @@ export class ItemsController {
   public deletedItems = async (req: Request, res: Response) => {
     const transactionDB = await sequelize.transaction();
     try {
-      const { id } = req.params;
+      const { id } = req.body;
       if (!id) {
         throw new RestError('items not available', 404);
       }
