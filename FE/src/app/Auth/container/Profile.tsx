@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Box, Grid, Paper } from '@mui/material';
 import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
@@ -14,15 +14,17 @@ import { CardProfile } from '../component/CardProfile';
 import { CardListShops } from '../component/CardListShops';
 import { BG_MAIN_1 } from 'commom/common.contants';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { AuthContext } from 'app/AuthContext/AuthContextApi';
+import { Users } from 'interface/Users.model';
 
 export const Profile = () => {
+  const userInfor: Users = useContext(AuthContext);
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
   const loadingAuth = useSelector(AuthSelector.selectLoading);
   const loadingShop = useSelector(ShopSelector.selectLoading);
   const resetDataRef = useRef<boolean | null>(false);
-  const userInfor = useSelector(AuthSelector.selectUserInfor);
 
   useEffect(() => {
     function initUrl(url) {
@@ -36,6 +38,8 @@ export const Profile = () => {
   }, [location]);
 
   useEffect(() => {
+    dispatch(ShopSlice.actions.getListsShop());
+
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
       const { type, payload } = RootStore.getState().lastAction;
       switch (type) {
@@ -77,8 +81,8 @@ export const Profile = () => {
     });
     return () => {
       storeSub$();
-      dispatch(AuthSlice.actions.clearData());
       handleResetData();
+      dispatch(AuthSlice.actions.clearData());
     };
   }, []);
 

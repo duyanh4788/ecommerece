@@ -12,7 +12,7 @@ import {
   ImageListItem,
   ImageListItemBar,
 } from '@mui/material';
-import { BG_MAIN_2 } from 'commom/common.contants';
+import { BG_MAIN_2, PAGE_MN_SHOP } from 'commom/common.contants';
 import { SwipersList } from 'hooks/component/SwipersList';
 import { FileUpload, FileUploadProps } from 'hooks/component/FileUpload';
 import { toast } from 'react-toastify';
@@ -30,7 +30,7 @@ interface Props {
 
 export const SlidersShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
   const dispatch = useDispatch();
-  const currentPage: string = 'SLIDER';
+  const currentPage: string = PAGE_MN_SHOP.SLIDER;
   const shopId = localStorage(TypeLocal.GET, LocalStorageKey.shopId);
   const [editSlides, setEditSlides] = useState<boolean>(false);
   const slidesUpdateRef = useRef<string[]>([]);
@@ -150,14 +150,16 @@ export const SlidersShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
   };
 
   return shopInfor?.sliders && shopInfor.sliders.length && !editSlides ? (
-    <Box component={'div'} my={2} onClick={() => handleEvent('SLIDER')}>
+    <Box component={'div'} my={2} onClick={() => handleEvent(PAGE_MN_SHOP.SLIDER)}>
       <SwipersList data={shopInfor.sliders} />
       <IconButton onClick={() => setEditSlides(true)}>
         <Edit />
       </IconButton>
     </Box>
   ) : (
-    <Card sx={{ background: BG_MAIN_2, margin: '10px 0' }} onClick={() => handleEvent('SLIDER')}>
+    <Card
+      sx={{ background: BG_MAIN_2, margin: '10px 0' }}
+      onClick={() => handleEvent(PAGE_MN_SHOP.SLIDER)}>
       {renderImagesList(shopInfor?.sliders as string[])}
     </Card>
   );

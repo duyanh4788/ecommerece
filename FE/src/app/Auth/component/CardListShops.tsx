@@ -63,9 +63,17 @@ export const CardListShops = ({ resetDataRef }: Props) => {
   }, [resetDataRef.current]);
 
   useEffect(() => {
-    dispatch(ShopSlice.actions.getListsShop());
-    dispatch(ShopSlice.actions.prodGetLists());
-  }, []);
+    return () => {
+      handleResetUrl();
+    };
+  }, [url]);
+
+  const handleResetUrl = () => {
+    if (url.length) {
+      dispatch(ShopSlice.actions.removeFile({ idImage: url[0] }));
+      dispatch(ShopSlice.actions.clearUrl());
+    }
+  };
 
   const handleDone = () => {
     if (!shopInfor) return;
@@ -96,6 +104,10 @@ export const CardListShops = ({ resetDataRef }: Props) => {
   };
 
   const handleCancel = () => {
+    if (url.length) {
+      dispatch(ShopSlice.actions.removeFile({ idImage: url[0] }));
+      dispatch(ShopSlice.actions.clearUrl());
+    }
     setRegister(!register);
     resetValue();
   };
@@ -149,7 +161,13 @@ export const CardListShops = ({ resetDataRef }: Props) => {
                   }}>
                   <DashboardCustomize color="success" />
                 </IconButton>
-                <IconButton onClick={() => dispatch(ShopSlice.actions.deletedShop(item?.id))}>
+                <IconButton
+                  onClick={() => {
+                    dispatch(ShopSlice.actions.deletedShop(item?.id));
+                    if (item.banners?.length) {
+                      dispatch(ShopSlice.actions.removeFile({ idImage: item?.banners[0] }));
+                    }
+                  }}>
                   <Delete color="error" />
                 </IconButton>
               </React.Fragment>

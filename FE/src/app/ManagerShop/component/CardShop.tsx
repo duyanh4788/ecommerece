@@ -19,7 +19,7 @@ import * as ShopSelector from 'store/shops/shared/selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppHelper } from 'utils/app.helper';
 import { Products, Shops } from 'interface/Shops.model';
-import { BANNER_SHOP, PATH_PARAMS } from 'commom/common.contants';
+import { BANNER_SHOP, PAGE_MN_SHOP, PATH_PARAMS } from 'commom/common.contants';
 import { useNavigate } from 'react-router-dom';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
@@ -38,7 +38,7 @@ interface Props {
 export const CardShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const currentPage: string = 'SHOP';
+  const currentPage: string = PAGE_MN_SHOP.SHOP;
   const shopId = localStorage(TypeLocal.GET, LocalStorageKey.shopId);
   const products = useSelector(ShopSelector.selectProducts);
   const [editShop, setEditShop] = useState<boolean>(false);
@@ -71,7 +71,6 @@ export const CardShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
         case ShopSlice.actions.uploadFileFail.type:
         case ShopSlice.actions.deletedShopFail.type:
           toast.error(payload.message);
-          handleResetData();
           break;
         default:
           break;
@@ -85,15 +84,29 @@ export const CardShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
   const handleDone = () => {
     if (!shop) return;
     const { nameShop, banners } = shop;
+    if (!nameShop || nameShop === '') {
+      setEditShop(false);
+      return;
+    }
+    const resultProduct = prodcutSell && prodcutSell.length ? prodcutSell.map(item => item.id) : [];
+    if (
+      shopInfor?.nameShop === nameShop &&
+      !urlRef?.current?.length &&
+      AppHelper.compareArrayProducts(shopInfor?.prodcutSell as any[], resultProduct)
+    ) {
+      setEditShop(false);
+      return;
+    }
     const payload = {
       nameShop,
-      prodcutSell: prodcutSell && prodcutSell.length ? prodcutSell.map(item => item.id) : [],
+      prodcutSell: resultProduct,
       banners: urlRef?.current ? [urlRef.current] : banners,
     };
     if (urlRef?.current && banners && banners.length) {
       dispatch(ShopSlice.actions.removeFile({ idImage: banners[0] }));
     }
     dispatch(ShopSlice.actions.updatedShop({ ...payload, id: shop.id }));
+    return;
   };
 
   const handleChange = (
@@ -137,7 +150,7 @@ export const CardShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
   };
 
   return (
-    <Grid item xs={12} sm={6} md={6} onClick={() => handleEvent('SHOP')}>
+    <Grid item xs={12} sm={6} md={6} onClick={() => handleEvent(PAGE_MN_SHOP.SHOP)}>
       <Card className="card_profile">
         <CardHeader
           avatar={

@@ -1,4 +1,4 @@
-const DOMAIN = 'https://dv19cu1ukmppw.cloudfront.net/ecommerce';
+const DOMAIN = 'https://dv19cu1ukmppw.cloudfront.net/img';
 export const NODEJS1 = DOMAIN + '/bannernode.png';
 export const NODEJS2 = DOMAIN + '/1688289500323.png';
 export const ELECTRONIC = DOMAIN + '/electronic.png';
@@ -77,6 +77,11 @@ export const CL_GR = '#919191';
 export const CL_BL = '#212321';
 export const CL_WT = '#ffffff';
 export const CL_GRE = '#56ab2f';
+
+export enum PAGE_MN_SHOP {
+  SHOP = 'SHOP',
+  SLIDER = 'SLIDER',
+}
 
 export const FOOTER = [
   {

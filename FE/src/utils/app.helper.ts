@@ -126,4 +126,18 @@ export class AppHelper {
   static ramdomColImg() {
     return Math.floor(Math.random() * 2) + 1;
   }
+
+  static compareArrayProducts(arrA: any[], arrB: any[]): boolean {
+    if ((!arrA.length && !arrB.length) || (arrA.length && !arrB.length)) return true;
+    if (!arrA.length && arrB.length) return false;
+    let res: any[] = [];
+    for (let itemA of arrA) {
+      const isCheck = arrB.find(itemB => itemB === itemA.id);
+      if (!isCheck) {
+        res.push(itemA);
+      }
+    }
+    if (res.length) return false;
+    return true;
+  }
 }
