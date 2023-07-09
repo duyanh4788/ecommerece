@@ -30,7 +30,7 @@ export class ItemRequest {
     }
 
     if (payloadEntity.id && !isCheckedTypeValues(payloadEntity.id, TypeOfValue.STRING)) {
-      throw new RestError('item not available', 404);
+      throw new RestError('item not available 1', 404);
     }
 
     if (payloadEntity.entityId && !isCheckedTypeValues(payloadEntity.entityId, TypeOfValue.STRING)) {
@@ -41,8 +41,8 @@ export class ItemRequest {
       throw new RestError('Name not Empty', 404);
     }
 
-    if (itemThumb && !isCheckedTypeValues(itemThumb, TypeOfValue.ARRAY)) {
-      throw new RestError('Name not Empty', 404);
+    if (itemThumb && !isCheckedTypeValues(itemThumb, TypeOfValue.ARRAY, false)) {
+      throw new RestError('Images thumb not Empty', 404);
     }
 
     if (description && !isCheckedTypeValues(description, TypeOfValue.STRING)) {

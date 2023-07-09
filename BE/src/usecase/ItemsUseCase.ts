@@ -27,4 +27,9 @@ export class ItemsUseCase {
   async deletedItemsUseCase(id: string, transactionDB?: Transaction) {
     return await this.itemsRepository.deletedItems(id, transactionDB);
   }
+
+  async updatedItemsThumbUseCase(reqBody: any) {
+    const { id, itemThumb } = reqBody;
+    return await this.itemsRepository.updatedSliders(id, itemThumb);
+  }
 }

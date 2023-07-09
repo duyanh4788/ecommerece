@@ -31,4 +31,11 @@ export interface IItemsRepository {
    * @param transactionDB
    */
   deletedItems(id: string, transactionDB?: Transaction): Promise<void>;
+
+  /**
+   * @param itemThumb
+   * @param id
+   * @param userId
+   */
+  updatedSliders(id: string, itemThumb: string[]): Promise<void>;
 }

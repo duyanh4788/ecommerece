@@ -80,6 +80,11 @@ export class ItemsSequelize implements IItemsRepository {
     return this.transformModelToEntity(item);
   }
 
+  async updatedSliders(id: string, itemThumb: string[]): Promise<void> {
+    await ItemsModel.update({ itemThumb }, { where: { id: deCryptFakeId(id) } });
+    return;
+  }
+
   async deletedItems(id: string, transactionDB?: Transaction): Promise<void> {
     const item = await ItemsModel.findByPk(deCryptFakeId(id));
     if (!item) {

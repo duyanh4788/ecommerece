@@ -4,6 +4,8 @@ import { RestError } from '../services/error/error';
 import { ItemsUseCase } from '../usecase/ItemsUseCase';
 import { sequelize } from '../database/sequelize';
 import { ItemRequest } from './request/ItemsRequest';
+import { removeFile } from '../utils/removeFile';
+import { TypeOfValue, isCheckedTypeValues } from '../utils/validate';
 
 export class ItemsController {
   constructor(private itemsUseCase: ItemsUseCase) {}
@@ -60,6 +62,22 @@ export class ItemsController {
       return new SendRespone({ data: update, message: 'updated successfullly.' }).send(res);
     } catch (error) {
       await transactionDB.rollback();
+      return RestError.manageServerError(res, error, false);
+    }
+  };
+
+  public updatedItemsThumb = async (req: Request, res: Response) => {
+    try {
+      const { id, itemThumb, idImageRemove } = req.body;
+      if (!isCheckedTypeValues(itemThumb, TypeOfValue.ARRAY, false) || !isCheckedTypeValues(id, TypeOfValue.STRING) || (idImageRemove && !isCheckedTypeValues(idImageRemove, TypeOfValue.STRING))) {
+        throw new RestError('invalid request!', 404);
+      }
+      await this.itemsUseCase.updatedItemsThumbUseCase(req.body);
+      if (idImageRemove) {
+        removeFile(idImageRemove);
+      }
+      return new SendRespone({ data: { id }, message: 'updated successfullly.' }).send(res);
+    } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
   };
