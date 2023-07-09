@@ -11,6 +11,7 @@ import { EntityCosmesticsModel } from '../model/EAV/EntityCosmesticsModel';
 import { EntityElectronicsModel } from '../model/EAV/EntityElectronicsModel';
 import { EntityFunituresModel } from '../model/EAV/EntityFunituresModel';
 import { parseEntityValues } from '../../utils/parseEntityValues';
+import { removeFile } from '../../utils/removeFile';
 
 export class ItemsSequelize implements IItemsRepository {
   private INCLUED = [{ model: EntityClothersModel }, { model: EntityCosmesticsModel }, { model: EntityElectronicsModel }, { model: EntityFunituresModel }];
@@ -44,21 +45,21 @@ export class ItemsSequelize implements IItemsRepository {
     return this.transformModelToEntity(find);
   }
 
-  async createdItems(payload: ItemsInterface, payloadEntity: PayloadEntity, transactionDB?: Transaction): Promise<void> {
-    const { shopId, productId, nameItem, itemThumb, description, brandName, origin, prices, typeProduct } = payload;
+  async createdItems(payload: ItemsInterface, payloadEntity: PayloadEntity, transactionDB?: Transaction): Promise<ItemsInterface> {
+    const { shopId, productId, nameItem, itemThumb, description, brandName, origin, prices, quantityStock, typeProduct } = payload;
     const items = await ItemsModel.create(
-      { shopId: deCryptFakeId(shopId), productId: deCryptFakeId(productId), nameItem, itemThumb, description, brandName, origin, typeProduct, prices },
+      { shopId: deCryptFakeId(shopId), productId: deCryptFakeId(productId), nameItem, itemThumb, description, brandName, origin, typeProduct, prices, quantityStock },
       { transaction: transactionDB }
     );
     const entiyValues = await EntityValuesModel.create({ itemId: items.id }, { transaction: transactionDB });
     const EntityAttsModel = await this.mapItemsServices.getType(typeProduct as ItemsType);
     const payloadEntitys = { ...payloadEntity, entityId: entiyValues.id };
     await EntityAttsModel.create(payloadEntitys, { transaction: transactionDB });
-    return;
+    return this.transformModelToEntity(items);
   }
 
-  async updatedItems(payload: ItemsInterface, payloadEntity: PayloadEntity, transactionDB?: Transaction): Promise<void> {
-    const { id, nameItem, itemThumb, description, brandName, origin, prices } = payload;
+  async updatedItems(payload: ItemsInterface, payloadEntity: PayloadEntity, transactionDB?: Transaction): Promise<ItemsInterface> {
+    const { id, nameItem, itemThumb, description, brandName, origin, prices, quantityStock } = payload;
     const item = await ItemsModel.findByPk(deCryptFakeId(id));
     if (!item) {
       throw new RestError('item not available', 404);
@@ -69,13 +70,14 @@ export class ItemsSequelize implements IItemsRepository {
     item.brandName = brandName ?? item.brandName;
     item.origin = origin ?? item.origin;
     item.prices = prices ?? item.prices;
+    item.quantityStock = quantityStock ?? item.quantityStock;
     await item.save({ transaction: transactionDB });
     const EntityAttsModel = await this.mapItemsServices.getType(item.typeProduct as ItemsType);
     const entityId = deCryptFakeId(payloadEntity.id);
     delete payloadEntity.id;
     delete payloadEntity.entityId;
     await EntityAttsModel.update(payloadEntity, { where: { id: entityId }, transaction: transactionDB });
-    return;
+    return this.transformModelToEntity(item);
   }
 
   async deletedItems(id: string, transactionDB?: Transaction): Promise<void> {
@@ -87,6 +89,9 @@ export class ItemsSequelize implements IItemsRepository {
     const entiry = await EntityValuesModel.findOne({ where: { itemId: item.id } });
     if (!entiry) {
       throw new RestError('item not available', 404);
+    }
+    if (item.itemThumb && item.itemThumb.length) {
+      item.itemThumb.forEach((item) => removeFile(item));
     }
     const EntityAttsModel = await this.mapItemsServices.getType(item.typeProduct as ItemsType);
     await EntityAttsModel.destroy({ where: { entityId: entiry.id }, transaction: transactionDB });

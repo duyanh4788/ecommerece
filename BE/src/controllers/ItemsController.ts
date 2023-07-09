@@ -39,10 +39,11 @@ export class ItemsController {
   public createdItems = async (req: Request, res: Response) => {
     const transactionDB = await sequelize.transaction();
     try {
-      const [items, payloadEntity] = await new ItemRequest().validateObject(req.body.items, req.body.payloadEntity);
-      await this.itemsUseCase.createdItemsUseCase(items, payloadEntity, transactionDB);
+      const { user } = req;
+      const [items, payloadEntity] = await new ItemRequest().validateObject(user.userId, req.body.items, req.body.payloadEntity, true);
+      const created = await this.itemsUseCase.createdItemsUseCase(items, payloadEntity, transactionDB);
       await transactionDB.commit();
-      return new SendRespone({ message: 'created successfullly.' }).send(res);
+      return new SendRespone({ data: created, message: 'created successfullly.' }).send(res);
     } catch (error) {
       await transactionDB.rollback();
       return RestError.manageServerError(res, error, false);
@@ -52,10 +53,11 @@ export class ItemsController {
   public updatedItems = async (req: Request, res: Response) => {
     const transactionDB = await sequelize.transaction();
     try {
-      const [items, payloadEntity] = await new ItemRequest().validateObject(req.body.items, req.body.payloadEntity);
-      await this.itemsUseCase.updatedItemsUseCase(items, payloadEntity, transactionDB);
+      const { user } = req;
+      const [items, payloadEntity] = await new ItemRequest().validateObject(user.userId, req.body.items, req.body.payloadEntity, false);
+      const update = await this.itemsUseCase.updatedItemsUseCase(items, payloadEntity, transactionDB);
       await transactionDB.commit();
-      return new SendRespone({ message: 'updated successfullly.' }).send(res);
+      return new SendRespone({ data: update, message: 'updated successfullly.' }).send(res);
     } catch (error) {
       await transactionDB.rollback();
       return RestError.manageServerError(res, error, false);
@@ -71,7 +73,7 @@ export class ItemsController {
       }
       await this.itemsUseCase.deletedItemsUseCase(id, transactionDB);
       await transactionDB.commit();
-      return new SendRespone({ message: 'deleted successfullly.' }).send(res);
+      return new SendRespone({ data: { id }, message: 'deleted successfullly.' }).send(res);
     } catch (error) {
       await transactionDB.rollback();
       return RestError.manageServerError(res, error, false);

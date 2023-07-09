@@ -46,7 +46,7 @@ export class ShopUseCase {
     if (roleId && roleId === UserRole.ADMIN) {
       return await this.shopUsersRepository.getShopById(shopId, roleId);
     }
-    return await RedisUsers.getInstance().handlerGetShopId(userId, shopId);
+    return await RedisUsers.getInstance().handlerGetShopId(shopId, userId);
   }
 
   async updateStatusShopUseCase(shopId: string, status: boolean) {

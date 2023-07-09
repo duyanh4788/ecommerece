@@ -10,6 +10,7 @@ import { RedisUsers } from '../../redis/users/RedisUsers';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 import { Transaction } from 'sequelize';
 import { SubscriptionModel } from '../model/SubscriptionModel';
+import { removeFile } from '../../utils/removeFile';
 
 export class ShopSequelize implements IShopRepository {
   private INCLUDES: any[] = [
@@ -45,9 +46,8 @@ export class ShopSequelize implements IShopRepository {
     if (banners) {
       find.banners = banners;
     }
-    if (sliders) {
-      const clone = find.sliders || [];
-      find.sliders = [...clone, ...sliders];
+    if (sliders && sliders.length) {
+      find.sliders = sliders;
     }
     await this.handleRedis(id, userId);
     await find.save();
@@ -75,6 +75,12 @@ export class ShopSequelize implements IShopRepository {
     const find = await ShopsModel.findByPk(deCryptFakeId(id));
     if (!find) throw new RestError('shop not availabe!', 404);
     if (find.userId !== deCryptFakeId(userId)) throw new RestError('shop not availabe!', 404);
+    if (find.sliders && find.sliders.length) {
+      find.sliders.forEach((item) => removeFile(item));
+    }
+    if (find.banners && find.banners.length) {
+      find.banners.forEach((item) => removeFile(item));
+    }
     await find.destroy();
     await this.handleRedis(id, userId);
     return;

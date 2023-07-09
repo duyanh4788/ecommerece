@@ -3,6 +3,10 @@ import { EntityCosmesticsModel } from '../database/model/EAV/EntityCosmesticsMod
 import { EntityElectronicsModel } from '../database/model/EAV/EntityElectronicsModel';
 import { EntityFunituresModel } from '../database/model/EAV/EntityFunituresModel';
 
+interface DefaultMysql {
+  id?: string | number | any;
+  createdAt?: Date;
+}
 export interface ListItemsInterface {
   total?: number;
   currentPage?: number;
@@ -27,6 +31,7 @@ export interface ItemsInterface {
   typeProduct?: string;
   createdAt?: Date;
   entityValues?: EntityValuesInterface;
+  subscriptionId?: string;
 }
 
 export interface EntityValuesInterface {
@@ -34,10 +39,10 @@ export interface EntityValuesInterface {
   itemId?: string | number | any;
   createdAt?: Date;
   entityElectronics?: EntityElectronicsInterface;
-  entityClothers?: EntityElectronicsInterface;
-  entityCosmestics?: EntityElectronicsInterface;
-  entityFunitures?: EntityElectronicsInterface;
-  attributes?: EntityCosmeticsInterface | EntityFunituresInterface | EntityElectronicsInterface | EntityClothesIntersface;
+  entityClothers?: EntityClothesIntersface;
+  entityCosmestics?: EntityCosmeticsInterface;
+  entityFunitures?: EntityFunituresInterface;
+  attributes?: PayloadEntity;
 }
 
 export interface EntityCosmeticsInterface {
@@ -98,7 +103,7 @@ export const MapItemsType = [
   { key: 'FUNITURES', value: EntityFunituresModel }
 ];
 
-export type PayloadEntity = EntityClothersModel | EntityCosmeticsInterface | EntityFunituresInterface | EntityElectronicsInterface;
+export type PayloadEntity = EntityClothesIntersface | EntityCosmeticsInterface | EntityFunituresInterface | EntityElectronicsInterface;
 
 export enum EntityType {
   entityElectronics = 'entityElectronics',

@@ -3,6 +3,7 @@ import { SendRespone } from '../services/success/success';
 import { RestError } from '../services/error/error';
 import { ShopUseCase } from '../usecase/ShopUseCase';
 import { TypeOfValue, isCheckedTypeValues } from '../utils/validate';
+import { removeFile } from '../utils/removeFile';
 
 export class ShopController {
   constructor(private shopUseCase: ShopUseCase) {}
@@ -29,11 +30,14 @@ export class ShopController {
   public updatedSliders = async (req: Request, res: Response) => {
     try {
       const { user } = req;
-      const { id, sliders } = req.body;
-      if (!isCheckedTypeValues(sliders, TypeOfValue.ARRAY, false) || !isCheckedTypeValues(id, TypeOfValue.STRING)) {
+      const { id, sliders, idImageRemove } = req.body;
+      if (!isCheckedTypeValues(sliders, TypeOfValue.ARRAY, false) || !isCheckedTypeValues(id, TypeOfValue.STRING) || (idImageRemove && !isCheckedTypeValues(idImageRemove, TypeOfValue.STRING))) {
         throw new RestError('invalid request!', 404);
       }
       await this.shopUseCase.updatedSlidersUseCase(req.body, user.userId);
+      if (idImageRemove) {
+        removeFile(idImageRemove);
+      }
       return new SendRespone({ message: 'updated successfullly.' }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);

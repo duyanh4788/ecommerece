@@ -65,7 +65,7 @@ export class RedisUsers {
     return shopsRedis;
   }
 
-  public async handlerGetShopId(userId: string, shopId: string): Promise<ShopInterface> {
+  public async handlerGetShopId(shopId: string, userId: string): Promise<ShopInterface> {
     let shopRedis = await redisController.getRedis(`${MainkeysRedis.SHOP_ID}${shopId}`);
     if (!shopRedis) {
       const shop = await this.shopSequelize.getShopById(shopId, userId);

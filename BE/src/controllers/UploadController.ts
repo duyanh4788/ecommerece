@@ -3,6 +3,7 @@ import { SendRespone } from '../services/success/success';
 import { RestError } from '../services/error/error';
 import fs from 'fs';
 import { TypeOfValue, isCheckedTypeValues } from '../utils/validate';
+import { removeFile } from '../utils/removeFile';
 export class Uploadcontroller {
   public uploadFile = async (req: Request, res: Response) => {
     try {
@@ -34,21 +35,13 @@ export class Uploadcontroller {
         throw new RestError('invalid request!', 404);
       }
       if (isCheckedTypeValues(idImage, TypeOfValue.ARRAY)) {
-        idImage.forEach((item) => this.unLinkFile(item));
+        idImage.forEach((item) => removeFile(item));
       } else if (isCheckedTypeValues(idImage, TypeOfValue.STRING)) {
-        this.unLinkFile(idImage);
+        removeFile(idImage);
       }
       return new SendRespone({ message: 'remove successfullly.' }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
-  };
-
-  private unLinkFile = (id: string) => {
-    const splitFolder = id.split('/data_publish/')[1];
-    const splitFileName = splitFolder.split('/');
-    const filePath = splitFileName[0] === 'videos' ? `${_pathFileVideo}/${splitFileName[1]}/${splitFileName[2]}` : `${_pathFileImages}/${splitFileName[1]}/${splitFileName[2]}`;
-    fs.accessSync(filePath);
-    fs.unlinkSync(filePath);
   };
 }

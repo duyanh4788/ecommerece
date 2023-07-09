@@ -18,13 +18,13 @@ export interface IItemsRepository {
    * @param payload
    * @param transactionDB
    */
-  createdItems(payload: ItemsInterface, payloadEntity: PayloadEntity, transactionDB?: Transaction): Promise<void>;
+  createdItems(payload: ItemsInterface, payloadEntity: PayloadEntity, transactionDB?: Transaction): Promise<ItemsInterface>;
 
   /**
    * @param payload
    * @param transactionDB
    */
-  updatedItems(payload: ItemsInterface, payloadEntity: PayloadEntity, transactionDB?: Transaction): Promise<void>;
+  updatedItems(payload: ItemsInterface, payloadEntity: PayloadEntity, transactionDB?: Transaction): Promise<ItemsInterface>;
 
   /**
    * @param id

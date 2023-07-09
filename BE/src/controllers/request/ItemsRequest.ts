@@ -1,19 +1,22 @@
 import { EntityClothesIntersface, EntityCosmeticsInterface, EntityElectronicsInterface, EntityFunituresInterface, ItemsInterface, ItemsType, PayloadEntity } from '../../interface/ItemsInterface';
+import { SubscriptionStatus } from '../../interface/SubscriptionInterface';
 import { RedisProducts } from '../../redis/products/RedisProducts';
+import { RedisResource } from '../../redis/subscription/RedisResource';
+import { RedisSubscription } from '../../redis/subscription/RedisSubscription';
+import { RedisUsers } from '../../redis/users/RedisUsers';
 import { RestError } from '../../services/error/error';
 import { TypeOfValue, isCheckedTypeValues } from '../../utils/validate';
-import { Request } from 'express';
 
 export class ItemRequest {
   private redisProducts: RedisProducts = new RedisProducts();
   public items: ItemsInterface;
   public payloadEntity: PayloadEntity;
 
-  async validateObject(items: ItemsInterface, payloadEntity: PayloadEntity): Promise<[ItemsInterface, PayloadEntity]> {
+  async validateObject(userId: string, items: ItemsInterface, payloadEntity: PayloadEntity, typeCheck: boolean): Promise<[ItemsInterface, PayloadEntity]> {
     if (!isCheckedTypeValues(items, TypeOfValue.OBJECT) || !isCheckedTypeValues(payloadEntity, TypeOfValue.OBJECT)) {
       throw new RestError('payload not available', 404);
     }
-    const { id, shopId, productId, nameItem, description, prices, brandName, origin } = items;
+    const { id, shopId, productId, nameItem, itemThumb, description, prices, quantityStock, brandName, origin } = items;
     if (id && !isCheckedTypeValues(id, TypeOfValue.STRING)) {
       throw new RestError('Payload not available', 404);
     }
@@ -34,16 +37,32 @@ export class ItemRequest {
       throw new RestError('item not available', 404);
     }
 
-    if (!isCheckedTypeValues(nameItem, TypeOfValue.STRING)) {
+    if (nameItem && !isCheckedTypeValues(nameItem, TypeOfValue.STRING)) {
       throw new RestError('Name not Empty', 404);
     }
 
-    if (!isCheckedTypeValues(description, TypeOfValue.STRING)) {
+    if (itemThumb && !isCheckedTypeValues(itemThumb, TypeOfValue.ARRAY)) {
+      throw new RestError('Name not Empty', 404);
+    }
+
+    if (description && !isCheckedTypeValues(description, TypeOfValue.STRING)) {
       throw new RestError('Description not Empty', 404);
     }
 
-    if (!isCheckedTypeValues(prices, TypeOfValue.NUMBER)) {
+    if (prices && !isCheckedTypeValues(prices, TypeOfValue.NUMBER)) {
       throw new RestError('Prices not Empty', 404);
+    }
+
+    if (prices && prices > 10000) {
+      throw new RestError('Prices not available', 404);
+    }
+
+    if (quantityStock && !isCheckedTypeValues(quantityStock, TypeOfValue.NUMBER)) {
+      throw new RestError('Number sotck not Empty', 404);
+    }
+
+    if (quantityStock && quantityStock > 10000) {
+      throw new RestError('Number sotck not available', 404);
     }
 
     if (brandName && !isCheckedTypeValues(brandName, TypeOfValue.STRING)) {
@@ -53,7 +72,27 @@ export class ItemRequest {
     if (origin && !isCheckedTypeValues(origin, TypeOfValue.STRING)) {
       throw new RestError('Origin Name not available', 404);
     }
-
+    const shops = await RedisUsers.getInstance().handlerGetShopId(shopId, userId);
+    if (!shops || shops.userId !== userId) {
+      throw new RestError('shop is not available', 404);
+    }
+    const subs = await RedisSubscription.getInstance().getSubsByShopId(shopId);
+    if (!subs || subs.status !== SubscriptionStatus.ACTIVE) {
+      throw new RestError('shop is not subscription', 404);
+    }
+    if (typeCheck) {
+      const shopResource = await RedisResource.getInstance().findByShopId(shopId);
+      if (!shopResource) {
+        throw new RestError('shop is not subscription', 404);
+      }
+      if (shopResource.numberItem <= 0) {
+        throw new RestError('Item is zero, please upgrade subscription or waiting next payment!', 404);
+      }
+    }
+    const isCheckProduct = shops.prodcutSell.find((item) => item.id === productId);
+    if (!isCheckProduct) {
+      throw new RestError('Product not registed', 404);
+    }
     const findProduct = await this.redisProducts.handlerGetProductsId(productId);
     if (!findProduct) {
       throw new RestError('Product not available', 404);
@@ -78,13 +117,13 @@ export class ItemRequest {
         break;
     }
 
-    this.items = { ...items, typeProduct };
+    this.items = { ...items, typeProduct, subscriptionId: subs.subscriptionId };
     this.payloadEntity = payloadEntity;
 
     return [this.items, this.payloadEntity];
   }
 
-  protected async validateAttbsElectronic(payloadEntity: PayloadEntity) {
+  protected validateAttbsElectronic(payloadEntity: PayloadEntity) {
     const { color, storage, screenSize, weight, technology, warranty } = payloadEntity as EntityElectronicsInterface;
 
     if (color && !isCheckedTypeValues(color, TypeOfValue.STRING)) {
@@ -112,7 +151,7 @@ export class ItemRequest {
     }
   }
 
-  protected async validateAttbsClothers(payloadEntity: PayloadEntity) {
+  protected validateAttbsClothers(payloadEntity: PayloadEntity) {
     const { color, material, size, styleList } = payloadEntity as EntityClothesIntersface;
 
     if (color && !isCheckedTypeValues(color, TypeOfValue.STRING)) {
@@ -132,7 +171,7 @@ export class ItemRequest {
     }
   }
 
-  protected async validateAttbsCosmetics(payloadEntity: PayloadEntity) {
+  protected validateAttbsCosmetics(payloadEntity: PayloadEntity) {
     const { volume, weight, activesIngredients, expiry } = payloadEntity as EntityCosmeticsInterface;
 
     if (volume && !isCheckedTypeValues(volume, TypeOfValue.STRING)) {
@@ -152,7 +191,7 @@ export class ItemRequest {
     }
   }
 
-  protected async validateAttbsFunitures(payloadEntity: PayloadEntity) {
+  protected validateAttbsFunitures(payloadEntity: PayloadEntity) {
     const { size, material, manufactury, funtion, warranty } = payloadEntity as EntityFunituresInterface;
 
     if (size && !isCheckedTypeValues(size, TypeOfValue.STRING)) {

@@ -5,6 +5,7 @@ import { UsersModel } from '../model/UsersModel';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
 import { RedisUsers } from '../../redis/users/RedisUsers';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { removeFile } from '../../utils/removeFile';
 
 export class UserSequelize implements IUserRepository {
   async findAllLists(): Promise<UserAttributes[]> {
@@ -44,9 +45,13 @@ export class UserSequelize implements IUserRepository {
     if (password) {
       user.password = password;
     }
+    if (user.avatar) {
+      removeFile(user.avatar);
+    }
     if (avatar) {
       user.avatar = avatar;
     }
+
     await user.save();
     await RedisUsers.getInstance().handlerDelKeysEmail(user.email);
     await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.USER_ID, userId);
