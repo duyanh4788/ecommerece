@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as ItemSlice from 'store/items/shared/slice';
 import * as ItemSelector from 'store/items/shared/selectors';
 import * as ShopSelector from 'store/shops/shared/selectors';
-import { Cancel, Done } from '@mui/icons-material';
+import { Cancel, Done, Edit } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -28,22 +28,27 @@ import {
   ValuesItems,
   ItemsType,
   formInputItem,
+  ItemsInterface,
 } from 'interface/Items.mode';
-import { BANNER_SHOP } from 'commom/common.contants';
+import { BG_MAIN_2, renderMsgUploadItems } from 'commom/common.contants';
 import { FormClosthers } from 'hooks/entityItem/FormClosthers';
 import { FormCosmetics } from 'hooks/entityItem/FormCosmetics';
 import { FormElectronics } from 'hooks/entityItem/FormElectronics';
 import { FormFunitures } from 'hooks/entityItem/FormFunitures';
 import { SwipersList } from 'hooks/component/SwipersList';
+import { AppHelper } from 'utils/app.helper';
+import { toast } from 'react-toastify';
+import { RenderImagesList } from 'hooks/component/RenderImagesList';
 
 interface Props {
-  setAddItem: (e: boolean) => void;
+  handleResetAddUpdate: () => void;
   resetDataRefItems: RefObject<boolean | null>;
 }
 
-export const CardAddItem = ({ setAddItem, resetDataRefItems }: Props) => {
+export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems }: Props) => {
   const dispatch = useDispatch();
   const shopInfor = useSelector(ShopSelector.selectShopInfor);
+  const itemInfor: ItemsInterface | null = useSelector(ItemSelector.selectItemInfor);
   const url = useSelector(ItemSelector.selectUrl);
   const [items, setItems] = useState<ValuesItems | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -51,7 +56,20 @@ export const CardAddItem = ({ setAddItem, resetDataRefItems }: Props) => {
   const [typeProduct, setTypeProduct] = useState<string | null>(
     (shopInfor?.prodcutSell && shopInfor?.prodcutSell[0].nameProduct?.toUpperCase()) || null,
   );
+  const [editSlides, setEditSlides] = useState<boolean>(false);
   const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    function initItemCurr(data) {
+      if (!data) return;
+      const parseObj = AppHelper.parseItemObject(data);
+      if (!parseObj) return;
+      setItems(prevItems => ({ ...prevItems, ...parseObj }));
+      setTypeProduct(parseObj.typeProduct as string);
+      return;
+    }
+    setTimeout(() => initItemCurr(itemInfor));
+  }, [itemInfor]);
 
   useEffect(() => {
     if (resetDataRefItems.current) {
@@ -62,7 +80,7 @@ export const CardAddItem = ({ setAddItem, resetDataRefItems }: Props) => {
   }, [resetDataRefItems.current]);
 
   const resetData = () => {
-    setAddItem(false);
+    handleResetAddUpdate();
     setItems(null);
     setSelectedIndex(0);
     setAnchorEl(null);
@@ -87,14 +105,38 @@ export const CardAddItem = ({ setAddItem, resetDataRefItems }: Props) => {
     accept: 'image/*',
     idInput: 'input-shop',
     onChange: (newFormData: FormData | null) => {
-      dispatch(ItemSlice.actions.uploadFile(newFormData));
+      if (newFormData) {
+        const formDataEntries = Array.from(newFormData.entries());
+        const formDataLength = formDataEntries.length;
+        if (
+          itemInfor &&
+          itemInfor.itemThumb &&
+          itemInfor.itemThumb.length &&
+          itemInfor.itemThumb.length + formDataLength > 5
+        ) {
+          toast.error(renderMsgUploadItems(5 - itemInfor.itemThumb.length));
+          return;
+        }
+        dispatch(ItemSlice.actions.uploadFile(newFormData));
+      }
     },
     onDrop: (event: React.DragEvent<HTMLElement>) => {
       const { files }: any = event.dataTransfer;
       if (files !== null && files.length > 0) {
-        const formData = new FormData();
-        formData.append('file', files.length === 1 ? files[0] : files);
-        dispatch(ItemSlice.actions.uploadFile(formData));
+        if (
+          itemInfor &&
+          itemInfor.itemThumb &&
+          itemInfor.itemThumb.length &&
+          itemInfor.itemThumb.length + files.length > 5
+        ) {
+          toast.error(renderMsgUploadItems(5 - itemInfor.itemThumb.length));
+          return;
+        }
+        const newFormData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+          newFormData.append('file', files[i]);
+        }
+        dispatch(ItemSlice.actions.uploadFile(newFormData));
       }
     },
   };
@@ -152,22 +194,52 @@ export const CardAddItem = ({ setAddItem, resetDataRefItems }: Props) => {
 
   const handleDone = () => {
     if (!shopInfor || !shopInfor?.prodcutSell?.length) return;
-    const itemsPayload = {
-      shopId: shopInfor?.id,
-      productId: shopInfor?.prodcutSell[selectedIndex].id,
-      nameItem: items?.nameItem,
-      itemThumb: url && url.length ? url : null,
-      description: items?.description,
-      prices: Number(items?.prices),
-      quantityStock: Number(items?.quantityStock),
-      brandName: items?.brandName,
-      origin: items?.origin,
-    };
-    const payload = {
-      items: itemsPayload,
-      payloadEntity: configPayloadEntity(),
-    };
-    dispatch(ItemSlice.actions.createdItem(payload));
+    if (!itemInfor) {
+      const itemsPayload = {
+        shopId: shopInfor?.id,
+        productId: shopInfor?.prodcutSell[selectedIndex].id,
+        nameItem: items?.nameItem,
+        itemThumb: url && url.length ? url : null,
+        description: items?.description,
+        prices: Number(items?.prices),
+        quantityStock: Number(items?.quantityStock),
+        brandName: items?.brandName,
+        origin: items?.origin,
+      };
+      const payload = {
+        items: itemsPayload,
+        payloadEntity: configPayloadEntity(),
+      };
+      dispatch(ItemSlice.actions.createdItem(payload));
+      return;
+    }
+    if (itemInfor) {
+      if (!items || !items?.itemChildId) return;
+      const itemsPayload = {
+        id: items?.id,
+        shopId: items?.shopId,
+        productId: items?.productId,
+        nameItem: items?.nameItem,
+        itemThumb: configItemThum(),
+        description: items?.description,
+        prices: Number(items?.prices),
+        quantityStock: Number(items?.quantityStock),
+        brandName: items?.brandName,
+        origin: items?.origin,
+      };
+      const payloadEntity = configPayloadEntity();
+      const payload = {
+        items: itemsPayload,
+        payloadEntity: {
+          ...payloadEntity,
+          id: items.itemChildId as string,
+          entityId: items?.entityId,
+        },
+      };
+      dispatch(ItemSlice.actions.updatedItem(payload));
+      return;
+    }
+    return;
   };
 
   const configPayloadEntity = () => {
@@ -185,7 +257,7 @@ export const CardAddItem = ({ setAddItem, resetDataRefItems }: Props) => {
         material: items?.material,
         manufactury: items?.manufactury,
         funtion: items?.funtion,
-        warranty: items?.warranty,
+        warranty: items?.warranty ? true : false,
       } as EntityFunituresInterface;
     }
     if (typeProduct === ItemsType.COSMETICS) {
@@ -203,9 +275,38 @@ export const CardAddItem = ({ setAddItem, resetDataRefItems }: Props) => {
         screenSize: items?.screenSize,
         weight: items?.weight,
         technology: items?.technology,
-        warranty: items?.warranty,
+        warranty: items?.warranty ? true : false,
       } as EntityElectronicsInterface;
     }
+  };
+
+  const configItemThum = () => {
+    if (items?.itemThumb && items?.itemThumb.length && url.length) {
+      return [...items?.itemThumb, ...url];
+    }
+
+    if (
+      (!items?.itemThumb && url.length) ||
+      (items?.itemThumb && !items.itemThumb.length && url.length)
+    ) {
+      return url;
+    }
+
+    if (items?.itemThumb && items?.itemThumb.length && !url.length) {
+      return items?.itemThumb;
+    }
+
+    return [];
+  };
+
+  const handleUploadSlider = (idImage: string) => {
+    const listThumb = itemInfor?.itemThumb?.filter(item => item !== idImage);
+    const result = {
+      id: itemInfor?.id,
+      itemThumb: listThumb,
+      idImageRemove: idImage,
+    };
+    dispatch(ItemSlice.actions.updatedThumb(result));
   };
 
   return (
@@ -230,17 +331,34 @@ export const CardAddItem = ({ setAddItem, resetDataRefItems }: Props) => {
           </React.Fragment>
         }
       />
-      {url.length ? (
-        <SwipersList data={url} />
+      {url.length ||
+      (itemInfor && itemInfor.itemThumb && itemInfor.itemThumb.length && !editSlides) ? (
+        <Box className="box_media">
+          <SwipersList data={url.length ? url : (itemInfor?.itemThumb as string[])} />
+          {items && items.itemThumb && items.itemThumb.length < 5 ? (
+            <FileUpload {...fileUploadProp} />
+          ) : null}
+        </Box>
       ) : (
-        <img src={BANNER_SHOP} alt={BANNER_SHOP} width={'100%'} height={'200px'} />
+        <Card sx={{ background: BG_MAIN_2, margin: '10px 0' }}>
+          <RenderImagesList
+            sliders={itemInfor?.itemThumb as string[]}
+            setEditSlides={setEditSlides}
+            handleUploadSlider={handleUploadSlider}
+            fileUploadProp={fileUploadProp}
+          />
+        </Card>
       )}
-      <FileUpload {...fileUploadProp} />
+
+      <IconButton onClick={() => setEditSlides(true)}>
+        <Edit />
+      </IconButton>
       <CardContent className="card_content">
         <Box className="box_add_item">
           <List component="nav">
             <ListItem
               button
+              disabled={itemInfor ? true : false}
               onClick={event => setAnchorEl(event.currentTarget)}
               className="menu_prod">
               <ListItemText
@@ -277,6 +395,7 @@ export const CardAddItem = ({ setAddItem, resetDataRefItems }: Props) => {
           <TextareaAutosize
             className="text_area"
             placeholder="Description"
+            name="description"
             value={items?.description}
             onChange={handleChange}
           />

@@ -19,12 +19,13 @@ import * as ShopSelector from 'store/shops/shared/selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppHelper } from 'utils/app.helper';
 import { Products, Shops } from 'interface/Shops.model';
-import { BANNER_SHOP, PATH_PARAMS } from 'commom/common.contants';
+import { BANNER_SHOP, MSG_DRAG_IMG, PATH_PARAMS } from 'commom/common.contants';
 import { useNavigate } from 'react-router-dom';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 import { FileUpload, FileUploadProps } from '../../../hooks/component/FileUpload';
 import { CardListItem } from '../../../hooks/component/CardListItem';
+import { toast } from 'react-toastify';
 
 interface Props {
   shopInfor: Shops | null;
@@ -111,6 +112,10 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
     onDrop: (event: React.DragEvent<HTMLElement>) => {
       const { files }: any = event.dataTransfer;
       if (files !== null && files.length > 0) {
+        if (files.length > 1) {
+          toast.error(MSG_DRAG_IMG);
+          return;
+        }
         const formData = new FormData();
         formData.append('file', files.length === 1 ? files[0] : files);
         dispatch(ShopSlice.actions.uploadFile(formData));

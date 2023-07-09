@@ -71,6 +71,12 @@ export const TITLE_WAITING = 'please waiting system sync transaction paymant wit
 export const TITLE_CHANGED =
   'Note: If you change your subscription, System is update the new plan with the cycle next payment, and the resource for you is reset with the new Plan after the system received payment from Paypal.';
 
+export const renderMsgUploadItems = (num: number) => {
+  return `In items You can have only a maximum of 5 images please remove images you want to be changed or upload maximun more ${num} images`;
+};
+
+export const MSG_DRAG_IMG = 'Please upload only 1 image!';
+
 export const BG_MAIN_2 = '#f5f5f5';
 export const BG_MAIN_1 = '#d6cfc957';
 export const CL_GR = '#919191';

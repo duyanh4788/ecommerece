@@ -32,6 +32,7 @@ import { CardListItem } from '../../../hooks/component/CardListItem';
 import { Shops } from 'interface/Shops.model';
 import {
   BANNER_SHOP,
+  MSG_DRAG_IMG,
   PATH_PARAMS,
   TITLE_REGISTED_SHOP,
   TITLE_STATUS_SHOP,
@@ -41,6 +42,7 @@ import { useNavigate } from 'react-router-dom';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 import { SubscriptionStatus } from 'interface/Subscriptions.model';
+import { toast } from 'react-toastify';
 
 interface Props {
   resetDataRef: RefObject<boolean | null>;
@@ -112,6 +114,10 @@ export const CardListShops = ({ resetDataRef }: Props) => {
     onDrop: (event: React.DragEvent<HTMLElement>) => {
       const { files }: any = event.dataTransfer;
       if (files !== null && files.length > 0) {
+        if (files.length > 1) {
+          toast.error(MSG_DRAG_IMG);
+          return;
+        }
         const formData = new FormData();
         formData.append('file', files.length === 1 ? files[0] : files);
         dispatch(ShopSlice.actions.uploadFile(formData));

@@ -92,10 +92,11 @@ export const ManagerShop = () => {
         case ItemSlice.actions.deletedItemFail.type:
         case ItemSlice.actions.createdItemFail.type:
         case ItemSlice.actions.updatedItemFail.type:
+        case ItemSlice.actions.updatedThumbFail.type:
           toast.error(payload.message);
           break;
         case ItemSlice.actions.createdItemSuccess.type:
-        case ItemSlice.actions.updatedItem.type:
+        case ItemSlice.actions.updatedItemSuccess.type:
         case ItemSlice.actions.deletedItemSuccess.type:
           toast.success(payload.message);
           handleResetDataItems();
@@ -103,6 +104,10 @@ export const ManagerShop = () => {
           break;
         case ItemSlice.actions.uploadFileSuccess.type:
           toast.success(payload.message);
+          break;
+        case ItemSlice.actions.updatedThumbSuccess.type:
+          toast.success(payload.message);
+          dispatch(ItemSlice.actions.getItemById(payload.data.id));
           break;
         default:
           break;

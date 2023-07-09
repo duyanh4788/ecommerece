@@ -47,6 +47,18 @@ const ItemSlice = createSlice({
       state.error = true;
     },
 
+    updatedThumb(state, action) {
+      state.loading = true;
+    },
+    updatedThumbSuccess(state, action) {
+      state.loading = false;
+      state.success = true;
+    },
+    updatedThumbFail(state, action) {
+      state.loading = false;
+      state.error = true;
+    },
+
     deletedItem(state) {
       state.loading = true;
     },

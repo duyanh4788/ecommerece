@@ -11,7 +11,8 @@ export function* createdItem(api, action) {
     const resPonse = yield call(api.createdItem, action.payload);
     const data = yield configResponse(resPonse);
     const newData = yield configListItems(TypeSaga.CREATED, data.data);
-    yield put(actions.createdItemSuccess(newData));
+    const dataSuccess = { ...data, data: newData };
+    yield put(actions.createdItemSuccess(dataSuccess));
   } catch (error) {
     yield put(actions.createdItemFail(configResponseError(error)));
   }
@@ -22,7 +23,8 @@ export function* updatedItem(api, action) {
     const resPonse = yield call(api.updatedItem, action.payload);
     const data = yield configResponse(resPonse);
     const newData = yield configListItems(TypeSaga.UPDATED, data.data);
-    yield put(actions.updatedItemSuccess(newData));
+    const dataSuccess = { ...data, data: newData };
+    yield put(actions.updatedItemSuccess(dataSuccess));
   } catch (error) {
     yield put(actions.updatedItemFail(configResponseError(error)));
   }
@@ -33,9 +35,20 @@ export function* deletedItem(api, action) {
     const resPonse = yield call(api.deletedItem, action.payload);
     const data = yield configResponse(resPonse);
     const newData = yield configListItems(TypeSaga.DELETED, data.data);
-    yield put(actions.deletedItemSuccess(newData));
+    const dataSuccess = { ...data, data: newData };
+    yield put(actions.deletedItemSuccess(dataSuccess));
   } catch (error) {
     yield put(actions.deletedItemFail(configResponseError(error)));
+  }
+}
+
+export function* updatedThumb(api, action) {
+  try {
+    const resPonse = yield call(api.updatedThumb, action.payload);
+    const data = yield configResponse(resPonse);
+    yield put(actions.updatedThumbSuccess(data));
+  } catch (error) {
+    yield put(actions.updatedThumbFail(configResponseError(error)));
   }
 }
 
@@ -83,6 +96,7 @@ export function* ItemSaga() {
   yield all([
     yield takeLatest(actions.createdItem.type, createdItem, itemRequest),
     yield takeLatest(actions.updatedItem.type, updatedItem, itemRequest),
+    yield takeLatest(actions.updatedThumb.type, updatedThumb, itemRequest),
     yield takeLatest(actions.deletedItem.type, deletedItem, itemRequest),
     yield takeLatest(actions.getListsItems.type, getListsItems, itemRequest),
     yield takeLatest(actions.getItemById.type, getItemById, itemRequest),
@@ -96,24 +110,20 @@ function* configListItems(type: string, data: ItemsInterface) {
   if (!listItems || !listItems.items?.length) return;
   if (type === TypeSaga.CREATED) {
     const result = [{ ...data, isAdd: true }, ...listItems.items];
-    return {
-      data: { ...listItems, items: result, total: listItems.total + 1, typeSaga: TypeSaga.CREATED },
-    };
+    return { ...listItems, items: result, total: listItems.total + 1, typeSaga: TypeSaga.CREATED };
   }
   if (type === TypeSaga.UPDATED) {
     const filter = listItems.items.filter(item => item.id !== data.id);
-    const result = filter.push(data);
-    return { data: { ...listItems, items: result, typeSaga: TypeSaga.UPDATED } };
+    const result = [{ ...data }, ...filter];
+    return { ...listItems, items: result, typeSaga: TypeSaga.UPDATED };
   }
   if (type === TypeSaga.DELETED) {
     const result = listItems.items.filter(item => item.id !== data.id);
     return {
-      data: {
-        ...listItems,
-        items: result,
-        total: listItems.total ? listItems.total - 1 : 0,
-        typeSaga: TypeSaga.DELETED,
-      },
+      ...listItems,
+      items: result,
+      total: listItems.total ? listItems.total - 1 : 0,
+      typeSaga: TypeSaga.DELETED,
     };
   }
 }

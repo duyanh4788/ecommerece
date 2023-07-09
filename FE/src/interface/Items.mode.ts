@@ -31,6 +31,7 @@ export interface ItemsInterface {
   createdAt?: Date;
   entityValues?: EntityValuesInterface;
   isAdd?: boolean;
+  itemChildId?: string;
 }
 
 export interface EntityValuesInterface {

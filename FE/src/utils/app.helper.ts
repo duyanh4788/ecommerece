@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-concat */
 /* eslint-disable array-callback-return */
+import { ItemsInterface } from 'interface/Items.mode';
 import * as _ from 'lodash';
 const moment = require('moment');
 
@@ -149,5 +150,28 @@ export class AppHelper {
       const truncatedText = text.slice(0, 10) + ' ...';
       return truncatedText;
     }
+  }
+
+  static parseItemObject(item: ItemsInterface) {
+    if (!item || !item.entityValues) return;
+    const entityKeys = [
+      'entityCosmestics',
+      'entityFunitures',
+      'entityElectronics',
+      'entityClothers',
+    ];
+    let clone = { ...item };
+    let itemChildId: any;
+    for (let key of entityKeys) {
+      if (clone && clone.entityValues && clone.entityValues[key]) {
+        const entity = clone.entityValues[key];
+        itemChildId = entity.id;
+        const { id, ...restEntity } = entity;
+        clone = { ...clone, ...restEntity };
+        delete clone.entityValues;
+        break;
+      }
+    }
+    return { ...clone, itemChildId };
   }
 }

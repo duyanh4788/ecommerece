@@ -18,7 +18,8 @@ import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
 import { FileUpload, FileUploadProps } from '../../../hooks/component/FileUpload';
 import { CardListItem } from '../../../hooks/component/CardListItem';
-import { PROFILE } from 'commom/common.contants';
+import { MSG_DRAG_IMG, PROFILE } from 'commom/common.contants';
+import { toast } from 'react-toastify';
 interface Props {
   resetDataRef: RefObject<boolean | null>;
 }
@@ -88,6 +89,10 @@ export const CardProfile = ({ resetDataRef }: Props) => {
     onDrop: (event: React.DragEvent<HTMLElement>) => {
       const { files }: any = event.dataTransfer;
       if (files !== null && files.length > 0) {
+        if (files.length > 1) {
+          toast.error(MSG_DRAG_IMG);
+          return;
+        }
         const formData = new FormData();
         formData.append('file', files.length === 1 ? files[0] : files);
         dispatch(AuthSlice.actions.uploadFile(formData));

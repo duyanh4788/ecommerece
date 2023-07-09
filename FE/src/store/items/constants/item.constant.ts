@@ -1,12 +1,13 @@
-const shopPath = (path: string): string => `/items/${path}`;
+const itemPath = (path: string): string => `/items/${path}`;
 const uploadPath = (path: string): string => `/upload/${path}`;
 
 export const ItemApi = {
-  CREATED: shopPath('created'),
-  UPDATED: shopPath('updated'),
-  DELETED: shopPath('deleted'),
-  GET_LISTS: shopPath('get-lists'),
-  GET_BY_ID: shopPath('get-by-id'),
+  CREATED: itemPath('created'),
+  UPDATED: itemPath('updated'),
+  UPDATE_THUMB: itemPath('updated-thumb'),
+  DELETED: itemPath('deleted'),
+  GET_LISTS: itemPath('get-lists'),
+  GET_BY_ID: itemPath('get-by-id'),
   UPLOAD_FILE: uploadPath('upload-file'),
   REMOVE_FILE: uploadPath('remove-file'),
 };

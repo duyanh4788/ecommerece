@@ -13,6 +13,10 @@ export class ItemHttp {
     return httpRequest().post(ItemApi.UPDATED, payload);
   };
 
+  public updatedThumb = (payload: any): Promise<any> => {
+    return httpRequest().post(ItemApi.UPDATE_THUMB, payload);
+  };
+
   public deletedItem = (id: string): Promise<any> => {
     return httpRequest().post(ItemApi.DELETED, { id });
   };

@@ -22,7 +22,7 @@ import { Shops } from 'interface/Shops.model';
 import { BANNER_SHOP } from 'commom/common.contants';
 import { ItemsInterface, TypeSaga } from 'interface/Items.mode';
 import { AppHelper } from 'utils/app.helper';
-import { CardAddItem } from './CardAddItem';
+import { CardAddUpdateItem } from './CardAddUpdateItem';
 
 interface Props {
   shopInfor: Shops | null;
@@ -48,7 +48,7 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
   const [items, setItems] = useState<ItemsInterface[]>([]);
   const [addItem, setAddItem] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<boolean>(false);
-  const [itemCurr, setItemCurr] = React.useState<ItemsInterface | null>(null);
+  const [itemCurrent, setItemCurrent] = React.useState<ItemsInterface | null>(null);
   const [alignment, setAlignment] = React.useState<string | null>('ALL');
   const [togge, setTogge] = React.useState<string>('ALL');
 
@@ -76,7 +76,7 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
   const handleResetData = () => {
     setEditItem(false);
     setAddItem(false);
-    setItemCurr(null);
+    setItemCurrent(null);
   };
 
   const renderListItems = useMemo(() => {
@@ -84,10 +84,18 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
     return items.map((item, idx) => {
       return (
         <Grid item xs={6} sm={3} md={2} key={idx}>
-          <Card className="card_profile" sx={{ border: item.isAdd ? '1px solid #56ab2f' : 'none' }}>
+          <Card
+            className="card_profile"
+            sx={{
+              border: item.isAdd
+                ? '3px solid #56ab2f'
+                : editItem && itemCurrent?.id === item.id
+                ? '3px solid #ffc14c'
+                : 'none',
+            }}>
             <CardHeader
               action={
-                editItem && itemCurr && itemCurr.id === item.id ? (
+                editItem && itemCurrent && itemCurrent.id === item.id ? (
                   <IconButton aria-label="settings" onClick={() => handleResetData()}>
                     <Cancel sx={{ fontSize: '15px' }} />
                   </IconButton>
@@ -95,16 +103,13 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
                   <React.Fragment>
                     <IconButton
                       onClick={() => {
-                        setItemCurr(item);
+                        setAddItem(false);
                         setEditItem(!editItem);
+                        dispatch(ItemSlice.actions.getItemById(item.id));
                       }}>
                       <Edit sx={{ fontSize: '15px' }} />
                     </IconButton>
-                    <IconButton
-                      onClick={() => {
-                        setItemCurr(item);
-                        dispatch(ItemSlice.actions.deletedItem(item?.id));
-                      }}>
+                    <IconButton onClick={() => dispatch(ItemSlice.actions.deletedItem(item?.id))}>
                       <Delete sx={{ fontSize: '15px' }} />
                     </IconButton>
                   </React.Fragment>
@@ -181,12 +186,24 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
                 {item.nameProduct}
               </ToggleButton>
             ))}
-          <ToggleButton value={'ADD'} sx={toge2} onClick={() => setAddItem(!addItem)}>
+          <ToggleButton
+            value={'ADD'}
+            sx={toge2}
+            onClick={() => {
+              setAddItem(!addItem);
+              setEditItem(false);
+              setItemCurrent(null);
+            }}>
             Ad
           </ToggleButton>
         </ToggleButtonGroup>
       )}
-      {addItem && <CardAddItem setAddItem={setAddItem} resetDataRefItems={resetDataRefItems} />}
+      {addItem || editItem ? (
+        <CardAddUpdateItem
+          handleResetAddUpdate={handleResetData}
+          resetDataRefItems={resetDataRefItems}
+        />
+      ) : null}
       <Grid container columns={{ xs: 6, sm: 12, md: 12 }} spacing={1}>
         {renderListItems}
       </Grid>

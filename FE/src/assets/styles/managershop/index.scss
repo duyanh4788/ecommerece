@@ -94,6 +94,11 @@
             }
         }
     }
+    .box_media {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 }
 
 .modal_plans {
