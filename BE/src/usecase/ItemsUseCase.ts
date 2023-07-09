@@ -7,8 +7,8 @@ import { IntegerValue, TypeDecInc } from '../interface/ShopsResourcesInterface';
 export class ItemsUseCase {
   constructor(private itemsRepository: IItemsRepository, private shopsResourcesRepository: IShopsResourcesRepository) {}
 
-  async getListsItemsUseCase(shopId: string, page: number, pageSize: number, options: string) {
-    return await this.itemsRepository.getListsItems(shopId, page, pageSize, options);
+  async getListsItemsUseCase(shopId: string, page: number, pageSize: number, search: any, options: string) {
+    return await this.itemsRepository.getListsItems(shopId, page, pageSize, search, options);
   }
 
   async getItemsByIdUseCase(id: string) {

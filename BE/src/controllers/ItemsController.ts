@@ -15,10 +15,10 @@ export class ItemsController {
       if (!shopId) {
         throw new RestError('shop not available', 404);
       }
-      const { page, pageSize, options } = req.query;
+      const { page, pageSize, options, search } = req.query;
       const configPage = Number(page) || 1;
       const configPageSzie = Number(pageSize) || 10;
-      const items = await this.itemsUseCase.getListsItemsUseCase(shopId, configPage, configPageSzie, String(options));
+      const items = await this.itemsUseCase.getListsItemsUseCase(shopId, configPage, configPageSzie, search, String(options));
       return new SendRespone({ data: items }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);

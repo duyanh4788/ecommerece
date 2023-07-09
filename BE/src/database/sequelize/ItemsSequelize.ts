@@ -1,4 +1,4 @@
-import { Transaction } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
 import { IItemsRepository } from '../../repository/IItemsRepository';
 import { PayloadEntity, ItemsInterface, ItemsType, ListItemsInterface } from '../../interface/ItemsInterface';
@@ -17,13 +17,20 @@ export class ItemsSequelize implements IItemsRepository {
   private INCLUED = [{ model: EntityClothersModel }, { model: EntityCosmesticsModel }, { model: EntityElectronicsModel }, { model: EntityFunituresModel }];
   constructor(private mapItemsServices: MapItemsServices) {}
 
-  async getListsItems(shopId: string, page: number, pageSize: number, options: string): Promise<ListItemsInterface> {
+  async getListsItems(shopId: string, page: number, pageSize: number, search: any, options: string): Promise<ListItemsInterface> {
     let option: any = {
       where: { shopId: deCryptFakeId(shopId) }
     };
 
     if (options) {
       option.where = { ...option.where, typeProduct: options };
+    }
+
+    if (search || search !== '') {
+      option.where = {
+        ...option.where,
+        nameItem: { [Op.like]: `%${search}%` }
+      };
     }
 
     const offset = (page - 1) * pageSize;

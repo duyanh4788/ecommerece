@@ -6,7 +6,7 @@ export interface IItemsRepository {
    * get items by shop id
    * @param shopId
    */
-  getListsItems(shopId: string, page: number, pageSize: number, options: string): Promise<ListItemsInterface>;
+  getListsItems(shopId: string, page: number, pageSize: number, search: any, options: string): Promise<ListItemsInterface>;
 
   /**
    * get items by id
