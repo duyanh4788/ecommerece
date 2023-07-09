@@ -27,7 +27,6 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     flexDirection: 'column',
     alignItems: 'center',
-    position: 'absolute',
   },
   hidden: {
     display: 'none',

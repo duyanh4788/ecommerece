@@ -10,6 +10,7 @@ export interface Shops {
   status?: boolean;
   createdAt?: Date;
   subscription?: Subscription;
+  idImageRemove?: string;
 }
 
 export interface Products {

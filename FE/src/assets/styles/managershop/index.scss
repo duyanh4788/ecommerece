@@ -60,6 +60,40 @@
             @include buttonSubs;
         }
     }
+    .card_content {
+        display: flex;
+        justify-content: space-between;
+        .box_add_item {
+            width: 100%;
+            border: $border1;
+            border-radius: 20px;
+            padding: 15px;
+            margin: 15px;
+            input {
+                @include input_form;
+            }
+            input::placeholder {
+                padding-right: 10px !important;
+                @include placehoder_form;
+            }
+            .menu_prod {
+                border: $border1;
+                border-radius: 20px;
+                padding: 0 20px;
+            }
+            .text_area {
+                width: 100%;
+                overflow: hidden;
+                border: $border1;
+                border-radius: 20px;
+                padding: 10px;
+                margin-top: 20px;
+            }
+            .text_area:focus-visible {
+                outline: $color-green auto 1px;
+            }
+        }
+    }
 }
 
 .modal_plans {

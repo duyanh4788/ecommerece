@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Box, Grid, Paper } from '@mui/material';
 import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
@@ -14,17 +14,15 @@ import { CardProfile } from '../component/CardProfile';
 import { CardListShops } from '../component/CardListShops';
 import { BG_MAIN_1 } from 'commom/common.contants';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AuthContext } from 'app/AuthContext/AuthContextApi';
-import { Users } from 'interface/Users.model';
 
 export const Profile = () => {
-  const userInfor: Users = useContext(AuthContext);
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
   const loadingAuth = useSelector(AuthSelector.selectLoading);
   const loadingShop = useSelector(ShopSelector.selectLoading);
-  const resetDataRef = useRef<boolean | null>(false);
+  const resetDataRefProfile = useRef<boolean | null>(false);
+  const resetDataRefListShop = useRef<boolean | null>(false);
 
   useEffect(() => {
     function initUrl(url) {
@@ -46,22 +44,22 @@ export const Profile = () => {
         case AuthSlice.actions.updateProfileSuccess.type:
           dispatch(AuthSlice.actions.getUserById());
           toast.success(payload.message);
-          handleResetData();
+          handleResetDataProfile();
+
           break;
-        case ShopSlice.actions.updatedShopSuccess.type:
         case ShopSlice.actions.deletedShopSuccess.type:
         case ShopSlice.actions.registedShopSuccess.type:
           dispatch(ShopSlice.actions.getListsShop());
           dispatch(ShopSlice.actions.clearUrl());
           toast.success(payload.message);
-          handleResetData();
+          handleResetDataShops();
           break;
         case AuthSlice.actions.uploadFileSuccess.type:
           toast.success(payload.message);
           if (payload && payload.data.length) {
             const data = { avatar: payload.data[0] };
             dispatch(AuthSlice.actions.updateProfile(data));
-            dispatch(AuthSlice.actions.removeFile({ idImage: userInfor?.avatar }));
+            dispatch(AuthSlice.actions.clearUrl());
           }
           break;
         case ShopSlice.actions.uploadFileSuccess.type:
@@ -81,14 +79,21 @@ export const Profile = () => {
     });
     return () => {
       storeSub$();
-      handleResetData();
+      handleResetDataProfile();
+      handleResetDataShops();
       dispatch(AuthSlice.actions.clearData());
     };
   }, []);
 
-  const handleResetData = () => {
-    if (resetDataRef.current !== undefined) {
-      resetDataRef.current = true;
+  const handleResetDataProfile = () => {
+    if (resetDataRefProfile.current !== undefined) {
+      resetDataRefProfile.current = true;
+    }
+  };
+
+  const handleResetDataShops = () => {
+    if (resetDataRefListShop.current !== undefined) {
+      resetDataRefListShop.current = true;
     }
   };
 
@@ -97,8 +102,8 @@ export const Profile = () => {
       {loadingAuth || loadingShop ? <Loading /> : null}
       <Box height={'100%'} bgcolor={BG_MAIN_1} padding={'10px'} borderRadius={'5px'}>
         <Grid container columns={{ xs: 6, sm: 12, md: 12 }} spacing={2}>
-          <CardProfile resetDataRef={resetDataRef} />
-          <CardListShops resetDataRef={resetDataRef} />
+          <CardProfile resetDataRef={resetDataRefProfile} />
+          <CardListShops resetDataRef={resetDataRefListShop} />
         </Grid>
       </Box>
     </Paper>

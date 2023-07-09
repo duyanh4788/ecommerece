@@ -39,19 +39,6 @@ export const CardProfile = ({ resetDataRef }: Props) => {
     }
   }, [resetDataRef.current]);
 
-  useEffect(() => {
-    return () => {
-      handleResetUrl();
-    };
-  }, [url]);
-
-  const handleResetUrl = () => {
-    if (url.length) {
-      dispatch(AuthSlice.actions.removeFile({ idImage: url[0] }));
-      dispatch(AuthSlice.actions.clearUrl());
-    }
-  };
-
   const validate = () => {
     if (!user?.email || !user.phone || !user.fullName) {
       return false;

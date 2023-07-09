@@ -81,6 +81,7 @@ export const CL_GRE = '#56ab2f';
 export enum PAGE_MN_SHOP {
   SHOP = 'SHOP',
   SLIDER = 'SLIDER',
+  ITEM = 'ITEM',
 }
 
 export const FOOTER = [

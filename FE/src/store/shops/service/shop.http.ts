@@ -19,6 +19,7 @@ export class ShopHttp {
       prodcutSell: shops.prodcutSell,
       banners: shops.banners,
       sliders: shops.sliders,
+      idImageRemove: shops.idImageRemove,
     };
   };
 

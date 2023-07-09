@@ -128,16 +128,26 @@ export class AppHelper {
   }
 
   static compareArrayProducts(arrA: any[], arrB: any[]): boolean {
+    if ((!arrA.length && arrB.length) || arrA.length !== arrB.length) return false;
     if ((!arrA.length && !arrB.length) || (arrA.length && !arrB.length)) return true;
-    if (!arrA.length && arrB.length) return false;
     let res: any[] = [];
-    for (let itemA of arrA) {
-      const isCheck = arrB.find(itemB => itemB === itemA.id);
+    for (let itemB of arrB) {
+      const isCheck = arrA.find(itemA => itemA.id === itemB);
       if (!isCheck) {
-        res.push(itemA);
+        res.push(itemB);
       }
     }
     if (res.length) return false;
     return true;
+  }
+
+  static textTruncate(text: string) {
+    if (!text || text === '') return null;
+    if (text.length < 10) {
+      return text;
+    } else {
+      const truncatedText = text.slice(0, 10) + ' ...';
+      return truncatedText;
+    }
   }
 }

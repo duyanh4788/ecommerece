@@ -129,6 +129,80 @@
   transition: box-shadow 0.3s, transform 0.3s, -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
 }
 
+.manager_shop .card_content {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.manager_shop .card_content .box_add_item {
+  width: 100%;
+  border: 1px solid #ebebec;
+  border-radius: 20px;
+  padding: 15px;
+  margin: 15px;
+}
+
+.manager_shop .card_content .box_add_item input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px 5px;
+  border-radius: 5px;
+  background-color: #ffffff;
+  outline: none;
+  border: 1px solid #cdcdcd5c;
+}
+
+.manager_shop .card_content .box_add_item input::-webkit-input-placeholder {
+  padding-right: 10px !important;
+  color: #919191;
+  opacity: 0.5;
+  text-align: right;
+}
+
+.manager_shop .card_content .box_add_item input:-ms-input-placeholder {
+  padding-right: 10px !important;
+  color: #919191;
+  opacity: 0.5;
+  text-align: right;
+}
+
+.manager_shop .card_content .box_add_item input::-ms-input-placeholder {
+  padding-right: 10px !important;
+  color: #919191;
+  opacity: 0.5;
+  text-align: right;
+}
+
+.manager_shop .card_content .box_add_item input::placeholder {
+  padding-right: 10px !important;
+  color: #919191;
+  opacity: 0.5;
+  text-align: right;
+}
+
+.manager_shop .card_content .box_add_item .menu_prod {
+  border: 1px solid #ebebec;
+  border-radius: 20px;
+  padding: 0 20px;
+}
+
+.manager_shop .card_content .box_add_item .text_area {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #ebebec;
+  border-radius: 20px;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+.manager_shop .card_content .box_add_item .text_area:focus-visible {
+  outline: #56ab2f auto 1px;
+}
+
 .modal_plans .box_1 {
   display: -webkit-box;
   display: -ms-flexbox;

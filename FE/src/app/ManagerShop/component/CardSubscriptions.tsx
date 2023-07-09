@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
+import React, { RefObject, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -15,7 +15,6 @@ import {
 import { HelpOutline } from '@mui/icons-material';
 import { AppHelper } from 'utils/app.helper';
 import { useSelector } from 'react-redux';
-import * as SubscriptionSlice from 'store/subscription/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
 import * as SubscriptionSelector from 'store/subscription/shared/selectors';
 import { SubscriptionStatus, TypeSubscriber } from 'interface/Subscriptions.model';
@@ -32,16 +31,14 @@ import { handleColorStatus, handleColorTier } from 'utils/color';
 import { ModalCancel } from './ModalCancel';
 import { ModalPlans } from './ModalPlans';
 import { ModalInvoices } from './ModalInvoices';
-import { Unsubscribe } from 'redux';
-import { RootStore } from 'store/configStore';
-import { toast } from 'react-toastify';
 import { Shops } from 'interface/Shops.model';
 
 interface Props {
   shopInfor: Shops | null;
+  resetDataRefSubs: RefObject<boolean | null>;
 }
 
-export const CardSubscriptions = ({ shopInfor }: Props) => {
+export const CardSubscriptions = ({ shopInfor, resetDataRefSubs }: Props) => {
   const userInfor = useSelector(AuthSelector.selectUserInfor);
   const plans = useSelector(SubscriptionSelector.selectPlans);
   const invoices = useSelector(SubscriptionSelector.selectInvoices);
@@ -52,25 +49,12 @@ export const CardSubscriptions = ({ shopInfor }: Props) => {
   const [typeSubscriber, setTypeSubscriber] = useState<string>(TypeSubscriber.SUBSCRIBER);
 
   useEffect(() => {
-    const storeSub$: Unsubscribe = RootStore.subscribe(() => {
-      const { type, payload } = RootStore.getState().lastAction;
-      switch (type) {
-        case SubscriptionSlice.actions.shopCanceledSuccess.type:
-          toast.success(payload.message);
-          handleResetData();
-          break;
-        case SubscriptionSlice.actions.shopCanceledFail.type:
-          toast.error(payload.message);
-          break;
-        default:
-          break;
-      }
-    });
-    return () => {
-      storeSub$();
+    if (resetDataRefSubs.current) {
       handleResetData();
-    };
-  }, []);
+      const newResetData = false;
+      Object.assign(resetDataRefSubs, { current: newResetData });
+    }
+  }, [resetDataRefSubs.current]);
 
   const handleResetData = () => {
     setModalPlans(false);

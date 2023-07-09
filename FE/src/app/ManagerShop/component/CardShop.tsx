@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, RefObject, useEffect, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -19,67 +19,40 @@ import * as ShopSelector from 'store/shops/shared/selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppHelper } from 'utils/app.helper';
 import { Products, Shops } from 'interface/Shops.model';
-import { BANNER_SHOP, PAGE_MN_SHOP, PATH_PARAMS } from 'commom/common.contants';
+import { BANNER_SHOP, PATH_PARAMS } from 'commom/common.contants';
 import { useNavigate } from 'react-router-dom';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 import { FileUpload, FileUploadProps } from '../../../hooks/component/FileUpload';
 import { CardListItem } from '../../../hooks/component/CardListItem';
-import { Unsubscribe } from 'redux';
-import { RootStore } from 'store/configStore';
-import { toast } from 'react-toastify';
 
 interface Props {
   shopInfor: Shops | null;
-  PAGE: string | null;
-  handleEvent: (e: any) => void;
+  resetDataRefShop: RefObject<boolean | null>;
+  urlRefShop: RefObject<string | null>;
 }
 
-export const CardShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
+export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const currentPage: string = PAGE_MN_SHOP.SHOP;
-  const shopId = localStorage(TypeLocal.GET, LocalStorageKey.shopId);
   const products = useSelector(ShopSelector.selectProducts);
   const [editShop, setEditShop] = useState<boolean>(false);
   const [shop, setShop] = React.useState<Shops | null>(shopInfor);
   const [prodcutSell, setProductSell] = React.useState<Products[]>([]);
-  const urlRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const storeSub$: Unsubscribe = RootStore.subscribe(() => {
-      if (PAGE !== currentPage) return;
-      const { type, payload } = RootStore.getState().lastAction;
-      switch (type) {
-        case ShopSlice.actions.updatedShopSuccess.type:
-          dispatch(ShopSlice.actions.getShopById(shopId));
-          urlRef.current = null;
-          handleResetData();
-          break;
-        case ShopSlice.actions.deletedShopSuccess.type:
-          toast.success(payload.message);
-          localStorage(TypeLocal.REMOVE, LocalStorageKey.shopId);
-          navigate(PATH_PARAMS.PROFILE);
-          break;
-        case ShopSlice.actions.uploadFileSuccess.type:
-          toast.success(payload.message);
-          if (urlRef.current === null) {
-            urlRef.current = payload.data[0];
-          }
-          break;
-        case ShopSlice.actions.updatedShopFail.type:
-        case ShopSlice.actions.uploadFileFail.type:
-        case ShopSlice.actions.deletedShopFail.type:
-          toast.error(payload.message);
-          break;
-        default:
-          break;
-      }
-    });
-    return () => {
-      storeSub$();
-    };
-  }, [PAGE]);
+    if (resetDataRefShop.current) {
+      handleResetData();
+      const newResetData = false;
+      Object.assign(resetDataRefShop, { current: newResetData });
+    }
+  }, [resetDataRefShop.current]);
+
+  const handleResetData = () => {
+    setEditShop(false);
+    setProductSell([]);
+    setShop(null);
+  };
 
   const handleDone = () => {
     if (!shop) return;
@@ -91,7 +64,7 @@ export const CardShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
     const resultProduct = prodcutSell && prodcutSell.length ? prodcutSell.map(item => item.id) : [];
     if (
       shopInfor?.nameShop === nameShop &&
-      !urlRef?.current?.length &&
+      !urlRefShop?.current?.length &&
       AppHelper.compareArrayProducts(shopInfor?.prodcutSell as any[], resultProduct)
     ) {
       setEditShop(false);
@@ -100,9 +73,9 @@ export const CardShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
     const payload = {
       nameShop,
       prodcutSell: resultProduct,
-      banners: urlRef?.current ? [urlRef.current] : banners,
+      banners: urlRefShop?.current ? [urlRefShop.current] : banners,
     };
-    if (urlRef?.current && banners && banners.length) {
+    if (urlRefShop?.current && banners && banners.length) {
       dispatch(ShopSlice.actions.removeFile({ idImage: banners[0] }));
     }
     dispatch(ShopSlice.actions.updatedShop({ ...payload, id: shop.id }));
@@ -122,6 +95,13 @@ export const CardShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
     setProductSell(value);
   };
 
+  const handleCancel = () => {
+    handleResetData();
+    if (urlRefShop?.current) {
+      dispatch(ShopSlice.actions.removeFile({ idImage: urlRefShop.current }));
+    }
+  };
+
   const fileUploadProp: FileUploadProps = {
     accept: 'image/*',
     idInput: 'input-shop',
@@ -138,27 +118,16 @@ export const CardShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
     },
   };
 
-  const handleResetData = () => {
-    setEditShop(false);
-    setProductSell([]);
-    setShop(null);
-    if (urlRef?.current) {
-      dispatch(ShopSlice.actions.removeFile({ idImage: urlRef.current }));
-      dispatch(ShopSlice.actions.clearUrl());
-      urlRef.current = null;
-    }
-  };
-
   return (
-    <Grid item xs={12} sm={6} md={6} onClick={() => handleEvent(PAGE_MN_SHOP.SHOP)}>
+    <Grid item xs={12} sm={6} md={6}>
       <Card className="card_profile">
         <CardHeader
           avatar={
             <Avatar
               aria-label="recipe"
               src={
-                urlRef?.current
-                  ? urlRef?.current
+                urlRefShop?.current
+                  ? urlRefShop?.current
                   : shopInfor?.banners?.length
                   ? shopInfor?.banners[0]
                   : BANNER_SHOP
@@ -172,7 +141,7 @@ export const CardShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
                 <IconButton aria-label="settings" onClick={handleDone}>
                   <Done />
                 </IconButton>
-                <IconButton aria-label="settings" onClick={() => handleResetData()}>
+                <IconButton aria-label="settings" onClick={() => handleCancel()}>
                   <Cancel />
                 </IconButton>
               </React.Fragment>
@@ -213,8 +182,8 @@ export const CardShop = ({ shopInfor, PAGE, handleEvent }: Props) => {
           component="img"
           height="194"
           src={
-            urlRef?.current
-              ? urlRef?.current
+            urlRefShop?.current
+              ? urlRefShop?.current
               : shopInfor?.banners?.length
               ? shopInfor?.banners[0]
               : BANNER_SHOP
