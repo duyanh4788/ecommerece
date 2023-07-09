@@ -22,9 +22,12 @@ export class ItemHttp {
   };
 
   public getListsItems = (query: any): Promise<any> => {
-    const { id, nextPage, option } = query;
+    const { id, nextPage, option, search } = query;
     return httpRequest().get(
-      ItemApi.GET_LISTS + '/' + id + `?page=${nextPage || ''}&options=${option || ''}`,
+      ItemApi.GET_LISTS +
+        '/' +
+        id +
+        `?page=${nextPage || ''}&options=${option || ''}&search=${search || ''}`,
     );
   };
 

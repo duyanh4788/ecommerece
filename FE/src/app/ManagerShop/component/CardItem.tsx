@@ -9,12 +9,14 @@ import {
   Chip,
   Grid,
   IconButton,
+  InputBase,
+  Paper,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Cancel, Edit, Delete, ExpandCircleDown } from '@mui/icons-material';
+import { Cancel, Edit, Delete, ExpandCircleDown, Search } from '@mui/icons-material';
 import * as ItemSlice from 'store/items/shared/slice';
 import * as ItemSelector from 'store/items/shared/selectors';
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,9 +50,10 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
   const [items, setItems] = useState<ItemsInterface[]>([]);
   const [addItem, setAddItem] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<boolean>(false);
-  const [itemCurrent, setItemCurrent] = React.useState<ItemsInterface | null>(null);
-  const [alignment, setAlignment] = React.useState<string | null>('ALL');
-  const [togge, setTogge] = React.useState<string>('ALL');
+  const [itemCurrent, setItemCurrent] = useState<ItemsInterface | null>(null);
+  const [alignment, setAlignment] = useState<string | null>('ALL');
+  const [togge, setTogge] = useState<string>('ALL');
+  const [search, setSearch] = useState<string | null>(null);
 
   useEffect(() => {
     if (resetDataRefItems.current) {
@@ -158,6 +161,22 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
     );
   };
 
+  const handleSearchSubmit = e => {
+    e.preventDefault();
+    if (search === null) return;
+    setItems([]);
+    dispatch(
+      ItemSlice.actions.getListsItems({
+        id: shopInfor?.id,
+        option: togge === 'ALL' ? '' : togge,
+        search,
+      }),
+    );
+    if (search === '') {
+      setSearch(null);
+    }
+  };
+
   return (
     <Box my={2}>
       {shopInfor?.prodcutSell && shopInfor?.prodcutSell.length && (
@@ -196,8 +215,31 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
             }}>
             Ad
           </ToggleButton>
+          <Paper
+            component="form"
+            onSubmit={handleSearchSubmit}
+            sx={{
+              p: '2px 4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderRadius: '10px',
+              border: '1px solid #cdcdcd5c',
+              width: '100%',
+              maxWidth: 400,
+            }}>
+            <InputBase
+              placeholder="Search"
+              inputProps={{ 'aria-label': 'search' }}
+              onChange={e => setSearch(e.target.value)}
+            />
+            <IconButton type="submit">
+              <Search />
+            </IconButton>
+          </Paper>
         </ToggleButtonGroup>
       )}
+
       {addItem || editItem ? (
         <CardAddUpdateItem
           handleResetAddUpdate={handleResetData}
