@@ -3,6 +3,9 @@ import { IProductsRepository } from '../../repository/IProductsRepository';
 import { ProductsInterface } from '../../interface/ProductsInterface';
 import { ProductsModel } from '../model/ProductsModel';
 import { RestError } from '../../services/error/error';
+import { ItemsModel } from '../model/ItemsModel';
+import { Op } from 'sequelize';
+import { ItemsInterface } from '../../interface/ItemsInterface';
 
 export class ProductsSequelize implements IProductsRepository {
   private ATTRIBUTES: string[] = ['id', 'nameProduct', 'avatar'];
@@ -38,6 +41,14 @@ export class ProductsSequelize implements IProductsRepository {
     return products.map((item) => this.transformModelToEntity(item));
   }
 
+  async getListsWithCondition(): Promise<ProductsInterface[]> {
+    const products = await ProductsModel.findAll({
+      attributes: this.ATTRIBUTES,
+      include: [{ model: ItemsModel, order: [['quantitySold', 'DESC']], limit: 20 }]
+    });
+    return products.map((item) => this.transformModelToEntity(item));
+  }
+
   async getProductById(productId: string): Promise<ProductsInterface> {
     const product = await ProductsModel.findByPk(deCryptFakeId(productId));
     return this.transformModelToEntity(product);
@@ -55,11 +66,34 @@ export class ProductsSequelize implements IProductsRepository {
   private transformModelToEntity(model: ProductsModel): ProductsInterface {
     if (!model) return;
     const entity: ProductsInterface = {};
+    let itemsModel: any[] = model.dataValues.items;
     const keysObj = Object.keys(model.dataValues);
+
     for (let key of keysObj) {
-      entity[key] = model[key];
+      if (key !== 'created_at' && key !== 'updated_at') {
+        entity[key] = model[key];
+      }
     }
     entity.id = enCryptFakeId(entity.id);
+    if (itemsModel && itemsModel.length) {
+      itemsModel = itemsModel.map((item) => this.transformModelItemToEntity(item));
+      return { ...entity, items: itemsModel };
+    }
+    return entity;
+  }
+
+  private transformModelItemToEntity(model: ItemsModel): ItemsInterface {
+    if (!model) return;
+    const entity: ItemsInterface = {};
+    const keysObj = Object.keys(model.dataValues);
+    for (let key of keysObj) {
+      if (key !== 'created_at' && key !== 'updated_at') {
+        entity[key] = model[key];
+      }
+    }
+    entity.id = enCryptFakeId(entity.id);
+    entity.shopId = enCryptFakeId(entity.shopId);
+    entity.productId = enCryptFakeId(entity.productId);
     return entity;
   }
 }

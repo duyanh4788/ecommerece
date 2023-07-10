@@ -11,6 +11,10 @@ export class ItemsUseCase {
     return await this.itemsRepository.getListsItems(shopId, page, pageSize, search, options);
   }
 
+  async getListsItemsByProdIdUseCase(productId: string, page: number, pageSize: number) {
+    return await this.itemsRepository.getListsItemsByProdId(productId, page, pageSize);
+  }
+
   async getItemsByIdUseCase(id: string) {
     return await this.itemsRepository.getItemsById(id);
   }

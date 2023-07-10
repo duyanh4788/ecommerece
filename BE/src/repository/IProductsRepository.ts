@@ -10,4 +10,6 @@ export interface IProductsRepository {
   getLists(): Promise<ProductsInterface[]>;
 
   getProductById(productId: string): Promise<ProductsInterface>;
+
+  getListsWithCondition(): Promise<ProductsInterface[]>;
 }

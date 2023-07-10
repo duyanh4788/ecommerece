@@ -30,4 +30,8 @@ export class ProductsUseCase {
   async getProductByIdUseCase(productId: string) {
     return await this.redisProducts.handlerGetProductsId(productId);
   }
+
+  async guestGetListUseCase() {
+    return await this.productsRepository.getListsWithCondition();
+  }
 }

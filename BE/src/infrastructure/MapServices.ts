@@ -25,13 +25,17 @@ import { ProductsUseCase } from '../usecase/ProductsUseCase';
 import { ShopUseCase } from '../usecase/ShopUseCase';
 import { SubscriptionUseCase } from '../usecase/SubscriptionUseCase';
 import { UserUseCase } from '../usecase/UserUseCase';
+import { GuestController } from '../controllers/GuestController';
+import { GuestUseCase } from '../usecase/GuestUseCase';
 
 export class MapServices {
   public paypalService: PaypalService = new PaypalService();
   public mapItemsServices: MapItemsServices = new MapItemsServices();
+
   public authUserMiddleware: AuthUserMiddleware = new AuthUserMiddleware();
   public verifyTokenMiddleware: VerifyTokenMiddleware = new VerifyTokenMiddleware();
   public multerMiddleware: MulterMiddleware = new MulterMiddleware();
+
   public userSequelize: UserSequelize = new UserSequelize();
   public tokenUsersSequelize: TokenUsersSequelize = new TokenUsersSequelize();
   public authenticatesCodesSequelize: AuthenticatesCodesSequelize = new AuthenticatesCodesSequelize();
@@ -44,15 +48,18 @@ export class MapServices {
   public itemsSequelize: ItemsSequelize = new ItemsSequelize(this.mapItemsServices);
 
   public subscriptionUseCase: SubscriptionUseCase = new SubscriptionUseCase(this.paypalService, this.subscriptionSequelize, this.invoicesSequelize, this.shopsResourcesSequelize, this.shopSequelize);
+  public guestUseCase: GuestUseCase = new GuestUseCase();
   public itemsUseCase: ItemsUseCase = new ItemsUseCase(this.itemsSequelize, this.shopsResourcesSequelize);
   public shopUseCase: ShopUseCase = new ShopUseCase(this.shopSequelize, this.subscriptionSequelize, this.shopsResourcesSequelize);
   public productsUseCase: ProductsUseCase = new ProductsUseCase(this.productsSequelize);
   public userUseCase: UserUseCase = new UserUseCase(this.userSequelize, this.tokenUsersSequelize, this.authenticatesCodesSequelize);
+
   public subscriptionController: SubscriptionController = new SubscriptionController(this.subscriptionUseCase);
   public paypalAppWebHookController: PaypalAppWebHookController = new PaypalAppWebHookController(this.paypalService, this.subscriptionUseCase);
   public usersController: UsersController = new UsersController(this.userUseCase);
-  public shopController: ShopController = new ShopController(this.shopUseCase);
   public itemsController: ItemsController = new ItemsController(this.itemsUseCase);
+  public guestController: GuestController = new GuestController(this.guestUseCase, this.itemsUseCase, this.productsUseCase);
   public productsController: ProductsController = new ProductsController(this.productsUseCase);
+  public shopController: ShopController = new ShopController(this.shopUseCase);
   public uploadcontroller: Uploadcontroller = new Uploadcontroller();
 }

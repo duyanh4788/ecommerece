@@ -6,6 +6,7 @@ import { AdminRouter } from './admin/AdminRouter';
 import { SubscriptionRouter } from './subscription/SubscriptionRouter';
 import { PaypalWebhooksRouters } from './subscription/PaypalWebhooksRouter';
 import { ItemsRouter } from './shop/ItemsRouter';
+import { GuestRouter } from './guest/GuestRouter';
 
 export class Routers {
   public paypalWebhooksRouters: PaypalWebhooksRouters = new PaypalWebhooksRouters();
@@ -15,8 +16,10 @@ export class Routers {
   public shopRouter: ShopRouter = new ShopRouter();
   public itemsRouter: ItemsRouter = new ItemsRouter();
   public adminRouter: AdminRouter = new AdminRouter();
+  public guestRouter: GuestRouter = new GuestRouter();
   public routes(app: Router): Router {
     this.paypalWebhooksRouters.routes(app);
+    this.guestRouter.routes(app);
     this.subscriptionRouter.routes(app);
     this.usersRoutes.routes(app);
     this.uploadRouter.routes(app);

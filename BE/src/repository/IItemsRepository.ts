@@ -5,8 +5,20 @@ export interface IItemsRepository {
   /**
    * get items by shop id
    * @param shopId
+   * @param page
+   * @param pageSize
+   * @param search
+   * @param options
    */
   getListsItems(shopId: string, page: number, pageSize: number, search: any, options: string): Promise<ListItemsInterface>;
+
+  /**
+   * get items by pro id
+   * @param productId
+   * @param page
+   * @param pageSize
+   */
+  getListsItemsByProdId(productId: string, page: number, pageSize: number): Promise<ListItemsInterface>;
 
   /**
    * get items by id

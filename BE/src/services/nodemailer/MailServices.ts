@@ -200,6 +200,22 @@ export class NodeMailerServices implements INodeMailerServices {
                 border: 1px solid #c1bdbd47;
               }
           </style>
+          <style>
+            @media screen and (max-width: 600px) {
+                .column_1,
+                .column_2,
+                .column_3,
+                .column_4,
+                .column_5 {
+                    width: 100%;
+                    display: block;
+                }
+
+                .img {
+                    max-width: 100%;
+                }
+            }
+          </style>
         </head>
         <body>
             <div class="container">

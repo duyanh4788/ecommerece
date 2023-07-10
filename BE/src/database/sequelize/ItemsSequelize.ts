@@ -18,25 +18,31 @@ export class ItemsSequelize implements IItemsRepository {
   constructor(private mapItemsServices: MapItemsServices) {}
 
   async getListsItems(shopId: string, page: number, pageSize: number, search: any, options: string): Promise<ListItemsInterface> {
-    let option: any = {
+    let optionWhere: any = {
       where: { shopId: deCryptFakeId(shopId) }
     };
-
     if (options) {
-      option.where = { ...option.where, typeProduct: options };
+      optionWhere.where = { ...optionWhere.where, typeProduct: options };
     }
 
     if (search || search !== '') {
-      option.where = {
-        ...option.where,
-        nameItem: { [Op.like]: `%${search}%` }
-      };
+      optionWhere.where = { ...optionWhere.where, nameItem: { [Op.like]: `%${search}%` } };
     }
+    return this.getListWithContition(page, pageSize, optionWhere, 'created_at');
+  }
 
+  async getListsItemsByProdId(productId: string, page: number, pageSize: number): Promise<ListItemsInterface> {
+    let optionWhere: any = {
+      where: { productId: deCryptFakeId(productId) }
+    };
+    return this.getListWithContition(page, pageSize, optionWhere, 'quantitySold');
+  }
+
+  private async getListWithContition(page: number, pageSize: number, optionWhere: any, order: string): Promise<ListItemsInterface> {
     const offset = (page - 1) * pageSize;
     const lists = await ItemsModel.findAndCountAll({
-      ...option,
-      order: [['created_at', 'DESC']],
+      ...optionWhere,
+      order: [[order, 'DESC']],
       offset,
       limit: pageSize
     });
