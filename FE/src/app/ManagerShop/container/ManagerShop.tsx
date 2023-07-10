@@ -56,6 +56,7 @@ export const ManagerShop = () => {
       switch (type) {
         case ShopSlice.actions.updatedShopSuccess.type:
         case ShopSlice.actions.updatedSlidersSuccess.type:
+          toast.success(payload.message);
           dispatch(ShopSlice.actions.getShopById(shopId));
           urlRefShop.current = null;
           handleStatusUploadSliders(false);

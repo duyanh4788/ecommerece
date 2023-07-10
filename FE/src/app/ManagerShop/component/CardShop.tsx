@@ -234,6 +234,9 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
                     avatar={<Avatar src={item.avatar} alt={item.avatar} />}
                   />
                 ))}
+                {!shopInfor?.prodcutSell?.length && (
+                  <Chip label="Please add product you can selling!" color="warning" />
+                )}
               </Box>
             </React.Fragment>
           )}

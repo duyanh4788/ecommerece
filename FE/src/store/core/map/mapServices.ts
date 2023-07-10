@@ -7,6 +7,8 @@ import * as ShopSlice from 'store/shops/shared/slice';
 import { ShopSaga } from 'store/shops/shared/saga';
 import * as ItemSlice from 'store/items/shared/slice';
 import { ItemSaga } from 'store/items/shared/saga';
+import * as GuestSlice from 'store/guest/shared/slice';
+import { GuestSaga } from 'store/guest/shared/saga';
 
 export const useInjectSlicesAndSagas = () => {
   useInjectReducer({
@@ -44,5 +46,15 @@ export const useInjectSlicesAndSagas = () => {
     key: ItemSlice.sliceKey,
     saga: ItemSaga,
   });
+
+  useInjectReducer({
+    key: GuestSlice.sliceKey,
+    reducer: GuestSlice.reducer,
+  });
+  useInjectSaga({
+    key: GuestSlice.sliceKey,
+    saga: GuestSaga,
+  });
+
   return;
 };

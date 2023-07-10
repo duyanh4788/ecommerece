@@ -131,8 +131,13 @@ export class AppHelper {
   }
 
   static compareArrayProducts(arrA: any[], arrB: any[]): boolean {
-    if ((!arrA.length && arrB.length) || arrA.length !== arrB.length) return false;
-    if ((!arrA.length && !arrB.length) || (arrA.length && !arrB.length)) return true;
+    if (
+      (!arrA && arrB.length) ||
+      (!arrA.length && arrB.length) ||
+      (arrA && arrA.length !== arrB.length)
+    )
+      return false;
+    if ((!arrA.length && !arrB.length) || (arrA && arrA.length && !arrB.length)) return true;
     let res: any[] = [];
     for (let itemB of arrB) {
       const isCheck = arrA.find(itemA => itemA.id === itemB);

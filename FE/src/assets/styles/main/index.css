@@ -659,6 +659,11 @@ body::-webkit-scrollbar-thumb,
   overflow: hidden !important;
 }
 
+.MuiAccordionSummary-expandIconWrapper {
+  -webkit-transform: none !important;
+          transform: none !important;
+}
+
 .MuiCard-root,
 .card {
   border-radius: 20px !important;
