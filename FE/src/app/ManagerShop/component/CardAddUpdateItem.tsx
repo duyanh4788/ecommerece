@@ -43,9 +43,10 @@ import { RenderImagesList } from 'hooks/component/RenderImagesList';
 interface Props {
   handleResetAddUpdate: () => void;
   resetDataRefItems: RefObject<boolean | null>;
+  modeDev: boolean;
 }
 
-export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems }: Props) => {
+export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, modeDev }: Props) => {
   const dispatch = useDispatch();
   const shopInfor = useSelector(ShopSelector.selectShopInfor);
   const itemInfor: ItemsInterface | null = useSelector(ItemSelector.selectItemInfor);
@@ -61,19 +62,25 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems }: P
 
   useEffect(() => {
     function initItemCurr(data) {
-      if (!data) return;
+      if (!data) {
+        setItems(null);
+        return;
+      }
       const parseObj = AppHelper.parseItemObject(data);
       if (!parseObj) return;
       setItems(prevItems => ({ ...prevItems, ...parseObj }));
       setTypeProduct(parseObj.typeProduct as string);
       return;
     }
-    setTimeout(() => initItemCurr(itemInfor));
+    initItemCurr(itemInfor);
   }, [itemInfor]);
 
   useEffect(() => {
     if (resetDataRefItems.current) {
-      resetData();
+      if (!modeDev) {
+        console.log(modeDev);
+        resetData();
+      }
       const newResetData = false;
       Object.assign(resetDataRefItems, { current: newResetData });
     }
@@ -194,10 +201,13 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems }: P
 
   const handleDone = () => {
     if (!shopInfor || !shopInfor?.prodcutSell?.length) return;
+    if (!modeDev && !validate()) return;
     if (!itemInfor) {
-      const itemsPayload = {
-        shopId: shopInfor?.id,
-        productId: shopInfor?.prodcutSell[selectedIndex].id,
+      const shopId = shopInfor?.id;
+      const productId = shopInfor?.prodcutSell[selectedIndex].id;
+      const payloadItems = {
+        shopId,
+        productId,
         nameItem: items?.nameItem,
         itemThumb: url && url.length ? url : null,
         description: items?.description,
@@ -207,8 +217,8 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems }: P
         origin: items?.origin,
       };
       const payload = {
-        items: itemsPayload,
-        payloadEntity: configPayloadEntity(),
+        items: modeDev ? AppHelper.fakerPayloadItems(shopId, productId) : payloadItems,
+        payloadEntity: modeDev ? AppHelper.fakerPayloadEntity(typeProduct) : configPayloadEntity(),
       };
       dispatch(ItemSlice.actions.createdItem(payload));
       return;
@@ -309,6 +319,30 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems }: P
     dispatch(ItemSlice.actions.updatedThumb(result));
   };
 
+  const validate = () => {
+    if (!items) {
+      toast.error('Please input full information!');
+      return false;
+    }
+    const { nameItem, description, prices, brandName, origin, quantityStock } = items;
+    if (
+      !AppHelper.validateString(nameItem) ||
+      !AppHelper.validateString(description) ||
+      !AppHelper.validateString(brandName) ||
+      !AppHelper.validateString(origin)
+    ) {
+      toast.error('Please input full information!');
+      return false;
+    }
+
+    if (!AppHelper.validateNumber(prices) || !AppHelper.validateString(quantityStock)) {
+      toast.error('Please input full information!');
+      return false;
+    }
+
+    return true;
+  };
+
   return (
     <Card className="card_profile" sx={{ marginBottom: '20px' }}>
       <CardHeader
@@ -396,7 +430,7 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems }: P
             className="text_area"
             placeholder="Description"
             name="description"
-            value={items?.description}
+            value={items?.description || ''}
             onChange={handleChange}
           />
         </Box>

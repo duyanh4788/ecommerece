@@ -45,6 +45,7 @@ export const refreshAuthToken = store => {
         store.dispatch(AuthSlice.actions.clearRefreshToKen());
         next(find);
       }
+      store.dispatch(AuthSlice.actions.getUserById());
       while (actionQueue.length > 0) {
         const queuedAction = actionQueue.shift();
         next(queuedAction);

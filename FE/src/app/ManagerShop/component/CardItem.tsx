@@ -6,7 +6,9 @@ import {
   CardContent,
   CardHeader,
   CardMedia,
+  Checkbox,
   Chip,
+  FormControlLabel,
   Grid,
   IconButton,
   InputBase,
@@ -51,9 +53,10 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
   const [addItem, setAddItem] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<boolean>(false);
   const [itemCurrent, setItemCurrent] = useState<ItemsInterface | null>(null);
-  const [alignment, setAlignment] = useState<string | null>('ALL');
+  const [alignment, setAlignment] = useState<string | null>(null);
   const [togge, setTogge] = useState<string>('ALL');
   const [search, setSearch] = useState<string | null>(null);
+  const [modeDev, setModeDev] = useState<boolean>(false);
 
   useEffect(() => {
     if (resetDataRefItems.current) {
@@ -82,6 +85,13 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
     setItemCurrent(null);
   };
 
+  const handleEditItem = (item: any) => {
+    setEditItem(!editItem);
+    setAddItem(false);
+    setItemCurrent(item);
+    dispatch(ItemSlice.actions.getItemById(item.id));
+  };
+
   const renderListItems = useMemo(() => {
     if (!items?.length) return null;
     return items.map((item, idx) => {
@@ -104,12 +114,7 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
                   </IconButton>
                 ) : (
                   <React.Fragment>
-                    <IconButton
-                      onClick={() => {
-                        setAddItem(false);
-                        setEditItem(!editItem);
-                        dispatch(ItemSlice.actions.getItemById(item.id));
-                      }}>
+                    <IconButton onClick={() => handleEditItem(item)}>
                       <Edit sx={{ fontSize: '15px' }} />
                     </IconButton>
                     <IconButton onClick={() => dispatch(ItemSlice.actions.deletedItem(item?.id))}>
@@ -141,7 +146,7 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
                 <Typography variant="caption" display="block" gutterBottom>
                   Sold: {item?.quantitySold}{' '}
                 </Typography>
-                <Chip label={`${item.prices}/$`} size="small" variant="outlined" />
+                <Chip label={`${item.prices} $`} size="small" variant="outlined" />
               </Box>
             </CardContent>
           </Card>
@@ -177,14 +182,20 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
     }
   };
 
+  const handleAddItem = () => {
+    setAddItem(!addItem);
+    setEditItem(false);
+    setItemCurrent(null);
+    dispatch(ItemSlice.actions.clearItem());
+  };
+
   return (
-    <Box my={2}>
+    <Box className="card_item">
       {shopInfor?.prodcutSell && shopInfor?.prodcutSell.length && (
         <ToggleButtonGroup
           color="success"
           value={alignment}
           exclusive
-          sx={{ marginBottom: '20px' }}
           onChange={(e: any, newAlignment) => {
             setAlignment(newAlignment);
             setTogge(e.target.innerText);
@@ -205,45 +216,36 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
                 {item.nameProduct}
               </ToggleButton>
             ))}
-          <ToggleButton
-            value={'ADD'}
-            sx={toge2}
-            onClick={() => {
-              setAddItem(!addItem);
-              setEditItem(false);
-              setItemCurrent(null);
-            }}>
+          <ToggleButton value={'ADD'} sx={toge2} onClick={handleAddItem}>
             Ad
           </ToggleButton>
-          <Paper
-            component="form"
-            onSubmit={handleSearchSubmit}
-            sx={{
-              p: '2px 4px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              borderRadius: '10px',
-              border: '1px solid #cdcdcd5c',
-              width: '100%',
-              maxWidth: 400,
-            }}>
-            <InputBase
-              placeholder="Search"
-              inputProps={{ 'aria-label': 'search' }}
-              onChange={e => setSearch(e.target.value)}
-            />
-            <IconButton type="submit">
-              <Search />
-            </IconButton>
-          </Paper>
         </ToggleButtonGroup>
       )}
+      <Tooltip title="if you active this feature, you can created items is random so do need typing, **Note: can not used with update items!">
+        <FormControlLabel
+          className="mode_dev"
+          control={
+            <Checkbox
+              value={modeDev}
+              color="success"
+              onChange={e => setModeDev(e.target.checked)}
+            />
+          }
+          label="Mode Dev"
+        />
+      </Tooltip>
+      <Paper component="form" onSubmit={handleSearchSubmit} className="paper_search">
+        <InputBase fullWidth placeholder="Search" onChange={e => setSearch(e.target.value)} />
+        <IconButton type="submit">
+          <Search />
+        </IconButton>
+      </Paper>
 
       {addItem || editItem ? (
         <CardAddUpdateItem
           handleResetAddUpdate={handleResetData}
           resetDataRefItems={resetDataRefItems}
+          modeDev={modeDev}
         />
       ) : null}
       <Grid container columns={{ xs: 6, sm: 12, md: 12 }} spacing={1}>

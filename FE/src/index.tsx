@@ -12,7 +12,7 @@ import 'swiper/css';
 import '../src/assets/styles/main/index.css';
 import { Box } from '@mui/material';
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+export const isDevelopment = process.env.NODE_ENV === 'development' ? true : false;
 
 const MOUNT_NODE = document.getElementById('root') as HTMLElement;
 

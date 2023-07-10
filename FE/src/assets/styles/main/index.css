@@ -259,6 +259,33 @@
   border-radius: 5px;
 }
 
+.manager_shop .card_profile {
+  width: 100%;
+}
+
+.manager_shop .card_profile input {
+  margin: 2px 0 !important;
+  padding: 5px 0 !important;
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px 5px;
+  border-radius: 5px;
+  background-color: #ffffff;
+  outline: none;
+  border: 1px solid #cdcdcd5c;
+}
+
+.manager_shop .card_profile li {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.manager_shop .card_profile .status {
+  border: 1px solid #ebebec;
+  padding: 5px;
+  border-radius: 5px;
+}
+
 .manager_shop .box_subs {
   background: #d6cfc957;
   text-align: center;
@@ -300,42 +327,6 @@
   transition: -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
   transition: box-shadow 0.3s, transform 0.3s;
   transition: box-shadow 0.3s, transform 0.3s, -webkit-box-shadow 0.3s, -webkit-transform 0.3s;
-}
-
-.manager_shop .cell_tier {
-  background: #d6cfc957;
-  padding: 5px 10px;
-  font-size: 13px;
-  border: 1px solid #ebebec;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.manager_shop .card_profile {
-  width: 100%;
-}
-
-.manager_shop .card_profile input {
-  margin: 2px 0 !important;
-  padding: 5px 0 !important;
-  width: 100%;
-  margin: 10px 0;
-  padding: 10px 5px;
-  border-radius: 5px;
-  background-color: #ffffff;
-  outline: none;
-  border: 1px solid #cdcdcd5c;
-}
-
-.manager_shop .card_profile li {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.manager_shop .status {
-  border: 1px solid #ebebec;
-  padding: 5px;
-  border-radius: 5px;
 }
 
 .manager_shop .subs {
@@ -467,6 +458,33 @@
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+}
+
+.manager_shop .card_item {
+  margin: 20px 0;
+}
+
+.manager_shop .card_item .paper_search {
+  padding: 2px 4px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  border-radius: 10px;
+  border: 1px solid #ebebec;
+  margin: 20px 0;
+}
+
+.manager_shop .card_item .mode_dev {
+  margin-left: 10px;
+  border: 1px solid #cdcdcd5c;
+  border-radius: 20px;
+  padding-right: 10px;
 }
 
 .modal_plans .box_1 {

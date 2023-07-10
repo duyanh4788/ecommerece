@@ -5,6 +5,16 @@
     margin: 20px;
     padding: 10px;
     border-radius: 5px;
+
+    .card_profile {
+        @include card_profile;
+        .status {
+            border: $border1;
+            padding: 5px;
+            border-radius: 5px;
+        }
+    }
+
     .box_subs {
         background: $background-main;
         text-align: center;
@@ -24,24 +34,6 @@
         }
     }
 
-    .cell_tier {
-        background: $background-main;
-        padding: 5px 10px;
-        font-size: 13px;
-        border: $border1;
-        border-radius: 10px;
-        cursor: pointer;
-    }
-
-    .card_profile {
-        @include card_profile;
-    }
-
-    .status {
-        border: $border1;
-        padding: 5px;
-        border-radius: 5px;
-    }
     .subs {
         display: flex;
         justify-content: center;
@@ -98,6 +90,27 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+    }
+
+    .card_item {
+        margin: 20px 0;
+
+        .paper_search {
+            padding: 2px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 10px;
+            border: $border1;
+            margin: 20px 0;
+        }
+
+        .mode_dev {
+            margin-left: 10px;
+            border: $border2;
+            border-radius: 20px;
+            padding-right: 10px;
+        }
     }
 }
 

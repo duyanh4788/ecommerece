@@ -1,7 +1,9 @@
 /* eslint-disable no-useless-concat */
 /* eslint-disable array-callback-return */
-import { ItemsInterface } from 'interface/Items.mode';
+import { ItemsInterface, ItemsType } from 'interface/Items.mode';
 import * as _ from 'lodash';
+import { faker } from '@faker-js/faker';
+
 const moment = require('moment');
 
 export class AppHelper {
@@ -173,5 +175,89 @@ export class AppHelper {
       }
     }
     return { ...clone, itemChildId };
+  }
+
+  static validateString(text: string | any) {
+    if (!text || text === '') return false;
+    return true;
+  }
+
+  static validateNumber(num: number | any) {
+    if (!num) return false;
+    return true;
+  }
+
+  static ranDomeImg() {
+    const characters = [
+      'abstract',
+      'animals',
+      'cats',
+      'city',
+      'fashion',
+      'food',
+      'nightlife',
+      'sports',
+      'technics',
+    ];
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    let result: string[] = [];
+    for (let i = 0; i <= 5; i++) {
+      result.push(faker.image.urlLoremFlickr({ category: characters[randomIndex] }));
+    }
+    return result;
+  }
+
+  static fakerPayloadItems(shopId: string, productId: string) {
+    if (!productId || !shopId) return;
+    return {
+      shopId,
+      productId,
+      nameItem: faker.commerce.productName(),
+      itemThumb: this.ranDomeImg(),
+      description: faker.commerce.productDescription(),
+      prices: faker.commerce.price(),
+      quantityStock: faker.number.int(30),
+      brandName: faker.company.name(),
+      origin: faker.location.country(),
+    };
+  }
+
+  static fakerPayloadEntity(typeProduct: string | null) {
+    if (!typeProduct) return;
+    if (typeProduct === ItemsType.CLOTHES) {
+      return {
+        color: faker.color.human(),
+        material: faker.airline.recordLocator(),
+        size: faker.airline.recordLocator(),
+        styleList: faker.airline.recordLocator(),
+      };
+    }
+    if (typeProduct === ItemsType.FUNITURES) {
+      return {
+        size: faker.airline.recordLocator(),
+        material: faker.airline.recordLocator(),
+        manufactury: faker.lorem.words(3),
+        funtion: faker.lorem.words(3),
+        warranty: faker.datatype.boolean(),
+      };
+    }
+    if (typeProduct === ItemsType.COSMETICS) {
+      return {
+        volume: `${faker.number.int(30)}/ml`,
+        weight: `${faker.number.int(30)}/gr`,
+        activesIngredients: faker.lorem.words(5),
+        expiry: `${faker.number.int(30)}/month`,
+      };
+    }
+    if (typeProduct === ItemsType.ELECTRONICS) {
+      return {
+        color: faker.color.human(),
+        storage: `${faker.number.int(300)}/GB`,
+        screenSize: `${faker.number.int(300)}/inch`,
+        weight: `${faker.number.int(30)}/gr`,
+        technology: faker.lorem.word(),
+        warranty: faker.datatype.boolean(),
+      };
+    }
   }
 }
