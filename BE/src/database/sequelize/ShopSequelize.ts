@@ -114,8 +114,9 @@ export class ShopSequelize implements IShopRepository {
   }
 
   async getShopById(shopId: string, userId?: string, roleId?: string): Promise<ShopInterface> {
-    const shop = await ShopsModel.findByPk(deCryptFakeId(shopId), { include: this.INCLUDES });
-    if ((!roleId && shop.userId !== deCryptFakeId(userId)) || (roleId && roleId !== UserRole.ADMIN && shop.userId !== deCryptFakeId(userId))) {
+    const decrShopId = deCryptFakeId(shopId);
+    const shop = await ShopsModel.findByPk(decrShopId, { include: this.INCLUDES });
+    if (!shop || (!roleId && shop.userId !== deCryptFakeId(userId)) || (roleId && roleId !== UserRole.ADMIN && shop.userId !== deCryptFakeId(userId))) {
       throw new RestError('shop is not available!', 404);
     }
     if (!shop.prodcutSell || !shop.prodcutSell.length) {

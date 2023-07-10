@@ -36,7 +36,6 @@ export class ItemsSequelize implements IItemsRepository {
     const offset = (page - 1) * pageSize;
     const lists = await ItemsModel.findAndCountAll({
       ...option,
-      include: [{ model: EntityValuesModel, include: this.INCLUED }],
       order: [['created_at', 'DESC']],
       offset,
       limit: pageSize
