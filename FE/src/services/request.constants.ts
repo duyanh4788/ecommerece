@@ -1,4 +1,6 @@
+import { CONFIG_ENV } from 'utils/config';
+
 export const ApiRouter = {
-  REACT_APP_DOMAIN_URL: process.env.REACT_APP_DOMAIN_URL,
-  SOCKET_URL: process.env.REACT_APP_SOCKET_API_URL,
+  VITE_APP_DOMAIN_URL: CONFIG_ENV.DOMAIN_URL,
+  SOCKET_URL: CONFIG_ENV.SOCKET_URL,
 };

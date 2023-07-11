@@ -4,7 +4,7 @@ import { ItemsInterface, ItemsType } from 'interface/Items.mode';
 import * as _ from 'lodash';
 import { faker } from '@faker-js/faker';
 
-const moment = require('moment');
+import moment from 'moment';
 
 export class AppHelper {
   /**

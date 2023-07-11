@@ -1,18 +1,19 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { Box } from '@mui/material';
+import 'swiper/css';
+import '../src/assets/styles/main/index.css';
 import { AppRouting } from 'router/AppRouting';
 import { Navbar, Footer } from 'app';
-import reportWebVitals from './reportWebVitals';
 import { RootStore } from 'store/configStore';
 import { createRoot } from 'react-dom/client';
 import { AuthContextProvider } from 'app/AuthContext/AuthContextApi';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
-import 'swiper/css';
-import '../src/assets/styles/main/index.css';
-import { Box } from '@mui/material';
+import reportWebVitals from 'webvitals/reportWebVitals';
+import { CONFIG_ENV } from 'utils/config';
 
-export const isDevelopment = process.env.NODE_ENV === 'development' ? true : false;
+export const isDevelopment = CONFIG_ENV.NODE_ENV === 'development' ? true : false;
 
 const MOUNT_NODE = document.getElementById('root') as HTMLElement;
 
@@ -62,5 +63,4 @@ if (isDevelopment && (module as any).hot) {
 }
 
 render();
-
 reportWebVitals();

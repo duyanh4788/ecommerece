@@ -3,6 +3,7 @@ import { createInjectorsEnhancer, forceReducerReload } from 'redux-injectors';
 import createSagaMiddleware from 'redux-saga';
 import { createReducer } from './rootReducer';
 import { refreshAuthToken } from './refreshAuthToken';
+import { CONFIG_ENV } from 'utils/config';
 
 export function configureAppstore() {
   const reduxSagaMonitorOptions = {};
@@ -10,7 +11,7 @@ export function configureAppstore() {
   const { run: runSaga } = sagaMiddleware;
 
   let middlewares = [sagaMiddleware];
-  if (process.env.NODE_ENV === 'development') {
+  if (CONFIG_ENV.NODE_ENV === 'development') {
     middlewares = [...middlewares];
   }
 
@@ -30,15 +31,16 @@ export function configureAppstore() {
   const store = configureStore({
     reducer: createReducer(),
     middleware: [...defaultMiddelWare, refreshAuthToken, ...middlewares],
-    devTools: process.env.NODE_ENV !== 'production' || process.env.PUBLIC_URL.length > 0,
+    devTools: CONFIG_ENV.NODE_ENV !== 'production',
     enhancers,
   });
 
-  if ((module as any).hot) {
-    (module as any).hot.accept('./rootReducer', () => {
+  if (import.meta.hot) {
+    import.meta.hot.accept('./rootReducer', () => {
       forceReducerReload(store);
     });
   }
+
   return store;
 }
 

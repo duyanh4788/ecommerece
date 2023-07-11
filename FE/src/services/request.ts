@@ -5,7 +5,7 @@ import { ApiRouter } from './request.constants';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 
 export const request: AxiosInstance = axios.create({
-  baseURL: ApiRouter.REACT_APP_DOMAIN_URL,
+  baseURL: ApiRouter.VITE_APP_DOMAIN_URL,
   headers: {
     'Cache-Control': 'no-cache',
     'Access-Control-Allow-Origin': '***',
