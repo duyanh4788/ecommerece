@@ -26,6 +26,7 @@ export default defineConfig(() => {
       outDir: 'build',
     },
     server: {
+      open: true,
       port: Number(process.env.PORT) || 3000,
     },
     plugins: [react()],
