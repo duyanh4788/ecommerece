@@ -30,10 +30,11 @@ export class NodeMailerServices implements INodeMailerServices {
     });
   }
 
-  async sendWelcomeUserNotification(email: string): Promise<void> {
+  async sendWelcomeUserNotification(email: string, fullName: string): Promise<void> {
     const baseMail = `
         <div style='overflow-wrap: break-word; background-color:#ffffff; line-height: 140%; padding: 30px;'>
           <h1>Welcome System Ecommerce</h1>
+          <h1>Hi ${fullName}</h1>
           <p>To access all of Ecommerce amazing features, Subscriber Paypal and 30 DAYS ACCESS TO ALL FEATURES on your selected subscription.
            Change and/or cancel your subscription at any time</p>
           <p>See you there,<br> Your friends at Ecommerce<br></p>
@@ -222,7 +223,7 @@ export class NodeMailerServices implements INodeMailerServices {
                 <div class="row">
                     <div class="column_1">
                         <img width="80px" height="80px" alt="image"
-                            src="https://dv19cu1ukmppw.cloudfront.net/img/bannernode.png" />
+                            src="http://localhost:8000/data_publish/products/bannernode.png" />
                     </div>
                     <div class="column_2">
                         <p style="font-size: 16px;font-weight: bold">
@@ -388,7 +389,7 @@ export class NodeMailerServices implements INodeMailerServices {
                     <div style="padding: 20px;">
                           <div class="row">
                             <div class="column_5">
-                                <img alt="image" src="https://dv19cu1ukmppw.cloudfront.net/img/bannernode.png" width="40px"
+                                <img alt="image" src="http://localhost:8000/data_publish/products/bannernode.png" width="40px"
                                     height="40px" />
                                 <span
                                     style="color:#0F4B73;font-size: 23px;font-weight: bold; margin-left: 10px;">duyanh4788@gmail.com</span>
@@ -396,7 +397,7 @@ export class NodeMailerServices implements INodeMailerServices {
                             <div class="column_5" style="text-align: right;">
                                 <span
                                     style="color:#0F4B73;font-size: 23px;font-weight: bold; margin-right: 10px;">anhthuanhtu.online</span>
-                                <img alt="image" src="https://dv19cu1ukmppw.cloudfront.net/img/bannernode.png" width="40px"
+                                <img alt="image" src="http://localhost:8000/data_publish/products/bannernode.png" width="40px"
                                     height="40px" />
                             </div>
                           </div>

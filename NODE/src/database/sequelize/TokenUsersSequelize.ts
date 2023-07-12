@@ -45,6 +45,7 @@ export class TokenUsersSequelize implements ITokenUsersRepository {
 
   async updateResfAndTokenUserByUserId(tokenUserId: string, refreshToKen: string, token: string): Promise<void> {
     const find = await TokenUserModel.findByPk(deCryptFakeId(tokenUserId));
+    if (!find) return;
     const resultRef = find.refreshTokens.filter((item) => item !== refreshToKen);
     find.refreshTokens = resultRef;
     const resultToken = find.tokens.filter((item) => item !== token);

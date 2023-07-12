@@ -22,7 +22,7 @@ export class UsersController {
   public userSignUp = async (req: Request, res: Response) => {
     try {
       const user = await this.userUseCase.userSginUpUseCase(req.body);
-      nodeMailerServices.sendWelcomeUserNotification(user.email);
+      nodeMailerServices.sendWelcomeUserNotification(user.email, user.fullName);
       return new SendRespone({ data: user, message: 'signup successfully!' }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);

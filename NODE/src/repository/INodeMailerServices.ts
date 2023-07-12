@@ -1,7 +1,7 @@
 import { UserAttributes } from '../interface/UserInterface';
 
 export interface INodeMailerServices {
-  sendWelcomeUserNotification(email: string): Promise<void>;
+  sendWelcomeUserNotification(email: string, fullName: string): Promise<void>;
 
   sendAuthCodeResetPassWord(user: UserAttributes, authCode: string): Promise<void>;
 
