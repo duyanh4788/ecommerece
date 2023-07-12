@@ -1,0 +1,146 @@
+@import "../variable/variables.scss";
+@import "../footer/index.scss";
+@import "../signin/index.scss";
+@import "../loading/index.scss";
+@import "../profile/index.scss";
+@import "../subscriber/index.scss";
+@import "../managershop/index.scss";
+
+@font-face {
+    font-family: "Gotham Ultra";
+    src: url("../../font/Gotham\ Ultra.otf") format("opentype");
+}
+
+body {
+    font-family: "Gotham Ultra", sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: roboto;
+}
+
+section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+html {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: none;
+    -moz-text-size-adjust: none;
+    -ms-text-size-adjust: none;
+    text-size-adjust: none;
+    scroll-behavior: smooth;
+}
+
+main {
+    flex-grow: 1;
+}
+
+body {
+    background: $background-body-1 !important;
+    background: -webkit-linear-gradient($background-body-1, $background-body-2);
+    background: linear-gradient($background-body-1, $background-body-2);
+}
+
+body::-webkit-scrollbar,
+.MuiDialogContent-root::-webkit-scrollbar,
+.MuiGrid-root::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background-color: $background-body-2;
+}
+body::-webkit-scrollbar-thumb,
+.MuiDialogContent-root::-webkit-scrollbar-thumb,
+.MuiGrid-root::-webkit-scrollbar-thumb {
+    background: $background-body-1;
+    border-radius: 6px;
+    border: $border3;
+    box-shadow: $box-shadow;
+}
+
+.MuiMenuItem-root {
+    font-size: 13px !important;
+}
+.MuiInput-underline:before,
+.MuiInput-underline:after {
+    display: none !important;
+}
+.MuiOutlinedInput-notchedOutline {
+    border: none !important;
+}
+
+.css-3bmhjh-MuiPaper-root-MuiPopover-paper {
+    border-radius: 10px !important;
+}
+
+.Toastify__toast-container {
+    width: auto !important;
+}
+
+.MuiDrawer-paper {
+    background: linear-gradient($background-body-1, $background-body-2) !important;
+}
+
+.css-1bjk3jo-MuiButtonBase-root-MuiBottomNavigationAction-root.Mui-selected {
+    color: $color-green !important;
+}
+
+.css-1lymaxv-MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
+.css-1lymaxv-MuiDataGrid-root .MuiDataGrid-cell:focus {
+    outline: none !important;
+}
+
+.MuiDialog-paper,
+.MuiDialog-paperScrollPaper MuiDialog-paperWidthLg {
+    overflow: hidden !important;
+}
+
+.MuiAccordionSummary-expandIconWrapper {
+    transform: none !important;
+}
+
+.MuiCard-root,
+.card {
+    border-radius: 20px !important;
+}
+
+.swiper {
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    background: #fff;
+
+    /* Center slide text vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.swiper-slide {
+    width: 60%;
+}
+
+.swiper-slide:nth-child(2n) {
+    width: 40%;
+}
+
+.swiper-slide:nth-child(3n) {
+    width: 20%;
+}

@@ -1,0 +1,22 @@
+.loading {
+  z-index: 99999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100%);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background-color: #ffffff6b;
+}
+
+.loading svg {
+  color: #56ab2f;
+}
+/*# sourceMappingURL=index.css.map */

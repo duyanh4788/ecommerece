@@ -1,0 +1,40 @@
+const userPath = (path: string): string => `/users/${path}`;
+const uploadPath = (path: string): string => `/upload/${path}`;
+
+export const AuthApi = {
+  SIGN_IN: userPath('signin'),
+  REFRESH_TOKEN: userPath('refresh-token'),
+  SIGN_UP: userPath('signup'),
+  SIGN_OUT: userPath('signout'),
+  GET_USER_BY_ID: userPath('get-user-by-id'),
+  FOR_GOT_PW: userPath('forgot-password'),
+  RESEND_ORDER_RESET_PASSWORD: userPath('resend-order-reset-password'),
+  RESET_PASSWORD: userPath('reset-password'),
+  REGISTER_OWNER_SHOP: userPath('register-owner-shop'),
+  UPDATE_PROFILE: userPath('update-profile'),
+  UPLOAD_FILE: uploadPath('upload-file'),
+  REMOVE_FILE: uploadPath('remove-file'),
+};
+
+export const REPONSE_CONSTANT = {
+  SIGN_IN_SUCCESS: 'SIGN_IN_SUCCESS',
+  SIGN_IN_FAIL: 'SIGN_IN_FAIL',
+  SIGN_UP_SUCCESS: 'SIGN_UP_SUCCESS',
+  SIGN_UP_FAIL: 'SIGN_UP_FAIL',
+  SIGN_OUT_SUCCESS: 'SIGN_OUT_SUCCESS',
+  SIGN_OUT_FAIL: 'SIGN_OUT_FAIL',
+  GET_USER_BY_ID_SUCCESS: 'GET_USER_BY_ID_SUCCESS',
+  GET_USER_BY_ID_FAIL: 'GET_USER_BY_ID_FAIL',
+  FOR_GOT_PW_SUCCESS: 'FOR_GOT_PW_SUCCESS',
+  FOR_GOT_PW_FAIL: 'FOR_GOT_PW_FAIL',
+  RESEND_ORDER_RESET_PASSWORD_SUCCESS: 'RESEND_ORDER_RESET_PASSWORD_SUCCESS',
+  RESEND_ORDER_RESET_PASSWORD_FAIL: 'RESEND_ORDER_RESET_PASSWORD_FAIL',
+  RESET_PASSWORD_SUCCESS: 'RESET_PASSWORD_SUCCESS',
+  RESET_PASSWORD_FAIL: 'RESET_PASSWORD_FAIL',
+  REGISTER_OWNER_SHOP_SUCCESS: 'REGISTER_OWNER_SHOP_SUCCESS',
+  REGISTER_OWNER_SHOP_FAIL: 'REGISTER_OWNER_SHOP_FAIL',
+  UPDATE_PROFILE_SUCCESS: 'UPDATE_PROFILE_SUCCESS',
+  UPDATE_PROFILE_FAIL: 'UPDATE_PROFILE_FAIL',
+  UPLOAD_FILE_SUCCESS: 'UPLOAD_FILE_SUCCESS',
+  UPLOAD_FILE_FAIL: 'UPLOAD_FILE_FAIL',
+};
