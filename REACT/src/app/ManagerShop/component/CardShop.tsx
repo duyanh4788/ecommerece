@@ -11,6 +11,7 @@ import {
   Grid,
   IconButton,
   SelectChangeEvent,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { Done, Cancel, Edit, Delete, DashboardCustomize } from '@mui/icons-material';
@@ -19,7 +20,7 @@ import * as ShopSelector from 'store/shops/shared/selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppHelper } from 'utils/app.helper';
 import { Products, Shops } from 'interface/Shops.model';
-import { BANNER_SHOP, MSG_DRAG_IMG, PATH_PARAMS } from 'commom/common.contants';
+import { BANNER_SHOP, MSG_DRAG_IMG, PATH_PARAMS, TITLE_STATUS_SHOP } from 'commom/common.contants';
 import { useNavigate } from 'react-router-dom';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
@@ -201,7 +202,9 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
             {shopInfor?.status ? (
               <Chip label="Active" size="small" color="success" />
             ) : (
-              <Chip label="Disabled" size="small" color="warning" />
+              <Tooltip title={TITLE_STATUS_SHOP}>
+                <Chip label="Disabled" size="small" color="warning" />
+              </Tooltip>
             )}
           </Box>
           {editShop ? (

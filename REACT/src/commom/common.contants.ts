@@ -1,4 +1,4 @@
-const DOMAIN = 'https://dv19cu1ukmppw.cloudfront.net/img';
+const DOMAIN = 'http://localhost:8000/data_publish/products';
 export const NODEJS1 = DOMAIN + '/bannernode.png';
 export const NODEJS2 = DOMAIN + '/1688289500323.png';
 export const ELECTRONIC = DOMAIN + '/electronic.png';

@@ -126,7 +126,19 @@ export const CardListShops = ({ resetDataRef }: Props) => {
   };
 
   const renderShops = () => {
-    if (!shops.length) return null;
+    if (!shops.length)
+      return (
+        <Box className="box_empty">
+          <Typography component="span">
+            <Typography variant="caption" component="p">
+              You have no Shop.
+            </Typography>
+            <Typography variant="caption" component="p">
+              You can click register and experience our product selling feature.
+            </Typography>
+          </Typography>
+        </Box>
+      );
     return shops.map(item => {
       return (
         <Card className="card_profile" key={item?.id} sx={{ marginBottom: '5px' }}>

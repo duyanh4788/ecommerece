@@ -54,6 +54,9 @@ export const ManagerShop = () => {
     const storeSub$: Unsubscribe = RootStore.subscribe(() => {
       const { type, payload } = RootStore.getState().lastAction;
       switch (type) {
+        case ShopSlice.actions.getShopByIdFail.type:
+          navigate(PATH_PARAMS.PROFILE);
+          break;
         case ShopSlice.actions.updatedShopSuccess.type:
         case ShopSlice.actions.updatedSlidersSuccess.type:
           toast.success(payload.message);

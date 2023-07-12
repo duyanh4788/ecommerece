@@ -33,11 +33,12 @@ export const Home = () => {
   const [prodsItems, setProdsItems] = useState<ProductsInterface[]>([]);
 
   useEffect(() => {
+    dispatch(GuestSlice.actions.getListProdsItems());
+  }, []);
+
+  useEffect(() => {
     function initListItem(data) {
-      if (!data || !data.length) {
-        dispatch(GuestSlice.actions.getListProdsItems());
-        return;
-      }
+      if (!data || !data.length) return;
       if (!prodsItems.length) {
         setProdsItems(data);
         return;
