@@ -30,7 +30,7 @@ export class GuestController {
       const configPage = Number(page) || 1;
       const configPageSzie = Number(pageSize) || 20;
       const items = await this.itemsUseCase.getListsItemsByProdIdUseCase(product.id, configPage, configPageSzie);
-      return new SendRespone({ data: items }).send(res);
+      return new SendRespone({ data: { ...items, ...product } }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
