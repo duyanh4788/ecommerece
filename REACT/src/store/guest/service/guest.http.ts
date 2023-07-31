@@ -11,9 +11,10 @@ export class GuestHttp {
     return httpRequest().get(GuestApi.GET_BY_ID + '/' + id);
   };
 
-  public getListItemsByProId = (id: string, nextPage: number): Promise<any> => {
+  public getListItemsByProId = (query: any): Promise<any> => {
+    const { prodId, nextPage } = query;
     return httpRequest().get(
-      GuestApi.GET_LIST_ITEMS_BY_PRO_ID + '/' + id + `?page=${nextPage || ''}`,
+      GuestApi.GET_LIST_ITEMS_BY_PRO_ID + '/' + prodId + `?page=${nextPage || ''}`,
     );
   };
 }

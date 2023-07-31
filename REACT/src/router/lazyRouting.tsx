@@ -48,3 +48,15 @@ export const ManagerShop = lazyLoad(
   module => module.ManagerShop,
   LoaderFallBack(),
 );
+
+export const ProductDetails = lazyLoad(
+  () => import('app'),
+  module => module.ProductDetails,
+  LoaderFallBack(),
+);
+
+export const ItemDetails = lazyLoad(
+  () => import('app'),
+  module => module.ItemDetails,
+  LoaderFallBack(),
+);

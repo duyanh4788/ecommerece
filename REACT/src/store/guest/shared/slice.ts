@@ -7,6 +7,7 @@ export interface GuestState {
   success: boolean;
   error: boolean;
   listProdsItems: ProductsInterface[];
+  listProdsItem: ProductsInterface | null;
   listItems: ListItemsInterface | null;
   itemsInfor: ItemsInterface | null;
 }
@@ -16,6 +17,7 @@ export const initialState: GuestState = {
   success: false,
   error: false,
   listProdsItems: [],
+  listProdsItem: null,
   listItems: null,
   itemsInfor: null,
 };
@@ -41,7 +43,7 @@ const GuestSlice = createSlice({
     },
     getListItemsByProIdSuccess(state, action) {
       state.loading = false;
-      state.listProdsItems = action.payload.data;
+      state.listProdsItem = action.payload.data;
     },
     getListItemsByProIdFail(state, action) {
       state.loading = false;
@@ -74,6 +76,7 @@ const GuestSlice = createSlice({
     clearData(state) {
       state.success = false;
       state.error = false;
+      state.listProdsItem = null;
     },
   },
 });

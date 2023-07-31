@@ -12,6 +12,8 @@ export const selectError = createSelector([selectGuest], state => state.error);
 
 export const selectListProdsItems = createSelector([selectGuest], state => state.listProdsItems);
 
+export const selectListProdsItem = createSelector([selectGuest], state => state.listProdsItem);
+
 export const selectListItems = createSelector([selectGuest], state => state.listItems);
 
 export const selectItemInfor = createSelector([selectGuest], state => state.itemsInfor);

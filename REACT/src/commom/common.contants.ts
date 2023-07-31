@@ -29,6 +29,8 @@ export const PATH_PARAMS = {
   PROFILE: '/profile',
   SUBSCRIBER: '/subscriber',
   MANAGER_SHOP: '/manager-shop',
+  PRODUCT_DETAILS: '/product-details/:prodId',
+  ITEM_DETAILS: '/item-details/:itemId',
 };
 
 export const TYPE_RESET_PW = {

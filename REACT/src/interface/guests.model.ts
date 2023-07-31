@@ -7,4 +7,8 @@ export interface ProductsInterface {
   status?: boolean;
   createdAt?: Date;
   items?: ItemsInterface[];
+  nextPage?: number;
+  pageSize?: number;
+  currentPage?: number;
+  total?: number;
 }

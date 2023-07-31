@@ -19,4 +19,16 @@ export const AppRouting: AppRoute[] = [
   { key: 6, path: PATH_PARAMS.SUBSCRIBER, title: 'Subscriber', Component: Router.Subscriber },
   { key: 7, path: PATH_PARAMS.MANAGER_SHOP, title: 'Manager Shop', Component: Router.ManagerShop },
   { key: 8, path: '*', title: '404 Notfound', Component: Router.NotFound },
+  {
+    key: 9,
+    path: PATH_PARAMS.PRODUCT_DETAILS,
+    title: 'Product Details',
+    Component: Router.ProductDetails,
+  },
+  {
+    key: 10,
+    path: PATH_PARAMS.ITEM_DETAILS,
+    title: 'Item Details',
+    Component: Router.ItemDetails,
+  },
 ];

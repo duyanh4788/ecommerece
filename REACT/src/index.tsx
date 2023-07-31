@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Box } from '@mui/material';
 import 'swiper/css';
@@ -18,7 +18,7 @@ export const isDevelopment = CONFIG_ENV.NODE_ENV === 'development' ? true : fals
 const MOUNT_NODE = document.getElementById('root') as HTMLElement;
 
 const ConnectedApp = () => (
-  <BrowserRouter>
+  <HashRouter>
     <Provider store={RootStore}>
       <AuthContextProvider>
         <HelmetProvider>
@@ -51,7 +51,7 @@ const ConnectedApp = () => (
         </HelmetProvider>
       </AuthContextProvider>
     </Provider>
-  </BrowserRouter>
+  </HashRouter>
 );
 
 const render = () => {

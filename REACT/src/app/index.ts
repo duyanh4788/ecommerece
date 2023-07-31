@@ -8,11 +8,15 @@ import { Subscriber } from './ManagerShop/container/Subscriber';
 import { Footer } from './Home/component/Footer';
 import { Navbar } from './Home/component/Navbar';
 import { Home } from './Home/container/Home';
+import { ProductDetails } from './Home/container/ProductDetails';
+import { ItemDetails } from './Home/container/ItemDetails';
 
 export {
   Navbar,
   Footer,
   Home,
+  ProductDetails,
+  ItemDetails,
   SignIn,
   SignUp,
   Password,
