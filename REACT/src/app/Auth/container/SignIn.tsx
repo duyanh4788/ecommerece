@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Input, Link } from '@mui/material';
+import { Box, Input } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
 import * as AuthSlice from 'store/auth/shared/slice';
@@ -11,7 +11,7 @@ import { Users } from 'interface/Users.model';
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
 import { PATH_PARAMS } from 'commom/common.contants';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 
@@ -138,10 +138,14 @@ export const SignIn = () => {
           </div>
         </form>
         <Box>
-          <Link href={PATH_PARAMS.SIGNUP}>Create account</Link>
+          <NavLink style={{ color: 'blue' }} to={PATH_PARAMS.SIGNUP}>
+            Create account
+          </NavLink>
         </Box>
         <Box>
-          <Link href={PATH_PARAMS.PASSW}>Forgot Password</Link>
+          <NavLink style={{ color: 'blue' }} to={PATH_PARAMS.PASSW}>
+            Forgot Password
+          </NavLink>
         </Box>
       </div>
     </div>

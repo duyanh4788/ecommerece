@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-concat */
 /* eslint-disable array-callback-return */
-import { ItemsInterface, ItemsType } from 'interface/Items.mode';
+import { EntityValuesInterface, ItemsInterface, ItemsType } from 'interface/Items.mode';
 import * as _ from 'lodash';
 import { faker } from '@faker-js/faker';
 
@@ -12,44 +12,6 @@ export class AppHelper {
    * @param  {String} url queryString
    * @return {Object} format query parameter
    */
-  static getParamsFromUrl(url: string): any {
-    url = decodeURI(url);
-    if (typeof url === 'string') {
-      let params = url.split('?');
-      let eachParamsArr = params[1].split('&');
-      let obj = {};
-      if (eachParamsArr && eachParamsArr.length) {
-        eachParamsArr.map((param: any): any => {
-          let keyValuePair = param.split('=');
-          let key = keyValuePair[0];
-          let value = keyValuePair[1];
-          obj[key] = value;
-        });
-      }
-      return obj;
-    }
-  }
-
-  /**
-   * Format Current To VND
-   * @param  {String} cur input string currency
-   * @return {String}  Price with format VND  "123.457 ₫"
-   */
-
-  static convertBirthDate(dateStr) {
-    if (!dateStr) return '';
-    const parts = dateStr.split('/');
-    return parts[2] + '-' + parts[1] + '-' + parts[0];
-  }
-
-  static formTimer(dateTime) {
-    if (!dateTime) return '-';
-    return moment(dateTime).format('HH:mm');
-  }
-
-  static getToDate(date) {
-    return moment(date).format('DD-MM-YYYY');
-  }
 
   static formmatDateTime(dateTime) {
     if (!dateTime) return '-';
@@ -190,6 +152,13 @@ export class AppHelper {
   static validateNumber(num: number | any) {
     if (!num) return false;
     return true;
+  }
+
+  static handleEntityValue(entityValues: EntityValuesInterface) {
+    if (entityValues.entityClothers) return 'entityClothers';
+    if (entityValues.entityCosmestics) return 'entityCosmestics';
+    if (entityValues.entityElectronics) return 'entityElectronics';
+    if (entityValues.entityFunitures) return 'entityFunitures';
   }
 
   static ranDomeImg() {

@@ -1,0 +1,23 @@
+.box_item {
+  border: $border3;
+  padding: 10px;
+  border-radius: 20px;
+
+  .box_add,
+  .box_add_btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .add_to_cart {
+      padding: 5px 15px;
+      border: $border3;
+      cursor: pointer;
+      font-size: 18px;
+      user-select: none;
+    }
+  }
+
+  .box_add_btn {
+    margin-top: 20px;
+  }
+}

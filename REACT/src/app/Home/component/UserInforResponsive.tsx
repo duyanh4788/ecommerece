@@ -7,7 +7,6 @@ import {
   Box,
   ThemeProvider,
   createTheme,
-  Link,
   List,
   ListItem,
   CircularProgress,
@@ -18,7 +17,7 @@ import * as AuthSelector from 'store/auth/shared/selectors';
 import { AppHelper } from 'utils/app.helper';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from '@emotion/styled';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { BG_MAIN_2, BG_MAIN_1, CL_GR, PATH_PARAMS } from 'commom/common.contants';
 
 interface Props {
@@ -126,7 +125,9 @@ export const UserInforResponsive = (props: Props) => {
               primaryTypographyProps={{ fontSize: 12, color: '#ff0000', fontWeight: 'bold' }}
             />
           ) : (
-            <Link href={PATH_PARAMS.SIGNIN}>Please login!</Link>
+            <NavLink style={{ color: 'blue' }} to={PATH_PARAMS.SIGNIN}>
+              Please login!
+            </NavLink>
           )}
         </FireNav>
       </ThemeProvider>

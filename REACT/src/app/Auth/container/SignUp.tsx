@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
-import { Input, Link } from '@mui/material';
+import { Input } from '@mui/material';
 import { Visibility, VisibilityOff, Password, EnhancedEncryptionSharp } from '@mui/icons-material';
 import * as AuthSlice from 'store/auth/shared/slice';
 import * as AuthSelector from 'store/auth/shared/selectors';
@@ -9,7 +9,7 @@ import { RootStore } from 'store/configStore';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loading } from 'commom/loading';
 import { PATH_PARAMS } from 'commom/common.contants';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
@@ -184,7 +184,9 @@ export const SignUp = () => {
             </button>
           </div>
         </form>
-        <Link href={PATH_PARAMS.SIGNIN}>You have account</Link>
+        <NavLink style={{ color: 'blue' }} to={PATH_PARAMS.SIGNIN}>
+          You have account
+        </NavLink>
       </div>
     </div>
   );

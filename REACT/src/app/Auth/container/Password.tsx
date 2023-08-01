@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { Unsubscribe } from 'redux';
 import { RootStore } from 'store/configStore';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
 import { LocalStorageKey, TypeLocal } from 'services/localStorage';
@@ -188,7 +188,9 @@ export const Password = () => {
           )}
         </Box>
         <Box>
-          <Link href={PATH_PARAMS.SIGNIN}>Sign In</Link>
+          <NavLink style={{ color: 'blue' }} to={PATH_PARAMS.SIGNIN}>
+            Sign In
+          </NavLink>
         </Box>
       </div>
     </div>

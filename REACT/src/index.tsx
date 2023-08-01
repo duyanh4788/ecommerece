@@ -4,7 +4,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Box } from '@mui/material';
 import 'swiper/css';
-import '../src/assets/styles/main/index.css';
+import '../src/assets/styles/main/index.scss';
 import { AppRouting } from 'router/AppRouting';
 import { Navbar, Footer } from 'app';
 import { RootStore } from 'store/configStore';
