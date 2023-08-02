@@ -12,6 +12,7 @@ import { EntityElectronicsModel } from '../model/EAV/EntityElectronicsModel';
 import { EntityFunituresModel } from '../model/EAV/EntityFunituresModel';
 import { parseEntityValues } from '../../utils/parseEntityValues';
 import { removeFile } from '../../utils/removeFile';
+import { ShopsModel } from '../model/ShopsModel';
 
 export class ItemsSequelize implements IItemsRepository {
   private INCLUED = [{ model: EntityClothersModel }, { model: EntityCosmesticsModel }, { model: EntityElectronicsModel }, { model: EntityFunituresModel }];
@@ -53,7 +54,12 @@ export class ItemsSequelize implements IItemsRepository {
   }
 
   async getItemsById(id: string): Promise<ItemsInterface> {
-    const find = await ItemsModel.findByPk(deCryptFakeId(id), { include: [{ model: EntityValuesModel, include: this.INCLUED }] });
+    const find = await ItemsModel.findByPk(deCryptFakeId(id), {
+      include: [
+        { model: EntityValuesModel, include: this.INCLUED },
+        { model: ShopsModel, attributes: ['nameShop', 'banners'] }
+      ]
+    });
     return this.transformModelToEntity(find);
   }
 
