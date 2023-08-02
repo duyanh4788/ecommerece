@@ -2,30 +2,36 @@ import {
   Avatar,
   Box,
   Chip,
+  Divider,
   Grid,
   IconButton,
   List,
   ListItem,
-  ListItemAvatar,
   ListItemText,
+  Popper,
   Tooltip,
 } from '@mui/material';
-import { PATH_PARAMS } from 'commom/common.contants';
+import { BANNER_SHOP, PATH_PARAMS } from 'commom/common.contants';
 import { SwipersList } from 'hooks/component/SwipersList';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as GuestSlice from 'store/guest/shared/slice';
 import * as GuestSelector from 'store/guest/shared/selectors';
 import { AppHelper } from 'utils/app.helper';
-import { LocalAtm, ShoppingCart } from '@mui/icons-material';
+import { Info, LocalAtm, ShoppingCart } from '@mui/icons-material';
+import { RootStore } from 'store/configStore';
+import { Unsubscribe } from 'redux';
 
 export const ItemDetails = () => {
   const { itemId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const itemInfor = useSelector(GuestSelector.selectItemInfor);
-  const [numberCart, setNumberCard] = useState(1);
+  const [numberCart, setNumberCard] = useState<number>(1);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popper' : undefined;
 
   useEffect(() => {
     function initItemId(data: string) {
@@ -36,6 +42,23 @@ export const ItemDetails = () => {
       dispatch(GuestSlice.actions.getItemById(itemId));
     }
     initItemId(itemId as string);
+
+    const storeSub$: Unsubscribe = RootStore.subscribe(() => {
+      const { type, payload } = RootStore.getState().lastAction;
+      switch (type) {
+        case GuestSlice.actions.getItemByIdFail.type:
+          navigate(PATH_PARAMS.HOME);
+          break;
+        default:
+          break;
+      }
+    });
+    return () => {
+      storeSub$();
+      dispatch(GuestSlice.actions.clearItem());
+      setAnchorEl(null);
+      setNumberCard(1);
+    };
   }, []);
 
   const handleDecrement = () => {
@@ -54,6 +77,10 @@ export const ItemDetails = () => {
     setNumberCard(numberCart + 1);
   };
 
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
   return (
     <Box m={5}>
       <Grid container columns={{ xs: 6, sm: 12, md: 12 }} spacing={3}>
@@ -62,6 +89,15 @@ export const ItemDetails = () => {
         </Grid>
         <Grid item xs={12} sm={6} md={6}>
           <Box className="box_item">
+            <Chip
+              label={itemInfor?.shops?.nameShop}
+              avatar={
+                <Avatar
+                  src={(itemInfor?.shops?.banners && itemInfor?.shops?.banners[0]) || BANNER_SHOP}
+                  alt="avatar"
+                />
+              }
+            />
             <h2>
               {itemInfor?.nameItem}{' '}
               <Chip label={`${itemInfor?.quantitySold} Sold`} style={{ marginLeft: '5px' }} />
@@ -78,6 +114,10 @@ export const ItemDetails = () => {
                 <ListItemText primary="Brand Name" secondary={itemInfor?.brandName} />
               </ListItem>
             </List>
+            <IconButton onClick={handleClick}>
+              <Info color="info" />
+            </IconButton>
+            <Divider />
             <Box className="box_add">
               <label>
                 <span className="add_to_cart" onClick={handleDecrement}>
@@ -95,7 +135,7 @@ export const ItemDetails = () => {
                 style={{ marginLeft: '5px' }}
               />
             </Box>
-            <Box className="box_add_btn">
+            <Box className="box_add">
               <Tooltip title="add to cart">
                 <IconButton>
                   <ShoppingCart color="warning" />
@@ -110,48 +150,49 @@ export const ItemDetails = () => {
           </Box>
         </Grid>
       </Grid>
-      <List className="box_item" style={{ marginTop: '20px' }}>
-        {itemInfor?.entityValues &&
-          Object.keys(
-            itemInfor?.entityValues[AppHelper.handleEntityValue(itemInfor?.entityValues) || ''],
-          ).map(item => {
-            console.log(item);
-            const value =
-              itemInfor?.entityValues?.[AppHelper.handleEntityValue(itemInfor?.entityValues) || ''][
-                item
-              ];
-            if (item !== 'id' && item !== 'entityId' && typeof value !== 'boolean') {
-              return (
-                <ListItem key={item}>
-                  <ListItemText
-                    primary={AppHelper.toTitleCase(item) || null}
-                    secondary={
-                      itemInfor?.entityValues?.[
-                        AppHelper.handleEntityValue(itemInfor?.entityValues) || ''
-                      ][item] || null
-                    }
-                  />
-                </ListItem>
-              );
-            }
-            if (typeof value === 'boolean') {
-              return (
-                <ListItem key={item}>
-                  <ListItemText
-                    primary={AppHelper.toTitleCase(item) || null}
-                    secondary={
-                      itemInfor?.entityValues?.[
-                        AppHelper.handleEntityValue(itemInfor?.entityValues) || ''
-                      ][item]
-                        ? 'Yes'
-                        : 'No'
-                    }
-                  />
-                </ListItem>
-              );
-            }
-          })}
-      </List>
+      <Popper id={id} open={open} anchorEl={anchorEl} placement="right-start">
+        <List className="box_item" style={{ background: 'white' }}>
+          {itemInfor?.entityValues &&
+            Object.keys(
+              itemInfor?.entityValues[AppHelper.handleEntityValue(itemInfor?.entityValues) || ''],
+            ).map(item => {
+              const value =
+                itemInfor?.entityValues?.[
+                  AppHelper.handleEntityValue(itemInfor?.entityValues) || ''
+                ][item];
+              if (item !== 'id' && item !== 'entityId' && typeof value !== 'boolean') {
+                return (
+                  <ListItem key={item}>
+                    <ListItemText
+                      primary={AppHelper.toTitleCase(item) || null}
+                      secondary={
+                        itemInfor?.entityValues?.[
+                          AppHelper.handleEntityValue(itemInfor?.entityValues) || ''
+                        ][item] || null
+                      }
+                    />
+                  </ListItem>
+                );
+              }
+              if (typeof value === 'boolean') {
+                return (
+                  <ListItem key={item}>
+                    <ListItemText
+                      primary={AppHelper.toTitleCase(item) || null}
+                      secondary={
+                        itemInfor?.entityValues?.[
+                          AppHelper.handleEntityValue(itemInfor?.entityValues) || ''
+                        ][item]
+                          ? 'Yes'
+                          : 'No'
+                      }
+                    />
+                  </ListItem>
+                );
+              }
+            })}
+        </List>
+      </Popper>
     </Box>
   );
 };

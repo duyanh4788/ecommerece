@@ -1,3 +1,5 @@
+import { Shops } from './Shops.model';
+
 export interface ListItemsInterface {
   total?: number;
   currentPage?: number;
@@ -32,6 +34,7 @@ export interface ItemsInterface {
   entityValues?: EntityValuesInterface;
   isAdd?: boolean;
   itemChildId?: string;
+  shops?: Shops;
 }
 
 export interface EntityValuesInterface {

@@ -18,6 +18,8 @@ import {
 import { Loading } from 'commom/loading';
 import { ExpandCircleDown } from '@mui/icons-material';
 import { ProductsInterface } from 'interface/guests.model';
+import { RootStore } from 'store/configStore';
+import { Unsubscribe } from 'redux';
 
 export const ProductDetails = () => {
   const { prodId } = useParams();
@@ -37,7 +39,19 @@ export const ProductDetails = () => {
     }
     initProductDetail(prodId as string);
 
+    const storeSub$: Unsubscribe = RootStore.subscribe(() => {
+      const { type } = RootStore.getState().lastAction;
+      switch (type) {
+        case GuestSlice.actions.getListProdsItemsFail.type:
+          navigate(PATH_PARAMS.HOME);
+          break;
+        default:
+          break;
+      }
+    });
+
     return () => {
+      storeSub$();
       dispatch(GuestSlice.actions.clearData());
       setProdsItem(null);
     };

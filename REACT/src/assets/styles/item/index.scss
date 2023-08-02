@@ -3,11 +3,11 @@
   padding: 10px;
   border-radius: 20px;
 
-  .box_add,
-  .box_add_btn {
+  .box_add {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 20px;
     .add_to_cart {
       padding: 5px 15px;
       border: $border3;
@@ -15,9 +15,5 @@
       font-size: 18px;
       user-select: none;
     }
-  }
-
-  .box_add_btn {
-    margin-top: 20px;
   }
 }
