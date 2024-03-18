@@ -3,25 +3,23 @@ import { RestError } from '../services/error/error';
 import { hashTokenPasswordInput, encryptTokenPasswordOutput, genarateKeyPairSync, compareSyncPasswordInput } from '../utils/handlerTokenPassword';
 import { UserAttributes, UserRole } from '../interface/UserInterface';
 import { ITokenUsersRepository } from '../repository/ITokenUsersRepository';
-import { RedisUsers } from '../redis/users/RedisUsers';
 import { IAuthenticatesCodesRepository } from '../repository/IAuthenticatesCodesRepository';
 import { ramdomAuthCode } from '../utils/ramdomAuthCode';
 import { checkTimerAuthenticator } from '../utils/timer';
 import { Transaction } from 'sequelize';
-import { RedisAuthenticate } from '../redis/authenticate/RedisAuthenticate';
 import { TokenUserInterface } from '../interface/TokenUserInterface';
 
 export class UserUseCase {
   constructor(private userRepository: IUserRepository, private tokenUsersRepository: ITokenUsersRepository, private authenticatesCodesRepository: IAuthenticatesCodesRepository) {}
 
   async userSigninUseCase(email: string, password: string) {
-    let user: UserAttributes = await RedisUsers.getInstance().handlerGetUserByEmail(email);
+    let user: UserAttributes = await this.userRepository.findByEmail(email);
     if (!user) throw new RestError('account not found!', 404);
     if (!user.activate) throw new RestError('account is disabled!', 404);
     const isPassWord = compareSyncPasswordInput(password, user.password);
     if (!isPassWord) throw new RestError('Password is wrong!', 400);
     const { id: userId } = user;
-    const keyStoresModel = await RedisUsers.getInstance().handlerGetTokenUserByUserId(userId);
+    const keyStoresModel = await this.tokenUsersRepository.findByUserId(userId);
     if (keyStoresModel && keyStoresModel.refreshTokens.length >= 5) {
       await this.tokenUsersRepository.deleteTokenUserByUserId(userId);
       throw new RestError('you have login 5 devices, please relogin!', 400);
@@ -54,7 +52,7 @@ export class UserUseCase {
 
   async userSginUpUseCase(reqBody: UserAttributes) {
     const { fullName, email, phone, password } = reqBody;
-    const findEmail = await RedisUsers.getInstance().handlerGetUserByEmail(email);
+    const findEmail = await this.userRepository.findByEmail(email);
     if (findEmail) {
       throw new RestError('email has exits!', 404);
     }
@@ -66,7 +64,7 @@ export class UserUseCase {
   }
 
   async getUserByIdUseCase(userId: string) {
-    const user = await RedisUsers.getInstance().handlerGetUserById(userId);
+    const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new RestError('user not found!', 404);
     }
@@ -78,7 +76,7 @@ export class UserUseCase {
   }
 
   async getUserByEmailUseCase(email: string) {
-    const user = await RedisUsers.getInstance().handlerGetUserByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
     if (!user) {
       throw new RestError('user not found!', 404);
     }
@@ -90,7 +88,7 @@ export class UserUseCase {
   }
 
   async forgotPasswordUseCase(userId: string) {
-    const find = await RedisAuthenticate.getInstance().getByUserId(userId);
+    const find = await this.authenticatesCodesRepository.findByUserId(userId);
     if (find) {
       throw new RestError('we have send authenticator code to email, please checked to email or resend order code!', 404);
     }
@@ -99,7 +97,7 @@ export class UserUseCase {
   }
 
   async resendForgotPasswordUseCase(userId: string) {
-    const find = await RedisAuthenticate.getInstance().getByUserId(userId);
+    const find = await this.authenticatesCodesRepository.findByUserId(userId);
     if (!find) {
       throw new RestError('you can not order reset password!', 404);
     }
@@ -130,7 +128,7 @@ export class UserUseCase {
 
   async refresTokenUseCase(userId: string, refreshToKen: string, token: string, tokenUser: TokenUserInterface) {
     const { id, privateKey, publicKey } = tokenUser;
-    const userInfo = await RedisUsers.getInstance().handlerGetUserById(userId);
+    const userInfo = await this.userRepository.findById(userId);
     const tokenPayload = encryptTokenPasswordOutput(userInfo, { privateKey, publicKey }, refreshToKen);
     await this.tokenUsersRepository.updateTokenUserById(id, token, tokenPayload.token);
     return tokenPayload;

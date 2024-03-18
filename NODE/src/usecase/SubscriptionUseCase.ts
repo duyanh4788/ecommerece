@@ -5,53 +5,52 @@ import { IInvoicesRepository } from '../repository/IInvoicesRepository';
 import { EventType, Invoices, MsgErrSubscription, PaypalBillingPlans, RequestEmail, Subscription, SubscriptionStatus } from '../interface/SubscriptionInterface';
 import { UserAttributes } from '../interface/UserInterface';
 import { RestError } from '../services/error/error';
-import { IUserRepository } from '../repository/IUserRepository';
 import { nodeMailerServices } from '../services/nodemailer/MailServices';
-import { RedisPlans } from '../redis/Plans/RedisPlans';
 import { capitalizeFirstLetter } from '../utils/accents';
 import { IShopRepository } from '../repository/IShopRepository';
-import { RedisSubscription } from '../redis/subscription/RedisSubscription';
-import { RedisUsers } from '../redis/users/RedisUsers';
 import { ShopInterface } from '../interface/ShopInterface';
 import { IShopsResourcesRepository } from '../repository/IShopsResourcesRepository';
 import { ShopsResourcesInterface } from '../interface/ShopsResourcesInterface';
+import { IPaypalBillingPlanRepository } from '../repository/IPaypalBillingPlanRepository';
+import { IUserRepository } from '../repository/IUserRepository';
 
 export class SubscriptionUseCase {
-  private redisPlans: RedisPlans = new RedisPlans();
   constructor(
     private paypalService: PaypalService,
+    private paypalBillingPlanRepository: IPaypalBillingPlanRepository,
     private subscriptionRepository: ISubscriptionRepository,
     private invoicesRepository: IInvoicesRepository,
     private shopsResourcesRepository: IShopsResourcesRepository,
-    private shopRepository: IShopRepository
+    private shopRepository: IShopRepository,
+    private userRepository: IUserRepository
   ) {}
 
   async adminFindAllSubscriptionUseCase() {
-    return await RedisSubscription.getInstance().adminGetListSubs();
+    return await this.subscriptionRepository.findAll();
   }
 
   async adminFindAllInvoicesUseCase() {
-    return await RedisSubscription.getInstance().adminGetInv();
+    return await this.invoicesRepository.findAllInvoices();
   }
 
   async findAllPlanUseCase() {
-    return await this.redisPlans.handlerGetPlans();
+    return await this.paypalBillingPlanRepository.findAll();
   }
 
   async finfByPlanIdUseCase(planId: string) {
-    return await this.redisPlans.handlerGetPlanId(planId);
+    return await this.paypalBillingPlanRepository.finfByPlanId(planId);
   }
 
   async shopGetSubscriptionUseCase(shopId: string) {
-    return await RedisSubscription.getInstance().getSubsByShopId(shopId);
+    return await this.subscriptionRepository.findByShopId(shopId);
   }
 
   async shopGetInvoicesUseCase(shopId: string) {
-    return await RedisSubscription.getInstance().getInvsByShopId(shopId);
+    return await this.invoicesRepository.findByShopId(shopId);
   }
 
   async getSubscriptionBySubsIdUseCase(subscriptionId: string) {
-    return await RedisSubscription.getInstance().getSubsBySubsId(subscriptionId);
+    return await this.subscriptionRepository.findBySubscriptionId(subscriptionId);
   }
 
   async createdInvoicesdUseCase(reqBody: Invoices, transactionDB?: Transaction) {
@@ -59,8 +58,8 @@ export class SubscriptionUseCase {
   }
 
   async subscriberUseCase(tier: string, shopId: string, userId: string, transactionDB: Transaction) {
-    const subscription = await RedisSubscription.getInstance().getSubsByShopId(shopId);
-    const user = await RedisUsers.getInstance().handlerGetUserById(userId);
+    const subscription = await this.subscriptionRepository.findByShopId(shopId);
+    const user = await this.userRepository.findById(userId);
     if (subscription && subscription.status === SubscriptionStatus.ACTIVE) {
       throw new RestError(MsgErrSubscription.ALLREADY_ACTIVE, 404);
     }
@@ -71,7 +70,7 @@ export class SubscriptionUseCase {
       throw new RestError(MsgErrSubscription.PLEASE_WAITING_SYNC, 404);
     }
     const checkTier = (subscription && !subscription.isTrial) || (subscription && subscription.status === SubscriptionStatus.CANCELLED) ? `${tier}_no_trial` : tier;
-    const plan: PaypalBillingPlans = await this.redisPlans.handlerGetTier(checkTier);
+    const plan: PaypalBillingPlans = await this.paypalBillingPlanRepository.finfByTier(checkTier);
     try {
       if (subscription && subscription.status === SubscriptionStatus.APPROVAL_PENDING && subscription.planId === plan.planId) {
         const agreement = await this.paypalService.getBillingAgreement(subscription.subscriptionId);
@@ -115,7 +114,7 @@ export class SubscriptionUseCase {
   }
 
   async cancelUseCase(subscriptionId: string, reason: string, shopId: string, userId: string) {
-    const subscription = await RedisSubscription.getInstance().getSubsByShopId(shopId);
+    const subscription = await this.subscriptionRepository.findByShopId(shopId);
     if (!subscription || subscription.status !== SubscriptionStatus.ACTIVE) {
       throw new RestError('No active subscription to cancel', 400);
     }
@@ -127,8 +126,8 @@ export class SubscriptionUseCase {
   }
 
   async changeUseCase(tier: string, shopId: string, userId: string) {
-    const userInfo = await RedisUsers.getInstance().handlerGetUserById(userId);
-    const subscription = await RedisSubscription.getInstance().getSubsByShopId(shopId);
+    const userInfo = await this.userRepository.findById(userId);
+    const subscription = await this.subscriptionRepository.findByShopId(shopId);
     if (!subscription || subscription.userId !== userId) {
       throw new RestError(MsgErrSubscription.NONE_SUBSCRIPTION, 404);
     }
@@ -139,7 +138,7 @@ export class SubscriptionUseCase {
       throw new RestError(MsgErrSubscription.CHANGE_SUBSCRIPTION, 404);
     }
     const checkTier = subscription.status === SubscriptionStatus.ACTIVE || !subscription.isTrial ? `${tier}_no_trial` : tier;
-    const plan: PaypalBillingPlans = await this.redisPlans.handlerGetTier(checkTier);
+    const plan: PaypalBillingPlans = await this.paypalBillingPlanRepository.finfByTier(checkTier);
     if (subscription.planId === plan.planId) {
       throw new RestError(MsgErrSubscription.PLAN_DUPLICATE, 404);
     }
@@ -165,10 +164,10 @@ export class SubscriptionUseCase {
   async getInvoicesUserPaypal(transactionPaypal: any, subscription: Subscription, transactionDB: Transaction) {
     const billingAgreement = await this.paypalService.getBillingAgreement(transactionPaypal.billing_agreement_id);
     const invoiceModel = await this.invoicesRepository.findByPaymentProcessorId(transactionPaypal.id);
-    const plan = await this.redisPlans.handlerGetPlanId(billingAgreement.plan_id);
+    const plan = await this.paypalBillingPlanRepository.finfByPlanId(billingAgreement.plan_id);
     if (!invoiceModel) {
-      const userInfor = await await RedisUsers.getInstance().handlerGetUserById(subscription.userId);
-      const resultBillingPlans = await this.redisPlans.handlerGetPlanId(billingAgreement.plan_id);
+      const userInfor = await this.userRepository.findById(subscription.userId);
+      const resultBillingPlans = await this.paypalBillingPlanRepository.finfByPlanId(billingAgreement.plan_id);
       let gst = 0;
       if (transactionPaypal.amount.currency === 'AUD') {
         gst = Math.round((transactionPaypal.amount.details.subtotal / 11) * 100) / 100;
@@ -236,7 +235,7 @@ export class SubscriptionUseCase {
   }
 
   async configUserSubscription(billingAgreement: any, subscription: Subscription, transactionDB: Transaction) {
-    const plan = await this.redisPlans.handlerGetPlanId(billingAgreement.plan_id);
+    const plan = await this.paypalBillingPlanRepository.finfByPlanId(billingAgreement.plan_id);
     if (subscription.status !== billingAgreement.status || subscription.planId !== billingAgreement.plan_id) {
       if (billingAgreement.status === SubscriptionStatus.ACTIVE) {
         const findTrial = billingAgreement.billing_info.cycle_executions.find((item) => item.tenure_type === 'TRIAL');
@@ -279,7 +278,7 @@ export class SubscriptionUseCase {
       };
       await this.shopRepository.updateStatusShopById(subscription.shopId, false, transactionDB);
       await this.subscriptionRepository.createOrUpdate(payload, transactionDB);
-      const userInfor = await RedisUsers.getInstance().handlerGetUserById(subscription.userId);
+      const userInfor = await this.userRepository.findById(subscription.userId);
       if (billingAgreement.status === SubscriptionStatus.CANCELLED) {
         await nodeMailerServices.sendSubscriptionCanceled(userInfor, subscription.shops.nameShop);
       }

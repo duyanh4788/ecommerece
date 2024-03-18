@@ -2,8 +2,8 @@ import { ITokenUsersRepository } from '../../repository/ITokenUsersRepository';
 import { TokenUserModel } from '../model/TokenUserModel';
 import { TokenUserInterface } from '../../interface/TokenUserInterface';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
-import { RedisUsers } from '../../redis/users/RedisUsers';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { redisController } from '../../redis/RedisController';
 
 export class TokenUsersSequelize implements ITokenUsersRepository {
   async createTokenUsers(payload: TokenUserInterface): Promise<TokenUserInterface> {
@@ -28,18 +28,25 @@ export class TokenUsersSequelize implements ITokenUsersRepository {
       await tokenUser.save();
     }
     const result = this.transformModelToEntity(tokenUser);
-    await RedisUsers.getInstance().handlerUpdateKeys(MainkeysRedis.TOKEN, userId, result);
+    await redisController.setRedis({ keyValue: `${MainkeysRedis.TOKEN}${userId}`, value: result });
     return result;
   }
 
   async findByUserId(userId: string): Promise<TokenUserInterface> {
-    const tokenUser = await TokenUserModel.findOne({ where: { userId: deCryptFakeId(userId) } });
-    return this.transformModelToEntity(tokenUser);
+    const key = `${MainkeysRedis.TOKEN}${userId}`;
+    let userRedis = await redisController.getRedis(key);
+    if (!userRedis) {
+      const tokenUserModel = await TokenUserModel.findOne({ where: { userId: deCryptFakeId(userId) } });
+      if (!tokenUserModel) return;
+      userRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(tokenUserModel) });
+    }
+    return userRedis;
   }
 
   async deleteTokenUserByUserId(userId: string): Promise<void> {
     await TokenUserModel.destroy({ where: { userId: deCryptFakeId(userId) } });
-    await RedisUsers.getInstance().handlerDelKeys(MainkeysRedis.TOKEN, userId);
+    await redisController.delRedis(`${MainkeysRedis.TOKEN}${userId}`);
+
     return;
   }
 
@@ -52,7 +59,7 @@ export class TokenUsersSequelize implements ITokenUsersRepository {
     find.tokens = resultToken;
     await find.save();
     const result = this.transformModelToEntity(find);
-    await RedisUsers.getInstance().handlerUpdateKeys(MainkeysRedis.TOKEN, result.userId, result);
+    await redisController.setRedis({ keyValue: `${MainkeysRedis.TOKEN}${result.userId}`, value: result });
   }
 
   async updateTokenUserById(tokenUserId: string, tokenOld: string, tokenNew: string): Promise<void> {
@@ -61,7 +68,7 @@ export class TokenUsersSequelize implements ITokenUsersRepository {
     find.tokens = [...resultToken, tokenNew];
     await find.save();
     const result = this.transformModelToEntity(find);
-    await RedisUsers.getInstance().handlerUpdateKeys(MainkeysRedis.TOKEN, result.userId, result);
+    await redisController.setRedis({ keyValue: `${MainkeysRedis.TOKEN}${result.userId}`, value: result });
   }
 
   /**

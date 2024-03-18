@@ -1,14 +1,17 @@
+import { ProductsSequelize } from '../../database/sequelize/ProductsSequelize';
+import { ShopSequelize } from '../../database/sequelize/ShopSequelize';
+import { ShopsResourcesSequelize } from '../../database/sequelize/ShopsResourcesSequelize';
+import { SubscriptionSequelize } from '../../database/sequelize/SubscriptionSequelize';
 import { EntityClothesIntersface, EntityCosmeticsInterface, EntityElectronicsInterface, EntityFunituresInterface, ItemsInterface, ItemsType, PayloadEntity } from '../../interface/ItemsInterface';
 import { SubscriptionStatus } from '../../interface/SubscriptionInterface';
-import { RedisProducts } from '../../redis/products/RedisProducts';
-import { RedisResource } from '../../redis/subscription/RedisResource';
-import { RedisSubscription } from '../../redis/subscription/RedisSubscription';
-import { RedisUsers } from '../../redis/users/RedisUsers';
 import { RestError } from '../../services/error/error';
 import { TypeOfValue, isCheckedTypeValues } from '../../utils/validate';
 
 export class ItemRequest {
-  private redisProducts: RedisProducts = new RedisProducts();
+  private productsRepository: ProductsSequelize = new ProductsSequelize();
+  private subscriptionRepository: SubscriptionSequelize = new SubscriptionSequelize();
+  private shopsResourcesRepository: ShopsResourcesSequelize = new ShopsResourcesSequelize();
+  private shopRepository: ShopSequelize = new ShopSequelize();
   public items: ItemsInterface;
   public payloadEntity: PayloadEntity;
 
@@ -72,16 +75,16 @@ export class ItemRequest {
     if (origin && !isCheckedTypeValues(origin, TypeOfValue.STRING)) {
       throw new RestError('Origin Name not available', 404);
     }
-    const shops = await RedisUsers.getInstance().handlerGetShopId(shopId, userId);
+    const shops = await this.shopRepository.getShopById(shopId, userId);
     if (!shops || shops.userId !== userId) {
       throw new RestError('shop is not available', 404);
     }
-    const subs = await RedisSubscription.getInstance().getSubsByShopId(shopId);
+    const subs = await this.subscriptionRepository.findByShopId(shopId);
     if (!subs || subs.status !== SubscriptionStatus.ACTIVE) {
       throw new RestError('shop is not subscription', 404);
     }
     if (typeCheck) {
-      const shopResource = await RedisResource.getInstance().findByShopId(shopId);
+      const shopResource = await this.shopsResourcesRepository.findByShopId(shopId);
       if (!shopResource) {
         throw new RestError('shop is not subscription', 404);
       }
@@ -93,7 +96,7 @@ export class ItemRequest {
     if (!isCheckProduct) {
       throw new RestError('Product not registed', 404);
     }
-    const findProduct = await this.redisProducts.handlerGetProductsId(productId);
+    const findProduct = await this.productsRepository.getProductById(productId);
     if (!findProduct) {
       throw new RestError('Product not available', 404);
     }

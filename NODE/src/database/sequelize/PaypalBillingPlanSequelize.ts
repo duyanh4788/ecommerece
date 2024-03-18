@@ -1,26 +1,43 @@
 import { IPaypalBillingPlanRepository } from '../../repository/IPaypalBillingPlanRepository';
 import { PaypalBillingPlans } from '../../interface/SubscriptionInterface';
 import { PaypalBillingPlansModel } from '../model/PaypalBillingPlansModel';
+import { redisController } from '../../redis/RedisController';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class PaypalBillingPlanSequelize implements IPaypalBillingPlanRepository {
   private ATTRIBUTES: string[] = ['tier', 'planId', 'frequency', 'amount', 'numberProduct', 'numberItem'];
+
   async findAll(): Promise<PaypalBillingPlans[]> {
-    const plans = await PaypalBillingPlansModel.findAll({
-      where: { isTrial: true },
-      attributes: this.ATTRIBUTES,
-      order: [['amount', 'ASC']]
-    });
-    return plans.map((item) => this.transformModelToEntity(item));
+    let plansRedis = await redisController.getRedis(MainkeysRedis.PLANS);
+    if (!plansRedis) {
+      const plansModel = await PaypalBillingPlansModel.findAll({
+        where: { isTrial: true },
+        attributes: this.ATTRIBUTES,
+        order: [['amount', 'ASC']]
+      });
+      plansRedis = await redisController.setRedis({ keyValue: MainkeysRedis.PLANS, value: plansModel.map((item) => this.transformModelToEntity(item)) });
+    }
+    return plansRedis;
   }
 
   async finfByPlanId(planId: string): Promise<PaypalBillingPlans> {
-    const plan = await PaypalBillingPlansModel.findOne({ where: { planId } });
-    return this.transformModelToEntity(plan);
+    const key = `${MainkeysRedis.PLAN_ID}${planId}`;
+    let planRedis = await redisController.getRedis(key);
+    if (!planRedis) {
+      const plan = await PaypalBillingPlansModel.findOne({ where: { planId } });
+      planRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(plan) });
+    }
+    return planRedis;
   }
 
   async finfByTier(tier: string): Promise<PaypalBillingPlans> {
-    const plan = await PaypalBillingPlansModel.findOne({ where: { tier } });
-    return this.transformModelToEntity(plan);
+    const key = `${MainkeysRedis.TIER}${tier}`;
+    let planRedis = await redisController.getRedis(key);
+    if (!planRedis) {
+      const plan = await PaypalBillingPlansModel.findOne({ where: { tier } });
+      planRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(plan) });
+    }
+    return planRedis;
   }
 
   /**

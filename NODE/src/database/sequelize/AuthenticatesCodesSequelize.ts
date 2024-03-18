@@ -5,6 +5,8 @@ import { IAuthenticatesCodesRepository } from '../../repository/IAuthenticatesCo
 import { AuthenticatesCodesInterface } from '../../interface/AuthenticatesCodesInterface';
 import { AuthenticatesCodesModel } from '../model/AuthenticatesCodesModel';
 import { RestError } from '../../services/error/error';
+import { redisController } from '../../redis/RedisController';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class AuthenticatesCodesSequelize implements IAuthenticatesCodesRepository {
   async createAuthCode(userId: string, authCode: string, transactionDb?: Transaction): Promise<AuthenticatesCodesInterface> {
@@ -21,19 +23,33 @@ export class AuthenticatesCodesSequelize implements IAuthenticatesCodesRepositor
   }
 
   async findByUserId(userId: string): Promise<AuthenticatesCodesInterface> {
-    const auths = await AuthenticatesCodesModel.findOne({ where: { userId: deCryptFakeId(userId) } });
-    return this.transformModelToEntity(auths);
+    const key = `${MainkeysRedis.AUTH_USERID}${userId}`;
+    let authRedis = await redisController.getRedis(key);
+    if (!authRedis) {
+      const authModel = await AuthenticatesCodesModel.findOne({ where: { userId: deCryptFakeId(userId) } });
+      if (!authModel) return;
+      authRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(authModel) });
+    }
+    return authRedis;
   }
 
   async findByAuthCode(authCode: string): Promise<AuthenticatesCodesInterface> {
-    const auths = await AuthenticatesCodesModel.findOne({ where: { authCode } });
-    return this.transformModelToEntity(auths);
+    const key = `${MainkeysRedis.AUTH_CODE}${authCode}`;
+    let authRedis = await redisController.getRedis(key);
+    if (!authRedis) {
+      const authModel = await AuthenticatesCodesModel.findOne({ where: { authCode } });
+      if (!authModel) return;
+      authRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(authModel) });
+    }
+    return authRedis;
   }
 
   async deleteAuthCodeByUserId(userId: string, authCode: string, transactionDb: Transaction): Promise<void> {
     const auths = await AuthenticatesCodesModel.findOne({ where: { userId: deCryptFakeId(userId) } });
     if (!auths || auths.authCode !== authCode) throw new RestError('code invalid!', 404);
     await auths.destroy({ transaction: transactionDb });
+    await redisController.delRedis(`${MainkeysRedis.AUTH_CODE}${authCode}`);
+    await redisController.delRedis(`${MainkeysRedis.AUTH_USERID}${userId}`);
     return;
   }
   /**

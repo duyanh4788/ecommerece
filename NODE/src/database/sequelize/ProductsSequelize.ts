@@ -4,8 +4,9 @@ import { ProductsInterface } from '../../interface/ProductsInterface';
 import { ProductsModel } from '../model/ProductsModel';
 import { RestError } from '../../services/error/error';
 import { ItemsModel } from '../model/ItemsModel';
-import { Op } from 'sequelize';
 import { ItemsInterface } from '../../interface/ItemsInterface';
+import { redisController } from '../../redis/RedisController';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class ProductsSequelize implements IProductsRepository {
   private ATTRIBUTES: string[] = ['id', 'nameProduct', 'avatar'];
@@ -37,8 +38,12 @@ export class ProductsSequelize implements IProductsRepository {
   }
 
   async getLists(): Promise<ProductsInterface[]> {
-    const products = await ProductsModel.findAll({ attributes: this.ATTRIBUTES });
-    return products.map((item) => this.transformModelToEntity(item));
+    let productsRedis = await redisController.getRedis(MainkeysRedis.PRODUCTS);
+    if (!productsRedis) {
+      const products = await ProductsModel.findAll({ attributes: this.ATTRIBUTES });
+      productsRedis = await redisController.setRedis({ keyValue: MainkeysRedis.PRODUCTS, value: products.map((item) => this.transformModelToEntity(item)) });
+    }
+    return productsRedis;
   }
 
   async getListsWithCondition(): Promise<ProductsInterface[]> {
@@ -50,8 +55,13 @@ export class ProductsSequelize implements IProductsRepository {
   }
 
   async getProductById(productId: string): Promise<ProductsInterface> {
-    const product = await ProductsModel.findByPk(deCryptFakeId(productId));
-    return this.transformModelToEntity(product);
+    const key = `${MainkeysRedis.PRODUCT_ID}${productId}`;
+    let productRedis = await redisController.getRedis(key);
+    if (!productRedis) {
+      const product = await ProductsModel.findByPk(deCryptFakeId(productId));
+      productRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(product) });
+    }
+    return productRedis;
   }
 
   async findById(id: number): Promise<ProductsInterface> {

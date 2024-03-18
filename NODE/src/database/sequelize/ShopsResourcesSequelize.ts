@@ -1,23 +1,34 @@
 import { Transaction } from 'sequelize';
-import { TokenUserInterface } from '../../interface/TokenUserInterface';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
 import { RestError } from '../../services/error/error';
 import { RedisSubscription } from '../../redis/subscription/RedisSubscription';
-import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 import { IShopsResourcesRepository } from '../../repository/IShopsResourcesRepository';
 import { IntegerValue, ShopsResourcesInterface } from '../../interface/ShopsResourcesInterface';
 import { ShopsResourcesModel } from '../model/ShopsResourcesModel';
-import { RedisResource } from '../../redis/subscription/RedisResource';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { redisController } from '../../redis/RedisController';
 
 export class ShopsResourcesSequelize implements IShopsResourcesRepository {
   async findByShopId(shopId: string): Promise<ShopsResourcesInterface> {
-    const resource = await ShopsResourcesModel.findOne({ where: { shopId: deCryptFakeId(shopId) } });
-    return this.transformModelToEntity(resource);
+    const key = `${MainkeysRedis.SHOP_RESOURCE_SHOPID}${shopId}`;
+    let shopResourceRedis = await redisController.getRedis(key);
+    if (!shopResourceRedis) {
+      const shopResourceModel = await ShopsResourcesModel.findOne({ where: { shopId: deCryptFakeId(shopId) } });
+      if (!shopResourceModel) return;
+      shopResourceRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(shopResourceModel) });
+    }
+    return shopResourceRedis;
   }
 
   async findById(id: string): Promise<ShopsResourcesInterface> {
-    const resource = await ShopsResourcesModel.findByPk(deCryptFakeId(id));
-    return this.transformModelToEntity(resource);
+    const key = `${MainkeysRedis.SHOP_RESOURCE_ID}${id}`;
+    let shopResourceRedis = await redisController.getRedis(key);
+    if (!shopResourceRedis) {
+      const shopResourceModel = await ShopsResourcesModel.findByPk(deCryptFakeId(id));
+      if (!shopResourceModel) return;
+      shopResourceRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(shopResourceModel) });
+    }
+    return shopResourceRedis;
   }
 
   async create(reqBody: ShopsResourcesInterface, subscriptionId: string, transactionDB?: Transaction): Promise<ShopsResourcesInterface> {
@@ -35,7 +46,7 @@ export class ShopsResourcesSequelize implements IShopsResourcesRepository {
       }
       await resource.save({ transaction: transactionDB });
     }
-    await this.handleRedis(resource.id, shopId, subscriptionId);
+    await this.handleDelRedis(resource.id, shopId, subscriptionId);
     return this.transformModelToEntity(resource);
   }
 
@@ -48,17 +59,13 @@ export class ShopsResourcesSequelize implements IShopsResourcesRepository {
     if (type === IntegerValue.INCR) {
       await resource.increment(value, { by: num, transaction: transactionDb });
     }
-    await this.handleRedis(resource.id, shopId, subscriptionId);
+    await this.handleDelRedis(resource.id, shopId, subscriptionId);
     return;
   }
 
-  private async handleRedis(id: number, shopId: string, subscriptionId: string) {
-    await RedisSubscription.getInstance().handlerDelKeys(MainkeysRedis.SUBS_SHOPID, shopId);
-    await RedisSubscription.getInstance().handlerDelKeys(MainkeysRedis.SUBS_ID, subscriptionId);
-    await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_SUBS);
-    await RedisSubscription.getInstance().adminDelKeys(MainkeysRedis.ADMIN_INV);
-    await RedisResource.getInstance().handlerDelKeys(MainkeysRedis.SHOP_RESOURCE_SHOPID, shopId);
-    await RedisResource.getInstance().handlerDelKeys(MainkeysRedis.SHOP_RESOURCE_ID, enCryptFakeId(id));
+  private async handleDelRedis(id: number, shopId: string, subscriptionId: string) {
+    await RedisSubscription.delSubscriptionRedis(shopId, subscriptionId);
+    await RedisSubscription.delResourceRedis(shopId, id);
   }
 
   /**

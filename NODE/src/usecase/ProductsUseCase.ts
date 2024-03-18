@@ -1,10 +1,7 @@
 import { IProductsRepository } from '../repository/IProductsRepository';
 import { ProductsInterface } from '../interface/ProductsInterface';
 import { dataProducts } from '../common/dataProduct';
-import { RedisProducts } from '../redis/products/RedisProducts';
-
 export class ProductsUseCase {
-  private redisProducts: RedisProducts = new RedisProducts();
   constructor(private productsRepository: IProductsRepository) {}
 
   async createdProductUseCase(reqBody: ProductsInterface) {
@@ -24,11 +21,11 @@ export class ProductsUseCase {
   }
 
   async getListsProductsUseCase() {
-    return await this.redisProducts.handlerGetProducts();
+    return await await this.productsRepository.getLists();
   }
 
   async getProductByIdUseCase(productId: string) {
-    return await this.redisProducts.handlerGetProductsId(productId);
+    return await this.productsRepository.getProductById(productId);
   }
 
   async guestGetListUseCase() {

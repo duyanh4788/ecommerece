@@ -3,16 +3,29 @@ import { Invoices } from '../../interface/SubscriptionInterface';
 import { IInvoicesRepository } from '../../repository/IInvoicesRepository';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
 import { InvoicesModel } from '../model/InvoicesModel';
+import { redisController } from '../../redis/RedisController';
+import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 
 export class InvoicesSequelize implements IInvoicesRepository {
   async findAllInvoices(): Promise<Invoices[]> {
-    const invoices = await InvoicesModel.findAll();
-    return invoices.map((item) => this.transformModelToEntity(item));
+    let invRedis = await redisController.getRedis(MainkeysRedis.ADMIN_INV);
+    if (!invRedis) {
+      const invoicesModels = await InvoicesModel.findAll();
+      if (!invoicesModels.length) return [];
+      invRedis = await redisController.setRedis({ keyValue: MainkeysRedis.ADMIN_INV, value: invoicesModels.map((item) => this.transformModelToEntity(item)) });
+    }
+    return invRedis;
   }
 
   async findByShopId(shopId: string): Promise<Invoices[]> {
-    const invoices = await InvoicesModel.findAll({ where: { shopId: deCryptFakeId(shopId) } });
-    return invoices.map((item) => this.transformModelToEntity(item));
+    const key = `${MainkeysRedis.INVS_ID}${shopId}`;
+    let invsRedis = await redisController.getRedis(key);
+    if (!invsRedis) {
+      const invoicesModels = await InvoicesModel.findAll({ where: { shopId: deCryptFakeId(shopId) } });
+      if (!invoicesModels.length) return [];
+      invsRedis = await redisController.setRedis({ keyValue: key, value: invoicesModels.map((item) => this.transformModelToEntity(item)) });
+    }
+    return invsRedis;
   }
 
   async findByPaymentProcessorId(paymentProcessorId: string): Promise<Invoices> {
