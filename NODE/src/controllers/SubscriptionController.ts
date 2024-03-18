@@ -6,6 +6,7 @@ import { TypeOfValue, isCheckedTypeValues } from '../utils/validate';
 import { sequelize } from '../database/sequelize';
 import { Tier } from '../interface/SubscriptionInterface';
 import { URL, URLSearchParams } from 'url';
+import { envConfig } from '../config/envConfig';
 
 export class SubscriptionController {
   constructor(private subscriptionUseCase: SubscriptionUseCase) {}
@@ -116,9 +117,9 @@ export class SubscriptionController {
       const subscriptionId = searchParams.get('subscription_id');
       await this.subscriptionUseCase.responseSuccessUseCase(subscriptionId);
       const notification = 'please waiting system sync with Paypal!';
-      return new SendRespone({ data: process.env.FE_URL + '/profile?notification=' + encodeURIComponent(notification) }).redirect(res);
+      return new SendRespone({ data: envConfig.FE_URL + '/profile?notification=' + encodeURIComponent(notification) }).redirect(res);
     } catch (error) {
-      return new SendRespone({ data: process.env.FE_URL }).redirect(res);
+      return new SendRespone({ data: envConfig.FE_URL }).redirect(res);
     }
   };
 }

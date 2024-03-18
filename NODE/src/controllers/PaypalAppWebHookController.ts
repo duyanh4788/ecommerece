@@ -3,6 +3,7 @@ import { PaypalService } from '../services/paypal/PaypalService';
 import { NameEventWebHook, PaymentSaleCompleted } from '../interface/SubscriptionInterface';
 import { SubscriptionUseCase } from '../usecase/SubscriptionUseCase';
 import { sequelize } from '../database/sequelize';
+import { envConfig } from '../config/envConfig';
 
 export class PaypalAppWebHookController {
   constructor(private paypalService: PaypalService, private subscriptionUseCase: SubscriptionUseCase) {}
@@ -50,7 +51,7 @@ export class PaypalAppWebHookController {
       transmission_sig: header[header.indexOf('Paypal-Transmission-Sig') + 1],
       cert_url: header[header.indexOf('Paypal-Cert-Url') + 1],
       auth_algo: header[header.indexOf('Paypal-Auth-Algo') + 1],
-      webhook_id: process.env.PAYPAL_WEBHOOK_ID,
+      webhook_id: envConfig.PAYPAL_WEBHOOK_ID,
       webhook_event: requestBody
     };
   }

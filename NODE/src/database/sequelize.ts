@@ -1,16 +1,17 @@
 import { Sequelize } from 'sequelize-typescript';
+import { envConfig } from '../config/envConfig';
 
 export const sequelize = new Sequelize({
-  host: process.env.DB_HOST,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  port: parseInt(process.env.DB_PORT || '0'),
+  host: envConfig.DB_HOST,
+  username: envConfig.DB_USERNAME,
+  password: envConfig.DB_PASSWORD,
+  database: envConfig.DB_DATABASE,
+  port: parseInt(envConfig.DB_PORT || '0'),
   dialect: 'mysql',
   models: [__dirname + '/model', __dirname + '/model/EAV'],
   logging: false,
   pool: {
-    max: parseInt(process.env.DB_CONNECTION_LIMIT || '0'),
+    max: parseInt(envConfig.DB_CONNECTION_LIMIT || '0'),
     min: 0,
     acquire: 30000,
     idle: 10000

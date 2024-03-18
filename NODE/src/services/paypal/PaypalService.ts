@@ -1,13 +1,14 @@
 import rp from 'request-promise';
 import { RestError } from '../error/error';
+import { envConfig } from '../../config/envConfig';
 
 export class PaypalService {
   accessToken: string;
   expiresAt: Date;
 
   static TIME_BUFFER = 60000; // if token expires in 1 min, get new one to avoid unauthorised access
-  static RESPONSE_PAYPAL_SUCCESS = process.env.SERVER_URL + '/api/v1/subscriptions/response-success';
-  static RESPONSE_PAYPAL_CANCEL = process.env.FE_URL + '/home';
+  static RESPONSE_PAYPAL_SUCCESS = envConfig.SERVER_URL + '/api/v1/subscriptions/response-success';
+  static RESPONSE_PAYPAL_CANCEL = envConfig.FE_URL + '/home';
   static PAYPAL_ENDPOINT = 'https://api-m.sandbox.paypal.com/v1';
   constructor() {
     this.accessToken = null;
@@ -16,8 +17,8 @@ export class PaypalService {
 
   private async getAccessToken() {
     if (!this.accessToken || this.expiresAt.getTime() - new Date().getTime() < PaypalService.TIME_BUFFER) {
-      const clientId = process.env.PAYPAL_CLIENT_ID;
-      const secret = process.env.PAYPAL_CLIENT_SECRET;
+      const clientId = envConfig.PAYPAL_CLIENT_ID;
+      const secret = envConfig.PAYPAL_CLIENT_SECRET;
       const auth = `Basic ${Buffer.from(clientId + ':' + secret).toString('base64')}`;
       const options = {
         method: 'POST',

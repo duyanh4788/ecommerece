@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { SendRespone } from '../services/success/success';
 import { RestError } from '../services/error/error';
-import fs from 'fs';
 import { TypeOfValue, isCheckedTypeValues } from '../utils/validate';
 import { removeFile } from '../utils/removeFile';
+import { envConfig } from '../config/envConfig';
 export class Uploadcontroller {
   public uploadFile = async (req: Request, res: Response) => {
     try {
@@ -15,10 +15,10 @@ export class Uploadcontroller {
       await Promise.all(
         fileList.map(async (item) => {
           if (item.path.includes('.mp4')) {
-            url.push(process.env.END_POINT_VIDEOS_PATH + item.path);
+            url.push(envConfig.END_POINT_VIDEOS_PATH + item.path);
           }
           if (!item.path.includes('.mp4')) {
-            url.push(process.env.END_POINT_IMAGES_PATH + item.path);
+            url.push(envConfig.END_POINT_IMAGES_PATH + item.path);
           }
         })
       );

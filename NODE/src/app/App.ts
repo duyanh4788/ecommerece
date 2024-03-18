@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import { RequestLimitMiddleware } from '../middlewares/requestlimit/RequestLimitMiddleware';
 import { SECRETKEY_SESSION } from '../common/common.constants';
+import { envConfig } from '../config/envConfig';
 
 const sessionOptions: SessionOptions = {
   secret: SECRETKEY_SESSION,
@@ -69,7 +70,7 @@ class App {
     this.App.use(seesion(sessionOptions));
     this.App.use(
       cors({
-        origin: process.env.FE_URL,
+        origin: envConfig.FE_URL,
         credentials: true
       })
     );

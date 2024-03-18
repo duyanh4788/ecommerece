@@ -3,27 +3,32 @@ dotenv.config();
 import App from './app/App';
 import { Request, Response } from 'express';
 import * as http from 'http';
-import { sequelize } from './database/sequelize';
 import { MonitorSystem } from './monitor/MonitorSystem';
+import { envConfig } from './config/envConfig';
+import { redisController } from './redis/RedisController';
+import { mySqlController } from './database/MysqlController';
 
-export const isDevelopment = process.env.APP_ENV === 'develop' ? true : false;
+export const isDevelopment = envConfig.APP_ENV === 'develop' ? true : false;
 
 // ********************* Connect DataBase *********************//
-sequelize.sync({ force: false, alter: false });
+mySqlController.connectDb();
+
+// ********************* Connect Redis *********************//
+redisController.connectRedis();
 
 // ********************* Monitor System *********************//
 new MonitorSystem().readMonitorSystem();
 
 // ********************* Config Server *********************//
-const APP_PORT: string | number | any = process.env.APP_PORT || 8000;
+const APP_PORT: string | number | any = envConfig.APP_PORT || 8000;
 const httpServer: http.Server = http.createServer(App);
 
 if (isDevelopment) {
   App.get('/', (req: Request, res: Response) => {
-    res.send('Server is Running ...');
+    res.send('API server is Running ...');
   });
 }
 
 httpServer.listen(APP_PORT, () => {
-  console.log(`Running API on port : ${APP_PORT}`);
+  console.log(`System server is running on port : ${APP_PORT}`);
 });

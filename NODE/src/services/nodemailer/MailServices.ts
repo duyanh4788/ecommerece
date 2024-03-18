@@ -7,7 +7,6 @@ import { formatYearMonthDate } from '../../utils/timer';
 
 export class NodeMailerServices implements INodeMailerServices {
   private nodemailerTransport!: nodemailer.Transporter;
-  private readonly FE_URL: string | undefined = process.env.FE_URL;
 
   constructor() {
     this.startNodeMailer();
@@ -25,7 +24,7 @@ export class NodeMailerServices implements INodeMailerServices {
       if (error) {
         console.log('Mail server connection failed', error);
       } else {
-        console.log('Mail server connection is running', success);
+        console.log('Mail server is running', success);
       }
     });
   }
