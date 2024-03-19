@@ -32,9 +32,9 @@ export class EntityCosmesticsModel extends Model<EntityCosmesticsModel> {
 
   @CreatedAt
   @Column
-  public created_at: Date;
+  public createdAt: Date;
 
   @UpdatedAt
   @Column
-  public updated_at: Date;
+  public updatedAt: Date;
 }

@@ -57,9 +57,9 @@ export class InvoicesModel extends Model<InvoicesModel> {
 
   @CreatedAt
   @Column
-  public created_at: Date;
+  public createdAt: Date;
 
   @UpdatedAt
   @Column
-  public updated_at: Date;
+  public updatedAt: Date;
 }

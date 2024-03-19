@@ -38,9 +38,9 @@ export class EntityElectronicsModel extends Model<EntityElectronicsModel> {
 
   @CreatedAt
   @Column
-  public created_at: Date;
+  public createdAt: Date;
 
   @UpdatedAt
   @Column
-  public updated_at: Date;
+  public updatedAt: Date;
 }

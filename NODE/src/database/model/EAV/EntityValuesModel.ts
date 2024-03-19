@@ -24,11 +24,11 @@ export class EntityValuesModel extends Model<EntityValuesModel> {
 
   @CreatedAt
   @Column
-  public created_at: Date;
+  public createdAt: Date;
 
   @UpdatedAt
   @Column
-  public updated_at: Date;
+  public updatedAt: Date;
 
   @HasOne(() => EntityCosmesticsModel)
   entityCosmestics: EntityCosmesticsModel;

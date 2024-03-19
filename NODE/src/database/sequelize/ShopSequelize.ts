@@ -100,6 +100,7 @@ export class ShopSequelize implements IShopRepository {
         include: this.INCLUDES
       };
       const shops = await ShopsModel.findAll(options);
+      if (!shops.length) return [];
       const listShop = await Promise.all(
         shops.map(async (item) => {
           if (!item.prodcutSell || !item.prodcutSell.length) return item;
@@ -113,7 +114,6 @@ export class ShopSequelize implements IShopRepository {
           return item;
         })
       );
-      if (!shops) return [];
       shopsRedis = await redisController.setRedis({ keyValue: key, value: listShop.map((item) => this.transformModelToEntity(item)) });
     }
     return shopsRedis;
@@ -159,6 +159,7 @@ export class ShopSequelize implements IShopRepository {
     await this.handleDelRedis(result.userId, shopId);
     return;
   }
+
   private async handleDelRedis(userId: string, shopId: string = null) {
     await redisController.delRedis(`${MainkeysRedis.SHOPS_USERID}${userId}`);
     if (shopId) {

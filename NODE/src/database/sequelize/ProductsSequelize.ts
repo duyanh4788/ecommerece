@@ -80,7 +80,7 @@ export class ProductsSequelize implements IProductsRepository {
     const keysObj = Object.keys(model.dataValues);
 
     for (let key of keysObj) {
-      if (key !== 'created_at' && key !== 'updated_at') {
+      if (key !== 'createdAt' && key !== 'updatedAt') {
         entity[key] = model[key];
       }
     }
@@ -97,7 +97,7 @@ export class ProductsSequelize implements IProductsRepository {
     const entity: ItemsInterface = {};
     const keysObj = Object.keys(model.dataValues);
     for (let key of keysObj) {
-      if (key !== 'created_at' && key !== 'updated_at') {
+      if (key !== 'createdAt' && key !== 'updatedAt') {
         entity[key] = model[key];
       }
     }

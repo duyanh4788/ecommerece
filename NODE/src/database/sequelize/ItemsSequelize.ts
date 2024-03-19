@@ -29,7 +29,7 @@ export class ItemsSequelize implements IItemsRepository {
     if (search || search !== '') {
       optionWhere.where = { ...optionWhere.where, nameItem: { [Op.like]: `%${search}%` } };
     }
-    return this.getListWithContition(page, pageSize, optionWhere, 'created_at');
+    return this.getListWithContition(page, pageSize, optionWhere, 'createdAt');
   }
 
   async getListsItemsByProdId(productId: string, page: number, pageSize: number): Promise<ListItemsInterface> {
@@ -137,7 +137,7 @@ export class ItemsSequelize implements IItemsRepository {
         entity[key] = {};
         for (let keyE of keysEntity) {
           if (model[key][keyE] !== null) {
-            if (keyE !== 'created_at' && keyE !== 'updated_at') {
+            if (keyE !== 'createdAt' && keyE !== 'updatedAt') {
               entity[key][keyE] = model[key][keyE];
             }
           }
@@ -145,7 +145,7 @@ export class ItemsSequelize implements IItemsRepository {
         if (Object.entries(entity[key]).length === 0) {
           delete entity[key];
         }
-      } else if (key !== 'created_at' && key !== 'updated_at') {
+      } else if (key !== 'createdAt' && key !== 'updatedAt') {
         entity[key] = model[key];
       }
     }

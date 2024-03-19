@@ -19,7 +19,7 @@ export const parseEntityValues = (data: any) => {
     }
   }
   for (let key of Object.keys(getEntity.dataValues)) {
-    if (key !== 'created_at' && key !== 'updated_at') {
+    if (key !== 'createdAt' && key !== 'updatedAt') {
       entity[key] = getEntity.dataValues[key];
     }
   }
