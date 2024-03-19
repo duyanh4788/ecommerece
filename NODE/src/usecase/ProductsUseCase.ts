@@ -21,7 +21,7 @@ export class ProductsUseCase {
   }
 
   async getListsProductsUseCase() {
-    return await await this.productsRepository.getLists();
+    return await this.productsRepository.getLists();
   }
 
   async getProductByIdUseCase(productId: string) {

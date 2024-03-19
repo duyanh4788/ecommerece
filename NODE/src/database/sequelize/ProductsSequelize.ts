@@ -39,7 +39,7 @@ export class ProductsSequelize implements IProductsRepository {
 
   async getLists(): Promise<ProductsInterface[]> {
     let productsRedis = await redisController.getRedis(MainkeysRedis.PRODUCTS);
-    if (!productsRedis) {
+    if (!productsRedis || !productsRedis.length) {
       const products = await ProductsModel.findAll({ attributes: this.ATTRIBUTES });
       productsRedis = await redisController.setRedis({ keyValue: MainkeysRedis.PRODUCTS, value: products.map((item) => this.transformModelToEntity(item)) });
     }

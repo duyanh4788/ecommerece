@@ -9,7 +9,7 @@ export class PaypalBillingPlanSequelize implements IPaypalBillingPlanRepository 
 
   async findAll(): Promise<PaypalBillingPlans[]> {
     let plansRedis = await redisController.getRedis(MainkeysRedis.PLANS);
-    if (!plansRedis) {
+    if (!plansRedis || !plansRedis.length) {
       const plansModel = await PaypalBillingPlansModel.findAll({
         where: { isTrial: true },
         attributes: this.ATTRIBUTES,

@@ -1,8 +1,9 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, BelongsTo, DataType, HasMany, HasOne, Index } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, AllowNull, BelongsTo, DataType, HasMany, HasOne, Index, BelongsToMany } from 'sequelize-typescript';
 import { UsersModel } from './UsersModel';
 import { ItemsModel } from './ItemsModel';
 import { SubscriptionModel } from './SubscriptionModel';
 import { InvoicesModel } from './InvoicesModel';
+import { ProductsModel } from './ProductsModel';
 
 @Table({
   tableName: 'shops'
@@ -27,8 +28,11 @@ export class ShopsModel extends Model<ShopsModel> {
   public nameShop: string;
 
   @AllowNull
-  @Column(DataType.JSON)
-  public prodcutSell: any[];
+  @Column(DataType.ARRAY(DataType.INTEGER))
+  public productIds: number[];
+
+  @HasMany(() => ProductsModel, 'id')
+  products: ProductsModel[];
 
   @AllowNull
   @Column(DataType.JSON)

@@ -1,7 +1,4 @@
-import { envConfig } from '../config/envConfig';
-
-const DOMAIN = envConfig.END_POINT_PRODUCTS_PATH;
-
+const DOMAIN = 'http://localhost:8000/data_publish/products/';
 export const dataProducts = [
   { nameProduct: 'Electronics', avatar: DOMAIN + '/electronic.png', createdAt: new Date(), updatedAt: new Date() },
   { nameProduct: 'Cosmetics', avatar: DOMAIN + '/cosmetics.png', createdAt: new Date(), updatedAt: new Date() },

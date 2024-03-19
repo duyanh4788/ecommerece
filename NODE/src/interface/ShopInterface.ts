@@ -1,3 +1,5 @@
+import { ProductsInterface } from './ProductsInterface';
+
 export interface ShopInterface {
   id?: string | number | any;
   shopId?: string | number | any;
@@ -5,7 +7,8 @@ export interface ShopInterface {
   nameShop?: string;
   banners?: string[];
   sliders?: string[];
-  prodcutSell?: any[];
+  productIds?: number[] | string[];
+  productsSell?: ProductsInterface[];
   numberProduct?: number;
   numberItem?: number;
   status?: boolean;

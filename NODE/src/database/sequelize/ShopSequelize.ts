@@ -7,15 +7,24 @@ import { ProductsSequelize } from './ProductsSequelize';
 import { UsersModel } from '../model/UsersModel';
 import { UserRole } from '../../interface/UserInterface';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
-import { Transaction } from 'sequelize';
+import { Op, Sequelize, Transaction } from 'sequelize';
 import { SubscriptionModel } from '../model/SubscriptionModel';
 import { removeFile } from '../../utils/removeFile';
 import { redisController } from '../../redis/RedisController';
+import { ProductsModel } from '../model/ProductsModel';
+import { sequelize } from '../sequelize';
 
 export class ShopSequelize implements IShopRepository {
   private INCLUDES: any[] = [
     { model: UsersModel, attributes: ['fullName', 'email', 'phone', 'avatar'] },
-    { model: SubscriptionModel, attributes: ['status'] }
+    { model: SubscriptionModel, attributes: ['status'] },
+    {
+      model: ProductsModel,
+      where: {
+        id: { [Op.in]: sequelize.col('ShopModel.productIds') }
+      },
+      required: false // Use false to perform a LEFT JOIN
+    }
   ];
   private productModel = new ProductsSequelize();
 
@@ -29,7 +38,7 @@ export class ShopSequelize implements IShopRepository {
   }
 
   async updated(reqBody: ShopInterface, userId: string): Promise<void> {
-    const { id, nameShop, prodcutSell, banners, sliders } = reqBody;
+    const { id, nameShop, productIds, banners, sliders } = reqBody;
     const find = await ShopsModel.findByPk(deCryptFakeId(id));
     if (!find) throw new RestError('shop not availabe!', 404);
     if (!find.status) throw new RestError('shop is not active subscription!', 404);
@@ -37,11 +46,11 @@ export class ShopSequelize implements IShopRepository {
     if (nameShop) {
       find.nameShop = nameShop;
     }
-    if (prodcutSell) {
-      if (prodcutSell.length > find.numberProduct) {
+    if (productIds) {
+      if (productIds.length > find.numberProduct) {
         throw new RestError(`You can only update product with ${find.numberProduct} number`, 404);
       }
-      find.prodcutSell = prodcutSell.map((item) => deCryptFakeId(item));
+      find.productIds = productIds.map((item) => deCryptFakeId(item));
     }
     if (banners) {
       find.banners = banners;
@@ -88,7 +97,7 @@ export class ShopSequelize implements IShopRepository {
 
   async getLists(userId: string, roleId?: string): Promise<ShopInterface[]> {
     const key = `${MainkeysRedis.SHOPS_USERID}${userId}`;
-    let shopsRedis = await redisController.getRedis(key);
+    let shopsRedis = null;
     if (!shopsRedis) {
       const options = {
         where:
@@ -101,20 +110,7 @@ export class ShopSequelize implements IShopRepository {
       };
       const shops = await ShopsModel.findAll(options);
       if (!shops.length) return [];
-      const listShop = await Promise.all(
-        shops.map(async (item) => {
-          if (!item.prodcutSell || !item.prodcutSell.length) return item;
-          item.prodcutSell = await Promise.all(
-            item.prodcutSell.map(async (itemProd) => {
-              const product = await this.productModel.findById(itemProd);
-              if (product) itemProd = product;
-              return itemProd;
-            })
-          );
-          return item;
-        })
-      );
-      shopsRedis = await redisController.setRedis({ keyValue: key, value: listShop.map((item) => this.transformModelToEntity(item)) });
+      shopsRedis = await redisController.setRedis({ keyValue: key, value: shops.map((item) => this.transformModelToEntity(item)) });
     }
     return shopsRedis;
   }
@@ -123,22 +119,14 @@ export class ShopSequelize implements IShopRepository {
     const key = `${MainkeysRedis.SHOP_ID}${shopId}`;
     let shopRedis = await redisController.getRedis(key);
     if (!shopRedis) {
-      const decrShopId = deCryptFakeId(shopId);
-      const shop = await ShopsModel.findByPk(decrShopId, { include: this.INCLUDES });
+      const shop = await ShopsModel.findByPk(deCryptFakeId(shopId), { include: this.INCLUDES });
       if (!shop || (!roleId && shop.userId !== deCryptFakeId(userId)) || (roleId && roleId !== UserRole.ADMIN && shop.userId !== deCryptFakeId(userId))) {
         throw new RestError('shop is not available!', 404);
       }
-      if (!shop.prodcutSell || !shop.prodcutSell.length) {
+      if (!shop.productIds || !shop.productIds.length) {
         shopRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(shop) });
         return shopRedis;
       }
-      const products = await Promise.all(
-        shop.prodcutSell.map(async (item) => {
-          const product = await this.productModel.findById(item);
-          if (product) return product;
-        })
-      );
-      shop.prodcutSell = products;
       shopRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(shop) });
     }
     return shopRedis;
