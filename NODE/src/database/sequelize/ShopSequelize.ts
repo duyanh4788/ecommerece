@@ -3,31 +3,27 @@ import { ShopInterface } from '../../interface/ShopInterface';
 import { IShopRepository } from '../../repository/IShopRepository';
 import { ShopsModel } from '../model/ShopsModel';
 import { RestError } from '../../services/error/error';
-import { ProductsSequelize } from './ProductsSequelize';
 import { UsersModel } from '../model/UsersModel';
 import { UserRole } from '../../interface/UserInterface';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
-import { Op, Sequelize, Transaction } from 'sequelize';
+import { Transaction } from 'sequelize';
 import { SubscriptionModel } from '../model/SubscriptionModel';
 import { removeFile } from '../../utils/removeFile';
 import { redisController } from '../../redis/RedisController';
+import { ShopProductsModel } from '../model/ShopProductsModel';
 import { ProductsModel } from '../model/ProductsModel';
-import { sequelize } from '../sequelize';
 
 export class ShopSequelize implements IShopRepository {
   private INCLUDES: any[] = [
     { model: UsersModel, attributes: ['fullName', 'email', 'phone', 'avatar'] },
     { model: SubscriptionModel, attributes: ['status'] },
     {
-      model: ProductsModel,
-      where: {
-        id: { [Op.in]: sequelize.col('ShopModel.productIds') }
-      },
-      required: false // Use false to perform a LEFT JOIN
+      model: ShopProductsModel,
+      required: false,
+      where: { status: true },
+      include: [{ model: ProductsModel, where: { status: true }, attributes: ['nameProduct', 'avatar', 'status', 'id'] }]
     }
   ];
-  private productModel = new ProductsSequelize();
-
   constructor() {}
 
   async registed(reqBody: ShopInterface, userId: string): Promise<void> {
@@ -39,27 +35,27 @@ export class ShopSequelize implements IShopRepository {
 
   async updated(reqBody: ShopInterface, userId: string): Promise<void> {
     const { id, nameShop, productIds, banners, sliders } = reqBody;
-    const find = await ShopsModel.findByPk(deCryptFakeId(id));
-    if (!find) throw new RestError('shop not availabe!', 404);
-    if (!find.status) throw new RestError('shop is not active subscription!', 404);
-    if (find.userId !== deCryptFakeId(userId)) throw new RestError('shop not availabe!', 404);
+    const shop = await ShopsModel.findByPk(deCryptFakeId(id));
+    if (!shop) throw new RestError('shop not availabe!', 404);
+    if (!shop.status) throw new RestError('shop is not active subscription!', 404);
+    if (shop.userId !== deCryptFakeId(userId)) throw new RestError('shop not availabe!', 404);
     if (nameShop) {
-      find.nameShop = nameShop;
+      shop.nameShop = nameShop;
     }
-    if (productIds) {
-      if (productIds.length > find.numberProduct) {
-        throw new RestError(`You can only update product with ${find.numberProduct} number`, 404);
+    if (productIds || productIds.length) {
+      const numberPros = productIds.filter((item) => item.status);
+      if (numberPros.length > shop.numberProduct) {
+        throw new RestError(`You can only update product with ${shop.numberProduct} number`, 404);
       }
-      find.productIds = productIds.map((item) => deCryptFakeId(item));
     }
     if (banners) {
-      find.banners = banners;
+      shop.banners = banners;
     }
     if (sliders && sliders.length) {
-      find.sliders = sliders;
+      shop.sliders = sliders;
     }
     await this.handleDelRedis(userId, id);
-    await find.save();
+    await shop.save();
     return;
   }
 
@@ -81,23 +77,23 @@ export class ShopSequelize implements IShopRepository {
   }
 
   async deleted(id: string, userId: string): Promise<void> {
-    const find = await ShopsModel.findByPk(deCryptFakeId(id));
-    if (!find) throw new RestError('shop not availabe!', 404);
-    if (find.userId !== deCryptFakeId(userId)) throw new RestError('shop not availabe!', 404);
-    if (find.sliders && find.sliders.length) {
-      find.sliders.forEach((item) => removeFile(item));
+    const shop = await ShopsModel.findByPk(deCryptFakeId(id));
+    if (!shop) throw new RestError('shop not availabe!', 404);
+    if (shop.userId !== deCryptFakeId(userId)) throw new RestError('shop not availabe!', 404);
+    if (shop.sliders && shop.sliders.length) {
+      shop.sliders.forEach((item) => removeFile(item));
     }
-    if (find.banners && find.banners.length) {
-      find.banners.forEach((item) => removeFile(item));
+    if (shop.banners && shop.banners.length) {
+      shop.banners.forEach((item) => removeFile(item));
     }
-    await find.destroy();
+    await shop.destroy();
     await this.handleDelRedis(userId, id);
     return;
   }
 
   async getLists(userId: string, roleId?: string): Promise<ShopInterface[]> {
     const key = `${MainkeysRedis.SHOPS_USERID}${userId}`;
-    let shopsRedis = null;
+    let shopsRedis = await redisController.getRedis(key);
     if (!shopsRedis) {
       const options = {
         where:
@@ -123,7 +119,7 @@ export class ShopSequelize implements IShopRepository {
       if (!shop || (!roleId && shop.userId !== deCryptFakeId(userId)) || (roleId && roleId !== UserRole.ADMIN && shop.userId !== deCryptFakeId(userId))) {
         throw new RestError('shop is not available!', 404);
       }
-      if (!shop.productIds || !shop.productIds.length) {
+      if (!shop.shopProducts || !shop.shopProducts.length) {
         shopRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(shop) });
         return shopRedis;
       }
@@ -133,8 +129,8 @@ export class ShopSequelize implements IShopRepository {
   }
 
   async findShopDisable(userId: string): Promise<boolean> {
-    const find = await ShopsModel.findAll({ where: { userId: deCryptFakeId(userId), status: false } });
-    if (find && find.length) return true;
+    const shops = await ShopsModel.findAll({ where: { userId: deCryptFakeId(userId), status: false } });
+    if (shops && shops.length) return true;
     return false;
   }
 
@@ -168,6 +164,14 @@ export class ShopSequelize implements IShopRepository {
     }
     entity.id = enCryptFakeId(entity.id);
     entity.userId = enCryptFakeId(entity.userId);
+    if (entity.shopProducts.length) {
+      entity.products = [];
+      entity.shopProducts.forEach((item: any) => {
+        entity.products.push({ ...item.products.dataValues, id: enCryptFakeId(item.products.dataValues.id) });
+      });
+      delete entity.productIds;
+      delete entity.shopProducts;
+    }
     return entity;
   }
 }

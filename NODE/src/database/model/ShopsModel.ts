@@ -3,8 +3,7 @@ import { UsersModel } from './UsersModel';
 import { ItemsModel } from './ItemsModel';
 import { SubscriptionModel } from './SubscriptionModel';
 import { InvoicesModel } from './InvoicesModel';
-import { ProductsModel } from './ProductsModel';
-
+import { ShopProductsModel } from './ShopProductsModel';
 @Table({
   tableName: 'shops'
 })
@@ -26,13 +25,6 @@ export class ShopsModel extends Model<ShopsModel> {
   @AllowNull
   @Column
   public nameShop: string;
-
-  @AllowNull
-  @Column(DataType.ARRAY(DataType.INTEGER))
-  public productIds: number[];
-
-  @HasMany(() => ProductsModel, 'id')
-  products: ProductsModel[];
 
   @AllowNull
   @Column(DataType.JSON)
@@ -62,6 +54,9 @@ export class ShopsModel extends Model<ShopsModel> {
   @UpdatedAt
   @Column
   public updatedAt: Date;
+
+  @HasMany(() => ShopProductsModel)
+  shopProducts: ShopProductsModel[];
 
   @HasOne(() => SubscriptionModel)
   subscription: SubscriptionModel;

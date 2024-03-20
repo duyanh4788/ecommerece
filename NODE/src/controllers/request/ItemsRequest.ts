@@ -92,7 +92,7 @@ export class ItemRequest {
         throw new RestError('Item is zero, please upgrade subscription or waiting next payment!', 404);
       }
     }
-    const isCheckProduct = shops.productsSell.find((item) => item.id === productId);
+    const isCheckProduct = shops.products.find((item) => item.id === productId);
     if (!isCheckProduct) {
       throw new RestError('Product not registed', 404);
     }

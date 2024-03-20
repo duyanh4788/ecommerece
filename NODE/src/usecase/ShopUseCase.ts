@@ -3,9 +3,9 @@ import { IShopRepository } from '../repository/IShopRepository';
 import { UserRole } from '../interface/UserInterface';
 import { ISubscriptionRepository } from '../repository/ISubscriptionRepository';
 import { RestError } from '../services/error/error';
-import { IShopsResourcesRepository } from '../repository/IShopsResourcesRepository';
+import { IShopProductsRepository } from '../repository/IShopProductsRepository';
 export class ShopUseCase {
-  constructor(private shopUsersRepository: IShopRepository, private subscriptionRepository: ISubscriptionRepository, private shopsResourcesRepository: IShopsResourcesRepository) {}
+  constructor(private shopUsersRepository: IShopRepository, private subscriptionRepository: ISubscriptionRepository, private shopProductsRepository: IShopProductsRepository) {}
 
   async registedShopUseCase(reqBody: ShopInterface, userId: string) {
     const shops = await this.shopUsersRepository.findShopDisable(userId);
@@ -16,7 +16,14 @@ export class ShopUseCase {
   }
 
   async updatedShopUseCase(reqBody: ShopInterface, userId: string) {
-    return await this.shopUsersRepository.updated(reqBody, userId);
+    await this.shopUsersRepository.updated(reqBody, userId);
+    if (reqBody.productIds.length) {
+      await Promise.all(
+        reqBody.productIds.map(async (item) => {
+          await this.shopProductsRepository.updated(reqBody.id, item.id, item.status);
+        })
+      );
+    }
   }
 
   async updatedSlidersUseCase(reqBody: ShopInterface, userId: string) {
@@ -27,7 +34,9 @@ export class ShopUseCase {
   async deletedShopUseCase(id: string, userId: string) {
     const subs = await this.subscriptionRepository.findByShopId(id);
     if (subs) throw new RestError('you have subscription so you can not delete shop, please contact admin!', 404);
-    return await this.shopUsersRepository.deleted(id, userId);
+    await this.shopUsersRepository.deleted(id, userId);
+    await this.shopProductsRepository.deletedMany(id);
+    return;
   }
 
   async getListsShopUseCase(userId: string, roleId?: string) {

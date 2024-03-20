@@ -1,4 +1,9 @@
-import { ProductsInterface } from './ProductsInterface';
+import { ProductsInterface, ShopProductsInterface } from './ProductsInterface';
+
+interface ProductIds {
+  id: string;
+  status: boolean;
+}
 
 export interface ShopInterface {
   id?: string | number | any;
@@ -7,8 +12,9 @@ export interface ShopInterface {
   nameShop?: string;
   banners?: string[];
   sliders?: string[];
-  productIds?: number[] | string[];
-  productsSell?: ProductsInterface[];
+  productIds?: ProductIds[];
+  products?: ProductsInterface[];
+  shopProducts?: ShopProductsInterface[];
   numberProduct?: number;
   numberItem?: number;
   status?: boolean;

@@ -8,3 +8,7 @@ export interface ProductsInterface {
   createdAt?: Date;
   items?: ItemsInterface[];
 }
+
+export interface ShopProductsInterface {
+  products?: ProductsInterface;
+}
