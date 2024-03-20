@@ -7,7 +7,7 @@ export class ShopHttp {
   private configRegisted = (shops: Shops) => {
     return {
       nameShop: shops.nameShop,
-      prodcutSell: shops.prodcutSell,
+      productIds: shops.productIds,
       banners: shops.banners,
     };
   };
@@ -16,7 +16,7 @@ export class ShopHttp {
     return {
       id: shops.id,
       nameShop: shops.nameShop,
-      prodcutSell: shops.prodcutSell,
+      productIds: shops.productIds,
       banners: shops.banners,
       sliders: shops.sliders,
       idImageRemove: shops.idImageRemove,

@@ -6,7 +6,8 @@ export interface Shops {
   nameShop?: string;
   banners?: string[];
   sliders?: string[];
-  prodcutSell?: Products[];
+  productIds?: string[];
+  products?: Products[];
   status?: boolean;
   createdAt?: Date;
   subscription?: Subscription;

@@ -102,7 +102,7 @@ export class AppHelper {
     if ((!arrA.length && !arrB.length) || (arrA && arrA.length && !arrB.length)) return true;
     let res: any[] = [];
     for (let itemB of arrB) {
-      const isCheck = arrA.find(itemA => itemA.id === itemB);
+      const isCheck = arrA.find(itemA => itemA.id === itemB.id);
       if (!isCheck) {
         res.push(itemB);
       }

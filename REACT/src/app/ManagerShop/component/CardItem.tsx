@@ -191,7 +191,7 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
 
   return (
     <Box className="card_item">
-      {shopInfor?.prodcutSell && shopInfor?.prodcutSell.length && (
+      {shopInfor?.products && shopInfor?.products.length && (
         <ToggleButtonGroup
           color="success"
           value={alignment}
@@ -200,14 +200,14 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
             setAlignment(newAlignment);
             setTogge(e.target.innerText);
           }}>
-          {shopInfor?.prodcutSell && shopInfor?.prodcutSell.length && (
+          {shopInfor?.products && shopInfor?.products.length && (
             <ToggleButton value={'ALL'} sx={toge1} onClick={e => handleTogge('')}>
               All
             </ToggleButton>
           )}
-          {shopInfor?.prodcutSell &&
-            shopInfor?.prodcutSell.length &&
-            shopInfor.prodcutSell.map((item, idx) => (
+          {shopInfor?.products &&
+            shopInfor?.products.length &&
+            shopInfor.products.map((item, idx) => (
               <ToggleButton
                 key={idx}
                 value={item.id}

@@ -189,7 +189,7 @@ export const CardListShops = ({ resetDataRef }: Props) => {
                 </Typography>
                 <Typography variant="inherit" component={'span'} fontWeight={'bold'}>
                   Products:
-                  {item?.prodcutSell?.map(item => (
+                  {item?.products?.map(item => (
                     <Chip
                       label={item.nameProduct}
                       key={item.id}

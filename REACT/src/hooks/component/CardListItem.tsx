@@ -47,9 +47,9 @@ export const CardListItem = (props: Props) => {
       }
     }
     if (selectData) {
-      initProduct(selectData.prodcutSell, selectData.products);
+      initProduct(selectData.productIds, selectData.products);
     }
-  }, [selectData?.prodcutSell, selectData?.products]);
+  }, [selectData?.productIds, selectData?.products]);
 
   const renderChip = (selected: any[]) => {
     return selected.map(value => (
@@ -74,7 +74,7 @@ export const CardListItem = (props: Props) => {
             id="demo-multiple-chip"
             multiple
             autoWidth
-            value={selectData.prodcutSell}
+            value={selectData.productIds}
             variant="outlined"
             sx={{ width: '100%', height: '30px', border: '1px solid #cdcdcd5c' }}
             input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
@@ -85,7 +85,7 @@ export const CardListItem = (props: Props) => {
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {renderChip(selected.slice(0, 1))}
                     <Chip
-                      label={`+${selectData.prodcutSell.length - selected.slice(0, 1).length}`}
+                      label={`+${selectData.productIds.length - selected.slice(0, 1).length}`}
                       size="small"
                     />
                   </Box>

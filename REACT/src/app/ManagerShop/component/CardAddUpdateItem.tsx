@@ -55,7 +55,7 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, mod
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [typeProduct, setTypeProduct] = useState<string | null>(
-    (shopInfor?.prodcutSell && shopInfor?.prodcutSell[0].nameProduct?.toUpperCase()) || null,
+    (shopInfor?.products && shopInfor?.products[0].nameProduct?.toUpperCase()) || null,
   );
   const [editSlides, setEditSlides] = useState<boolean>(false);
   const open = Boolean(anchorEl);
@@ -156,8 +156,7 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, mod
             items={items}
             handleChange={handleChange}
             nameProduct={
-              shopInfor?.prodcutSell &&
-              (shopInfor?.prodcutSell[selectedIndex].nameProduct as string)
+              shopInfor?.products && (shopInfor?.products[selectedIndex].nameProduct as string)
             }
           />
         );
@@ -167,8 +166,7 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, mod
             items={items}
             handleChange={handleChange}
             nameProduct={
-              shopInfor?.prodcutSell &&
-              (shopInfor?.prodcutSell[selectedIndex].nameProduct as string)
+              shopInfor?.products && (shopInfor?.products[selectedIndex].nameProduct as string)
             }
           />
         );
@@ -178,8 +176,7 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, mod
             items={items}
             handleChange={handleChange}
             nameProduct={
-              shopInfor?.prodcutSell &&
-              (shopInfor?.prodcutSell[selectedIndex].nameProduct as string)
+              shopInfor?.products && (shopInfor?.products[selectedIndex].nameProduct as string)
             }
           />
         );
@@ -189,8 +186,7 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, mod
             items={items}
             handleChange={handleChange}
             nameProduct={
-              shopInfor?.prodcutSell &&
-              (shopInfor?.prodcutSell[selectedIndex].nameProduct as string)
+              shopInfor?.products && (shopInfor?.products[selectedIndex].nameProduct as string)
             }
           />
         );
@@ -200,11 +196,11 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, mod
   };
 
   const handleDone = () => {
-    if (!shopInfor || !shopInfor?.prodcutSell?.length) return;
+    if (!shopInfor || !shopInfor?.products?.length) return;
     if (!modeDev && !validate()) return;
     if (!itemInfor) {
       const shopId = shopInfor?.id;
-      const productId = shopInfor?.prodcutSell[selectedIndex].id;
+      const productId = shopInfor?.products[selectedIndex].id;
       const payloadItems = {
         shopId,
         productId,
@@ -397,15 +393,13 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, mod
               className="menu_prod">
               <ListItemText
                 primary={<Typography variant="caption">Product</Typography>}
-                secondary={
-                  shopInfor?.prodcutSell && shopInfor?.prodcutSell[selectedIndex].nameProduct
-                }
+                secondary={shopInfor?.products && shopInfor?.products[selectedIndex].nameProduct}
               />
             </ListItem>
           </List>
           <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)}>
-            {shopInfor?.prodcutSell &&
-              shopInfor?.prodcutSell.map((item, index) => (
+            {shopInfor?.products &&
+              shopInfor?.products.map((item, index) => (
                 <MenuItem
                   key={index}
                   selected={index === selectedIndex}

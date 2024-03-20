@@ -40,7 +40,7 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
   const products = useSelector(ShopSelector.selectProducts);
   const [editShop, setEditShop] = useState<boolean>(false);
   const [shop, setShop] = React.useState<Shops | null>(shopInfor);
-  const [prodcutSell, setProductSell] = React.useState<Products[]>([]);
+  const [productIds, setProducts] = React.useState<Products[]>([]);
 
   useEffect(() => {
     if (resetDataRefShop.current) {
@@ -52,7 +52,7 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
 
   const handleResetData = () => {
     setEditShop(false);
-    setProductSell([]);
+    setProducts([]);
     setShop(null);
   };
 
@@ -63,18 +63,18 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
       setEditShop(false);
       return;
     }
-    const resultProduct = prodcutSell && prodcutSell.length ? prodcutSell.map(item => item.id) : [];
     if (
       shopInfor?.nameShop === nameShop &&
       !urlRefShop?.current?.length &&
-      AppHelper.compareArrayProducts(shopInfor?.prodcutSell as any[], resultProduct)
+      AppHelper.compareArrayProducts(shopInfor?.products as any[], productIds)
     ) {
       setEditShop(false);
       return;
     }
+    const resultProduct = productIds && productIds.length ? handleResultProduct(productIds) : [];
     const payload = {
       nameShop,
-      prodcutSell: resultProduct,
+      productIds: resultProduct,
       banners: urlRefShop?.current ? [urlRefShop.current] : banners,
     };
     if (urlRefShop?.current && banners && banners.length) {
@@ -84,8 +84,21 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
     return;
   };
 
+  const handleResultProduct = (resultProduct: Products[]) => {
+    const result: Products[] = [];
+    products.forEach(item => {
+      const prod = resultProduct.find(res => res.id === item.id);
+      if (!prod) {
+        result.push({ id: item.id, status: false });
+      } else {
+        result.push({ id: item.id, status: true });
+      }
+    });
+    return result;
+  };
+
   const handleChange = (
-    event: SelectChangeEvent<typeof prodcutSell> | ChangeEvent<HTMLInputElement>,
+    event: SelectChangeEvent<typeof productIds> | ChangeEvent<HTMLInputElement>,
   ) => {
     const {
       target: { name, value },
@@ -94,7 +107,7 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
       setShop({ ...shop, nameShop: value });
       return;
     }
-    setProductSell(value);
+    setProducts(value);
   };
 
   const handleCancel = () => {
@@ -158,7 +171,7 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
                   onClick={() => {
                     setEditShop(!editShop);
                     setShop(shopInfor);
-                    setProductSell(shopInfor?.prodcutSell as Products[]);
+                    setProducts(shopInfor?.products as Products[]);
                   }}>
                   <Edit />
                 </IconButton>
@@ -218,9 +231,9 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
               <CardListItem
                 title={'Products'}
                 value={null}
-                name={'prodcutSell'}
+                name={'productIds'}
                 handleOnChange={handleChange}
-                selectData={{ prodcutSell: prodcutSell || [], products }}
+                selectData={{ productIds: productIds || [], products }}
               />
             </React.Fragment>
           ) : (
@@ -228,7 +241,7 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
               <Box>Name: {shopInfor?.nameShop}</Box>
               <Box>
                 Products:{' '}
-                {shopInfor?.prodcutSell?.map((item, idx) => (
+                {shopInfor?.products?.map((item, idx) => (
                   <Chip
                     label={item.nameProduct}
                     key={idx}
@@ -237,7 +250,7 @@ export const CardShop = ({ shopInfor, resetDataRefShop, urlRefShop }: Props) => 
                     avatar={<Avatar src={item.avatar} alt={item.avatar} />}
                   />
                 ))}
-                {!shopInfor?.prodcutSell?.length && (
+                {!shopInfor?.products?.length && (
                   <Chip label="Please add product you can selling!" color="warning" />
                 )}
               </Box>
