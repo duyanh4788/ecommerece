@@ -4,7 +4,6 @@ import { RestError } from '../services/error/error';
 import { ItemsUseCase } from '../usecase/ItemsUseCase';
 import { ProductsUseCase } from '../usecase/ProductsUseCase';
 import { GuestUseCase } from '../usecase/GuestUseCase';
-
 export class GuestController {
   constructor(private guestUseCase: GuestUseCase, private itemsUseCase: ItemsUseCase, private productsUseCase: ProductsUseCase) {}
   public getListsItems = async (req: Request, res: Response) => {

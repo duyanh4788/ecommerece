@@ -19,5 +19,9 @@ export enum MainkeysRedis {
   SUBS_ID = 'subs_subid:',
   SHOP_RESOURCE_SHOPID = 'shop_resource_shopid:',
   SHOP_RESOURCE_ID = 'shop_resource_id:',
-  INVS_ID = 'invs_subid:'
+  INVS_ID = 'invs_subid:',
+  SOCKET_BY_SHOP = 'socket_by_shop:',
+  SOCKET_BY_USER = 'socket_by_user:',
+  CHANNLE_SHOP = 'channel_shop:',
+  CHANNLE_USER = 'channel_user:'
 }

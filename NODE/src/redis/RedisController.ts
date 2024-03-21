@@ -1,6 +1,7 @@
 import * as redis from 'redis';
 import * as util from 'util';
 import { envConfig } from '../config/envConfig';
+import { MainkeysRedis } from '../interface/KeyRedisInterface';
 
 interface RedisCache {
   hasKey: string;
@@ -26,9 +27,12 @@ class RedisController {
   private client: redis.RedisClientType;
   private REDIS_TIMEOUT: number = 100000;
   private connectTimeOut: NodeJS.Timeout;
+  private messageConsumber: string = '';
 
   constructor() {
     this.client = redis.createClient({ url: this.REDIS_URL });
+    this.subcriber(MainkeysRedis.CHANNLE_SHOP);
+    this.subcriber(MainkeysRedis.CHANNLE_USER);
     util.promisify(this.client.get).bind(this.client);
   }
 
@@ -115,6 +119,33 @@ class RedisController {
   async setIncreaseRedis(keyValue: any, value: any) {
     const result = await this.client.incrBy(keyValue, value);
     return JSON.parse(result as any);
+  }
+
+  async saddMembers(keyValue: any, value: any) {
+    if (!value.id) return;
+    return await this.client.sAdd(keyValue, value.id);
+  }
+
+  async sRemMembers(keyValue: any, value: any) {
+    if (!value.id) return;
+    return await this.client.sRem(keyValue, value.id);
+  }
+
+  async publisher(channelName: string, value: string) {
+    await this.client.publish(channelName, value);
+  }
+
+  async subcriber(channelName: string) {
+    const subscriber = this.client.duplicate();
+    subscriber.on('error', (err) => console.error(err));
+    await subscriber.connect();
+    await subscriber.subscribe(channelName, (message: string, channel: string) => {
+      this.messageConsumber = message;
+    });
+  }
+
+  public getMessageConsumber() {
+    return this.messageConsumber;
   }
 }
 export const redisController = new RedisController();

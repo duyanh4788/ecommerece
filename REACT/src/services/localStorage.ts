@@ -24,6 +24,8 @@ export enum LocalStorageKey {
   shopId = '_shopId',
   tier = '_tier',
   tabs = '_tabs',
+  socket_user = '_socket_user',
+  socket_shop = '_socket_shop',
 }
 
 export class LocalStorageService {
