@@ -13,6 +13,8 @@ import { IShopsResourcesRepository } from '../repository/IShopsResourcesReposito
 import { ShopsResourcesInterface } from '../interface/ShopsResourcesInterface';
 import { IPaypalBillingPlanRepository } from '../repository/IPaypalBillingPlanRepository';
 import { IUserRepository } from '../repository/IUserRepository';
+import { redisController } from '../redis/RedisController';
+import { MainkeysRedis } from '../interface/KeyRedisInterface';
 
 export class SubscriptionUseCase {
   constructor(
@@ -251,6 +253,7 @@ export class SubscriptionUseCase {
         };
         await this.subscriptionRepository.createOrUpdate(payloadSubs, transactionDB);
         await this.shopRepository.updateStatusShopById(subscription.shopId, true, transactionDB);
+        await redisController.publisher(MainkeysRedis.SHOP_ID, subscription.userId);
         if (subscription.status === SubscriptionStatus.WAITING_SYNC && findTrial) {
           const payload: any = {
             shopId: subscription.shopId,

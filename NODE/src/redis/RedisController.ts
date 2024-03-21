@@ -2,6 +2,7 @@ import * as redis from 'redis';
 import * as util from 'util';
 import { envConfig } from '../config/envConfig';
 import { MainkeysRedis } from '../interface/KeyRedisInterface';
+import { webSocket } from '../server';
 
 interface RedisCache {
   hasKey: string;
@@ -27,13 +28,12 @@ class RedisController {
   private client: redis.RedisClientType;
   private REDIS_TIMEOUT: number = 100000;
   private connectTimeOut: NodeJS.Timeout;
-  private messageConsumber: string = '';
 
   constructor() {
     this.client = redis.createClient({ url: this.REDIS_URL });
+    util.promisify(this.client.get).bind(this.client);
     this.subcriber(MainkeysRedis.CHANNLE_SHOP);
     this.subcriber(MainkeysRedis.CHANNLE_USER);
-    util.promisify(this.client.get).bind(this.client);
   }
 
   async connectRedis() {
@@ -131,6 +131,11 @@ class RedisController {
     return await this.client.sRem(keyValue, value.id);
   }
 
+  async sisMembers(keyValue: any, id: any) {
+    if (!id) return;
+    return await this.client.sIsMember(keyValue, id);
+  }
+
   async publisher(channelName: string, value: string) {
     await this.client.publish(channelName, value);
   }
@@ -140,12 +145,8 @@ class RedisController {
     subscriber.on('error', (err) => console.error(err));
     await subscriber.connect();
     await subscriber.subscribe(channelName, (message: string, channel: string) => {
-      this.messageConsumber = message;
+      webSocket.sendMessageConsumber(message, channel);
     });
-  }
-
-  public getMessageConsumber() {
-    return this.messageConsumber;
   }
 }
 export const redisController = new RedisController();

@@ -17,7 +17,6 @@ mySqlController.connectDb();
 
 // ********************* Connect Redis *********************//
 redisController.connectRedis();
-redisController.subcriber('channel_shop:');
 
 // ********************* Monitor System *********************//
 new MonitorSystem().readMonitorSystem();
@@ -32,9 +31,8 @@ const configIo = new Server(httpServer, {
     credentials: true
   }
 });
-
-const socket = new WebSocket();
-socket.socketIO(configIo);
+export const webSocket = new WebSocket(configIo);
+webSocket.socketIO();
 
 if (isDevelopment) {
   App.get('/', (req: Request, res: Response) => {

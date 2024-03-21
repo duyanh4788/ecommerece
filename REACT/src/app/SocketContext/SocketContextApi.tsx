@@ -36,17 +36,17 @@ export const SocketContextProvider = ({ children }) => {
         socket.current.emit(SOCKET_COMMIT.DISCONNECTED, connectionUser);
         socket.current.emit(SOCKET_COMMIT.DISCONNECTED, connectionShop);
       };
-
       window.addEventListener('beforeunload', handleBeforeUnload);
 
       socket.current.emit(SOCKET_COMMIT.JOIN_ROOM, connectionUser);
       socket.current.emit(SOCKET_COMMIT.JOIN_ROOM, connectionShop);
 
       socket.current.on(SOCKET_COMMIT.SEND_MESSAGE_NOTIFY, (response: any) => {
+        console.log(response);
         if (response.code === 200) {
-          return toast.success(response.code, response.messages || 'wellcome to Ecommerce Anh Vu');
+          return toast.success(response.messages || 'wellcome to Ecommerce Anh Vu');
         } else {
-          return toast.error(response.code, response.messages || 'please try again later');
+          return toast.error(response.messages || 'please try again later');
         }
       });
       return () => {
