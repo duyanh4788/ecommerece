@@ -8,7 +8,7 @@ export interface IShopRepository {
 
   updatedSliders(sliders: string[], id: string, userId: string): Promise<void>;
 
-  updatedNumberResource(payload: ShopInterface, transactionDB: Transaction): Promise<void>;
+  updatedNumberResourceSubs(payload: ShopInterface, transactionDB: Transaction): Promise<void>;
 
   deleted(id: string, userId: string): Promise<void>;
 
@@ -18,5 +18,5 @@ export interface IShopRepository {
 
   findShopDisable(userId: string): Promise<boolean>;
 
-  updateStatusShopById(shopId: string, status: boolean, transactionDB?: Transaction): Promise<void>;
+  updateStatusShopById(shopId: string, status: boolean, reasons: string, transactionDB?: Transaction): Promise<void>;
 }

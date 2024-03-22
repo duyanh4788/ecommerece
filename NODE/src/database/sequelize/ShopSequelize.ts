@@ -1,5 +1,5 @@
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
-import { ShopInterface } from '../../interface/ShopInterface';
+import { Reasons, ShopInterface } from '../../interface/ShopInterface';
 import { IShopRepository } from '../../repository/IShopRepository';
 import { ShopsModel } from '../model/ShopsModel';
 import { RestError } from '../../services/error/error';
@@ -65,7 +65,7 @@ export class ShopSequelize implements IShopRepository {
     return;
   }
 
-  async updatedNumberResource(payload: ShopInterface, transactionDB: Transaction): Promise<void> {
+  async updatedNumberResourceSubs(payload: ShopInterface, transactionDB: Transaction): Promise<void> {
     const { numberProduct, numberItem, shopId, userId } = payload;
     const shop = await ShopsModel.findByPk(deCryptFakeId(shopId));
     if (!shop) return;
@@ -73,6 +73,11 @@ export class ShopSequelize implements IShopRepository {
     shop.numberItem = shop.numberItem ? shop.numberItem + numberItem : numberItem;
     await shop.save({ transaction: transactionDB });
     await this.handleDelRedis(userId, enCryptFakeId(shop.id));
+    await redisController.publisher(MainkeysRedis.SHOP_ID, {
+      userId: enCryptFakeId(shop.userId),
+      shopId: enCryptFakeId(shop.id),
+      messages: this.handleMesagePublish(true, Reasons.INVOICES, shop.nameShop)
+    });
     return;
   }
 
@@ -134,13 +139,18 @@ export class ShopSequelize implements IShopRepository {
     return false;
   }
 
-  async updateStatusShopById(shopId: string, status: boolean, transactionDB: Transaction): Promise<void> {
+  async updateStatusShopById(shopId: string, status: boolean, reasons: string, transactionDB: Transaction): Promise<void> {
     const shop = await ShopsModel.findByPk(deCryptFakeId(shopId));
     if (!shop) return;
     shop.status = status;
     await shop.save(transactionDB && { transaction: transactionDB });
     const result = this.transformModelToEntity(shop);
     await this.handleDelRedis(result.userId, shopId);
+    await redisController.publisher(MainkeysRedis.SHOP_ID, {
+      userId: enCryptFakeId(shop.userId),
+      shopId: enCryptFakeId(shop.id),
+      messages: this.handleMesagePublish(status, reasons, shop.nameShop)
+    });
     return;
   }
 
@@ -148,6 +158,18 @@ export class ShopSequelize implements IShopRepository {
     await redisController.delRedis(`${MainkeysRedis.SHOPS_USERID}${userId}`);
     if (shopId) {
       await redisController.delRedis(`${MainkeysRedis.SHOP_ID}${shopId}`);
+    }
+  }
+
+  private handleMesagePublish(status: boolean, reasons: string, nameShop: string) {
+    if (status) {
+      if (reasons === Reasons.SUBSCRIPTION) return `Shop ${nameShop} has been active`;
+      if (reasons === Reasons.INVOICES) return `Shop ${nameShop} has been invoices for check on page and email`;
+      if (reasons === Reasons.ADMIN) return `Shop ${nameShop} has been Admin active`;
+    }
+    if (!status) {
+      if (reasons === Reasons.SUBSCRIPTION) return `Shop ${nameShop} has been disable`;
+      if (reasons === Reasons.ADMIN) return `Shop ${nameShop} has been Admin disable`;
     }
   }
 

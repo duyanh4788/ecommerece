@@ -1,4 +1,4 @@
-import { ShopInterface } from '../interface/ShopInterface';
+import { Reasons, ShopInterface } from '../interface/ShopInterface';
 import { IShopRepository } from '../repository/IShopRepository';
 import { UserRole } from '../interface/UserInterface';
 import { ISubscriptionRepository } from '../repository/ISubscriptionRepository';
@@ -54,6 +54,6 @@ export class ShopUseCase {
   }
 
   async updateStatusShopUseCase(shopId: string, status: boolean) {
-    return await this.shopUsersRepository.updateStatusShopById(shopId, status);
+    return await this.shopUsersRepository.updateStatusShopById(shopId, status, Reasons.ADMIN);
   }
 }

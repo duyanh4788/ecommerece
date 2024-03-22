@@ -4,13 +4,10 @@ import { RestError } from '../services/error/error';
 import { ItemsUseCase } from '../usecase/ItemsUseCase';
 import { ProductsUseCase } from '../usecase/ProductsUseCase';
 import { GuestUseCase } from '../usecase/GuestUseCase';
-import { redisController } from '../redis/RedisController';
-
 export class GuestController {
   constructor(private guestUseCase: GuestUseCase, private itemsUseCase: ItemsUseCase, private productsUseCase: ProductsUseCase) {}
   public getListsItems = async (req: Request, res: Response) => {
     try {
-      await redisController.publisher('channel_shop:', JSON.stringify({ shopId: 1, msg: '1234' }));
       const products = await this.productsUseCase.guestGetListUseCase();
       return new SendRespone({ data: products }).send(res);
     } catch (error) {

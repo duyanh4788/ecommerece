@@ -4,32 +4,37 @@ import { Connections, SOCKET_COMMIT, TYPE_CONNECTION_SOCKET } from '../common/so
 import { redisController } from '../redis/RedisController';
 import { MainkeysRedis } from '../interface/KeyRedisInterface';
 
+interface UserSocketMap {
+  [userId: string]: Socket;
+}
 export class WebSocket {
   private socket_io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>;
-  private socketClient: Socket;
+  private userSocketMap: UserSocketMap = {};
   constructor(socket_io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {
     this.socket_io = socket_io;
   }
 
   public socketIO() {
     this.socket_io.on(SOCKET_COMMIT.CONNECT, (socket: Socket) => {
-      this.socketClient = socket;
       this.connected(socket);
       this.sendMessages(socket);
       this.disConnected(socket);
     });
   }
 
-  public async sendMessageConsumber(userId: string, channel: string) {
-    // const isMember = await redisController.sisMembers(MainkeysRedis.SOCKET_BY_USER, userId);
-    // if (!isMember) return;
-    console.log(userId);
-    this.socketClient.broadcast.emit(SOCKET_COMMIT.SEND_MESSAGE_NOTIFY, { messages: userId, channel, code: 200 });
+  public async sendMessageConsumber(message: string, channel: string) {
+    const response = JSON.parse(message);
+    const isMember = await redisController.sisMembers(MainkeysRedis.SOCKET_BY_USER, response.userId);
+    if (!isMember) return;
+    const socket = this.userSocketMap[response.userId];
+    if (!socket) return;
+    socket.emit(SOCKET_COMMIT.SEND_MESSAGE_NOTIFY, response);
   }
 
   private connected(socket: Socket) {
     socket.on(SOCKET_COMMIT.JOIN_ROOM, async (connections: Connections) => {
       socket.join(connections.id);
+      this.userSocketMap[connections.id] = socket;
       await this.addMemberConnections(connections);
     });
   }
@@ -37,6 +42,7 @@ export class WebSocket {
   private disConnected(socket: Socket) {
     socket.on(SOCKET_COMMIT.DISCONNECTED, async (connections: Connections) => {
       await this.dellMemberConnections(connections);
+      delete this.userSocketMap[connections.id];
     });
   }
 
@@ -60,6 +66,7 @@ export class WebSocket {
       case TYPE_CONNECTION_SOCKET.SHOP:
         return await redisController.sRemMembers(MainkeysRedis.SOCKET_BY_SHOP, connections);
       case TYPE_CONNECTION_SOCKET.USER:
+        await redisController.delRedis(`${MainkeysRedis.SOCKET_BY_USER}${connections.id}`);
         return await redisController.sRemMembers(MainkeysRedis.SOCKET_BY_USER, connections);
       default:
         break;

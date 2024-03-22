@@ -136,8 +136,8 @@ class RedisController {
     return await this.client.sIsMember(keyValue, id);
   }
 
-  async publisher(channelName: string, value: string) {
-    await this.client.publish(channelName, value);
+  async publisher(channelName: string, value: any) {
+    await this.client.publish(channelName, JSON.stringify(value));
   }
 
   async subcriber(channelName: string) {

@@ -8,13 +8,11 @@ import { RestError } from '../services/error/error';
 import { nodeMailerServices } from '../services/nodemailer/MailServices';
 import { capitalizeFirstLetter } from '../utils/accents';
 import { IShopRepository } from '../repository/IShopRepository';
-import { ShopInterface } from '../interface/ShopInterface';
+import { Reasons, ShopInterface } from '../interface/ShopInterface';
 import { IShopsResourcesRepository } from '../repository/IShopsResourcesRepository';
 import { ShopsResourcesInterface } from '../interface/ShopsResourcesInterface';
 import { IPaypalBillingPlanRepository } from '../repository/IPaypalBillingPlanRepository';
 import { IUserRepository } from '../repository/IUserRepository';
-import { redisController } from '../redis/RedisController';
-import { MainkeysRedis } from '../interface/KeyRedisInterface';
 
 export class SubscriptionUseCase {
   constructor(
@@ -252,8 +250,7 @@ export class SubscriptionUseCase {
           isTrial: findTrial ? true : false
         };
         await this.subscriptionRepository.createOrUpdate(payloadSubs, transactionDB);
-        await this.shopRepository.updateStatusShopById(subscription.shopId, true, transactionDB);
-        await redisController.publisher(MainkeysRedis.SHOP_ID, subscription.userId);
+        await this.shopRepository.updateStatusShopById(subscription.shopId, true, Reasons.SUBSCRIPTION, transactionDB);
         if (subscription.status === SubscriptionStatus.WAITING_SYNC && findTrial) {
           const payload: any = {
             shopId: subscription.shopId,
@@ -279,7 +276,7 @@ export class SubscriptionUseCase {
         status: billingAgreement.status,
         isTrial: false
       };
-      await this.shopRepository.updateStatusShopById(subscription.shopId, false, transactionDB);
+      await this.shopRepository.updateStatusShopById(subscription.shopId, false, Reasons.SUBSCRIPTION, transactionDB);
       await this.subscriptionRepository.createOrUpdate(payload, transactionDB);
       const userInfor = await this.userRepository.findById(subscription.userId);
       if (billingAgreement.status === SubscriptionStatus.CANCELLED) {
@@ -297,6 +294,6 @@ export class SubscriptionUseCase {
   }
 
   private async updatedNumberResourceShop(payload: ShopInterface, transactionDB: Transaction) {
-    await this.shopRepository.updatedNumberResource(payload, transactionDB);
+    await this.shopRepository.updatedNumberResourceSubs(payload, transactionDB);
   }
 }
