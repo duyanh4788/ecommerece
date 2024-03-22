@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as ItemSlice from 'store/items/shared/slice';
 import * as ItemSelector from 'store/items/shared/selectors';
 import * as ShopSelector from 'store/shops/shared/selectors';
-import { Cancel, Done, Edit } from '@mui/icons-material';
+import { Close, Done, Edit } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -30,7 +30,7 @@ import {
   formInputItem,
   ItemsInterface,
 } from 'interface/Items.mode';
-import { BG_MAIN_2, renderMsgUploadItems } from 'commom/common.contants';
+import { BG_MAIN_2, CL_GRE, renderMsgUploadItems } from 'commom/common.contants';
 import { FormClosthers } from 'hooks/entityItem/FormClosthers';
 import { FormCosmetics } from 'hooks/entityItem/FormCosmetics';
 import { FormElectronics } from 'hooks/entityItem/FormElectronics';
@@ -344,7 +344,7 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, mod
       <CardHeader
         action={
           <React.Fragment>
-            <IconButton aria-label="settings" onClick={handleDone}>
+            <IconButton aria-label="settings" onClick={handleDone} className="done_btn">
               <Done />
             </IconButton>
             <IconButton
@@ -355,8 +355,9 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, mod
                   dispatch(ItemSlice.actions.removeFile({ idImage: url }));
                   dispatch(ItemSlice.actions.clearUrl());
                 }
-              }}>
-              <Cancel />
+              }}
+              className="cancel_btn">
+              <Close />
             </IconButton>
           </React.Fragment>
         }
@@ -368,6 +369,9 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, mod
           {items && items.itemThumb && items.itemThumb.length < 5 ? (
             <FileUpload {...fileUploadProp} />
           ) : null}
+          <IconButton onClick={() => setEditSlides(true)}>
+            <Edit />
+          </IconButton>
         </Box>
       ) : (
         <Card sx={{ background: BG_MAIN_2, margin: '10px 0' }}>
@@ -379,10 +383,6 @@ export const CardAddUpdateItem = ({ handleResetAddUpdate, resetDataRefItems, mod
           />
         </Card>
       )}
-
-      <IconButton onClick={() => setEditSlides(true)}>
-        <Edit />
-      </IconButton>
       <CardContent className="card_content">
         <Box className="box_add_item">
           <List component="nav">

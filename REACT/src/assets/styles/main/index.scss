@@ -179,3 +179,31 @@ body::-webkit-scrollbar-thumb,
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
+
+.done_btn {
+  animation: blink-animation 2s infinite;
+  .MuiSvgIcon-root {
+    border-radius: 50% !important;
+    border: 1px solid $color-green !important;
+  }
+}
+
+.cancel_btn {
+  animation: blink-animation 2s infinite;
+  .MuiSvgIcon-root {
+    border-radius: 50% !important;
+    border: 1px solid $color-green-slow !important;
+  }
+}
+
+@keyframes blink-animation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}

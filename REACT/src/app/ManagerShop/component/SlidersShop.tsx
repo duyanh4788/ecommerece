@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import * as ShopSlice from 'store/shops/shared/slice';
-import { Edit } from '@mui/icons-material';
+import { DesignServices } from '@mui/icons-material';
 import { Box, Card, IconButton } from '@mui/material';
 import { BG_MAIN_2, renderMsgUploadItems } from 'commom/common.contants';
 import { SwipersList } from 'hooks/component/SwipersList';
@@ -60,14 +60,14 @@ export const SlidersShop = ({ shopInfor, handleStatusUploadSliders }: Props) => 
   };
 
   return shopInfor?.sliders && shopInfor.sliders.length && !editSlides ? (
-    <Box component={'div'} my={2}>
-      <SwipersList data={shopInfor.sliders} />
-      <IconButton onClick={() => setEditSlides(true)}>
-        <Edit />
+    <Box component={'div'} className="slider_shop">
+      <IconButton onClick={() => setEditSlides(true)} className="done_btn">
+        <DesignServices />
       </IconButton>
+      <SwipersList data={shopInfor.sliders} />
     </Box>
   ) : (
-    <Card sx={{ background: BG_MAIN_2, margin: '10px 0' }}>
+    <Card sx={{ background: BG_MAIN_2, margin: '20px 0' }}>
       <RenderImagesList
         sliders={shopInfor?.sliders as string[]}
         setEditSlides={setEditSlides}

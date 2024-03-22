@@ -8,7 +8,7 @@ import * as SubscriptionSlice from 'store/subscription/shared/slice';
 import * as SubscriptionSelector from 'store/subscription/shared/selectors';
 import * as ItemSlice from 'store/items/shared/slice';
 import * as ItemSelector from 'store/items/shared/selectors';
-import { Divider, Grid, IconButton, Paper } from '@mui/material';
+import { Grid, IconButton, Paper } from '@mui/material';
 import { PATH_PARAMS } from 'commom/common.contants';
 import { Loading } from 'commom/loading';
 import { localStorage } from 'hooks/localStorage/LocalStorage';
@@ -166,7 +166,6 @@ export const ManagerShop = () => {
         <CardSubscriptions shopInfor={shopInfor} resetDataRefSubs={resetDataRefSubs} />
       </Grid>
       <SlidersShop shopInfor={shopInfor} handleStatusUploadSliders={handleStatusUploadSliders} />
-      <Divider />
       <CardItem shopInfor={shopInfor} resetDataRefItems={resetDataRefItems} />
     </Paper>
   );

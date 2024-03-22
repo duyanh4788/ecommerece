@@ -18,7 +18,14 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Cancel, Edit, Delete, ExpandCircleDown, Search } from '@mui/icons-material';
+import {
+  Cancel,
+  Edit,
+  Delete,
+  ExpandCircleDown,
+  Search,
+  AddCircleOutline,
+} from '@mui/icons-material';
 import * as ItemSlice from 'store/items/shared/slice';
 import * as ItemSelector from 'store/items/shared/selectors';
 import { useDispatch, useSelector } from 'react-redux';
@@ -192,48 +199,57 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
   return (
     <Box className="card_item">
       {shopInfor?.products && shopInfor?.products.length && (
-        <ToggleButtonGroup
-          color="success"
-          value={alignment}
-          exclusive
-          onChange={(e: any, newAlignment) => {
-            setAlignment(newAlignment);
-            setTogge(e.target.innerText);
-          }}>
-          {shopInfor?.products && shopInfor?.products.length && (
-            <ToggleButton value={'ALL'} sx={toge1} onClick={e => handleTogge('')}>
-              All
-            </ToggleButton>
-          )}
-          {shopInfor?.products &&
-            shopInfor?.products.length &&
-            shopInfor.products.map((item, idx) => (
-              <ToggleButton
-                key={idx}
-                value={item.id}
-                onClick={e => handleTogge(item.nameProduct?.toUpperCase() as string)}
-                sx={toge2}>
-                {item.nameProduct}
+        <Box className="box_add">
+          <ToggleButtonGroup
+            color="success"
+            value={alignment}
+            exclusive
+            onChange={(e: any, newAlignment) => {
+              setAlignment(newAlignment);
+              setTogge(e.target.innerText);
+            }}>
+            {shopInfor?.products && shopInfor?.products.length && (
+              <ToggleButton value={'ALL'} sx={toge1} onClick={e => handleTogge('')}>
+                All
               </ToggleButton>
-            ))}
-          <ToggleButton value={'ADD'} sx={toge2} onClick={handleAddItem}>
-            Ad
-          </ToggleButton>
-        </ToggleButtonGroup>
-      )}
-      <Tooltip title="if you active this feature, you can created items is random so do need typing, **Note: can not used with update items!">
-        <FormControlLabel
-          className="mode_dev"
-          control={
-            <Checkbox
-              value={modeDev}
+            )}
+            {shopInfor?.products &&
+              shopInfor?.products.length &&
+              shopInfor.products.map((item, idx) => (
+                <ToggleButton
+                  key={idx}
+                  value={item.id}
+                  onClick={e => handleTogge(item.nameProduct?.toUpperCase() as string)}
+                  sx={toge2}>
+                  {item.nameProduct}
+                </ToggleButton>
+              ))}
+          </ToggleButtonGroup>
+          <Box className="box_add">
+            <IconButton
+              aria-label="settings"
               color="success"
-              onChange={e => setModeDev(e.target.checked)}
-            />
-          }
-          label="Mode Dev"
-        />
-      </Tooltip>
+              onClick={handleAddItem}
+              className="done_btn">
+              <AddCircleOutline />
+            </IconButton>
+            <Tooltip title="if you active this feature, you can created items is random so do need typing, **Note: can not used with update items!">
+              <FormControlLabel
+                className="mode_dev"
+                control={
+                  <Checkbox
+                    value={modeDev}
+                    color="success"
+                    onChange={e => setModeDev(e.target.checked)}
+                  />
+                }
+                label="Mode For Dev"
+              />
+            </Tooltip>
+          </Box>
+        </Box>
+      )}
+
       <Paper component="form" onSubmit={handleSearchSubmit} className="paper_search">
         <InputBase fullWidth placeholder="Search" onChange={e => setSearch(e.target.value)} />
         <IconButton type="submit">

@@ -1,4 +1,4 @@
-import { DeleteForever, DisabledByDefault } from '@mui/icons-material';
+import { Cancel, DeleteForever, DisabledByDefault } from '@mui/icons-material';
 import { Divider, IconButton, ImageList, ImageListItem, ImageListItemBar } from '@mui/material';
 import React from 'react';
 import { FileUpload, FileUploadProps } from './FileUpload';
@@ -19,10 +19,9 @@ export const RenderImagesList = ({
   if (!sliders || !sliders.length) return <FileUpload {...fileUploadProp} />;
   return (
     <React.Fragment>
-      <IconButton onClick={() => setEditSlides(false)}>
-        <DisabledByDefault />
+      <IconButton onClick={() => setEditSlides(false)} className="cancel_btn">
+        <Cancel />
       </IconButton>
-      <Divider sx={{ margin: '5px 0' }} />
       <ImageList cols={3} sx={{ padding: '20px' }}>
         {sliders?.map((item, idx) => (
           <ImageListItem key={idx}>
@@ -55,7 +54,6 @@ export const RenderImagesList = ({
           </ImageListItem>
         ))}
       </ImageList>
-      <Divider sx={{ margin: '5px 0' }} />
       {sliders.length < 5 && <FileUpload {...fileUploadProp} />}
     </React.Fragment>
   );
