@@ -4,13 +4,14 @@ import { UserRole } from '../interface/UserInterface';
 import { ISubscriptionRepository } from '../repository/ISubscriptionRepository';
 import { RestError } from '../services/error/error';
 import { IShopProductsRepository } from '../repository/IShopProductsRepository';
+import { Messages } from '../common/messages';
 export class ShopUseCase {
   constructor(private shopUsersRepository: IShopRepository, private subscriptionRepository: ISubscriptionRepository, private shopProductsRepository: IShopProductsRepository) {}
 
   async registedShopUseCase(reqBody: ShopInterface, userId: string) {
     const shops = await this.shopUsersRepository.findShopDisable(userId);
     if (shops) {
-      throw new RestError('you do not subscribe previous Shop so can not register a new shop, please subscribe to PayPal!', 404);
+      throw new RestError(Messages.SHOP_NEED_SUBS, 404);
     }
     return await this.shopUsersRepository.registed(reqBody, userId);
   }
@@ -33,7 +34,7 @@ export class ShopUseCase {
 
   async deletedShopUseCase(id: string, userId: string) {
     const subs = await this.subscriptionRepository.findByShopId(id);
-    if (subs) throw new RestError('you have subscription so you can not delete shop, please contact admin!', 404);
+    if (subs) throw new RestError(Messages.SHOP_HAS_SUBS, 404);
     await this.shopUsersRepository.deleted(id, userId);
     await this.shopProductsRepository.deletedMany(id);
     return;

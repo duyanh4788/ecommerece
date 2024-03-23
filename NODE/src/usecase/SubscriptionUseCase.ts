@@ -2,7 +2,7 @@ import { Transaction } from 'sequelize';
 import { PaypalService } from '../services/paypal/PaypalService';
 import { ISubscriptionRepository } from '../repository/ISubscriptionRepository';
 import { IInvoicesRepository } from '../repository/IInvoicesRepository';
-import { EventType, Invoices, MsgErrSubscription, PaypalBillingPlans, RequestEmail, Subscription, SubscriptionStatus } from '../interface/SubscriptionInterface';
+import { EventType, Invoices, PaypalBillingPlans, RequestEmail, Subscription, SubscriptionStatus } from '../interface/SubscriptionInterface';
 import { UserAttributes } from '../interface/UserInterface';
 import { RestError } from '../services/error/error';
 import { nodeMailerServices } from '../services/nodemailer/MailServices';
@@ -13,6 +13,8 @@ import { IShopsResourcesRepository } from '../repository/IShopsResourcesReposito
 import { ShopsResourcesInterface } from '../interface/ShopsResourcesInterface';
 import { IPaypalBillingPlanRepository } from '../repository/IPaypalBillingPlanRepository';
 import { IUserRepository } from '../repository/IUserRepository';
+import { Messages } from '../common/messages';
+import { PaymentProcessor } from '../common/variable';
 
 export class SubscriptionUseCase {
   constructor(
@@ -61,13 +63,13 @@ export class SubscriptionUseCase {
     const subscription = await this.subscriptionRepository.findByShopId(shopId);
     const user = await this.userRepository.findById(userId);
     if (subscription && subscription.status === SubscriptionStatus.ACTIVE) {
-      throw new RestError(MsgErrSubscription.ALLREADY_ACTIVE, 404);
+      throw new RestError(Messages.ALREADY_ACTIVE, 404);
     }
     if (subscription && subscription.status === SubscriptionStatus.SUSPENDED) {
-      throw new RestError(MsgErrSubscription.SUBSCRIPTION_SUSPENDED, 404);
+      throw new RestError(Messages.SUBSCRIPTION_SUSPENDED, 404);
     }
     if (subscription && subscription.status === SubscriptionStatus.WAITING_SYNC) {
-      throw new RestError(MsgErrSubscription.PLEASE_WAITING_SYNC, 404);
+      throw new RestError(Messages.PLEASE_WAITING_SYNC, 404);
     }
     const checkTier = (subscription && !subscription.isTrial) || (subscription && subscription.status === SubscriptionStatus.CANCELLED) ? `${tier}_no_trial` : tier;
     const plan: PaypalBillingPlans = await this.paypalBillingPlanRepository.finfByTier(checkTier);
@@ -103,7 +105,7 @@ export class SubscriptionUseCase {
       userId: userInfo.id,
       subscriptionId,
       lastPaymentsFetch: new Date(),
-      paymentProcessor: 'PAYPAL',
+      paymentProcessor: PaymentProcessor.PAYPAL,
       planId: planId,
       isTrial,
       status: SubscriptionStatus.APPROVAL_PENDING,
@@ -116,10 +118,10 @@ export class SubscriptionUseCase {
   async cancelUseCase(subscriptionId: string, reason: string, shopId: string, userId: string) {
     const subscription = await this.subscriptionRepository.findByShopId(shopId);
     if (!subscription || subscription.status !== SubscriptionStatus.ACTIVE) {
-      throw new RestError('No active subscription to cancel', 400);
+      throw new RestError(Messages.NONE_SUB_TO_CANCEL, 400);
     }
     if (subscription.subscriptionId !== subscriptionId || subscription.userId !== userId) {
-      throw new RestError('subscription not available', 400);
+      throw new RestError(Messages.SUB_NOT_AVAILABLE, 400);
     }
     await this.paypalService.cancelSubscription(subscriptionId, reason);
     return;
@@ -129,26 +131,26 @@ export class SubscriptionUseCase {
     const userInfo = await this.userRepository.findById(userId);
     const subscription = await this.subscriptionRepository.findByShopId(shopId);
     if (!subscription || subscription.userId !== userId) {
-      throw new RestError(MsgErrSubscription.NONE_SUBSCRIPTION, 404);
+      throw new RestError(Messages.NONE_SUBSCRIPTION, 404);
     }
     if (subscription && subscription.status === SubscriptionStatus.WAITING_SYNC) {
-      throw new RestError(MsgErrSubscription.PLEASE_WAITING_SYNC, 404);
+      throw new RestError(Messages.PLEASE_WAITING_SYNC, 404);
     }
     if (subscription && subscription.status !== SubscriptionStatus.ACTIVE) {
-      throw new RestError(MsgErrSubscription.CHANGE_SUBSCRIPTION, 404);
+      throw new RestError(Messages.CHANGE_SUBSCRIPTION, 404);
     }
     const checkTier = subscription.status === SubscriptionStatus.ACTIVE || !subscription.isTrial ? `${tier}_no_trial` : tier;
     const plan: PaypalBillingPlans = await this.paypalBillingPlanRepository.finfByTier(checkTier);
     if (subscription.planId === plan.planId) {
-      throw new RestError(MsgErrSubscription.PLAN_DUPLICATE, 404);
+      throw new RestError(Messages.PLAN_DUPLICATE, 404);
     }
     const billingAgreement = await this.paypalService.getBillingAgreement(subscription.subscriptionId);
     if (billingAgreement.status !== billingAgreement.status) {
-      throw new RestError(MsgErrSubscription.PLEASE_UPDATE_BILLING, 400);
+      throw new RestError(Messages.PLEASE_UPDATE_BILLING, 400);
     }
     const response = await this.paypalService.changeSubscriptions(plan.planId, subscription.subscriptionId, userInfo.email);
     if (!response || (response && !response.confirmationLink)) {
-      throw new RestError(MsgErrSubscription.CHANGE_SUBSCRIPTION, 400);
+      throw new RestError(Messages.CHANGE_SUBSCRIPTION, 400);
     }
     return response.confirmationLink;
   }
@@ -185,7 +187,7 @@ export class SubscriptionUseCase {
         invoiceTo: billingAgreement.billing_info.next_billing_time || null,
         planType: resultBillingPlans.tier,
         paymentProcessorId: transactionPaypal.id,
-        paymentProcessor: 'PAYPAL',
+        paymentProcessor: PaymentProcessor.PAYPAL,
         subscriptionId: subscription.subscriptionId,
         invoiceStatus: transactionPaypal.status,
         subscriber: billingAgreement.subscriber
@@ -243,7 +245,7 @@ export class SubscriptionUseCase {
           shopId: subscription.shopId,
           userId: subscription.userId,
           lastPaymentsFetch: new Date(),
-          paymentProcessor: 'PAYPAL',
+          paymentProcessor: PaymentProcessor.PAYPAL,
           planId: plan.planId,
           status: SubscriptionStatus.ACTIVE,
           eventType: subscription.planId !== billingAgreement.plan_id ? EventType.CHANGED : EventType.NOMORAL,

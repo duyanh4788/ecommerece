@@ -4,6 +4,7 @@ import { RestError } from '../services/error/error';
 import { ItemsUseCase } from '../usecase/ItemsUseCase';
 import { ProductsUseCase } from '../usecase/ProductsUseCase';
 import { GuestUseCase } from '../usecase/GuestUseCase';
+import { Messages } from '../common/messages';
 export class GuestController {
   constructor(private guestUseCase: GuestUseCase, private itemsUseCase: ItemsUseCase, private productsUseCase: ProductsUseCase) {}
   public getListsItems = async (req: Request, res: Response) => {
@@ -19,11 +20,11 @@ export class GuestController {
     try {
       const { proId } = req.params;
       if (!proId) {
-        throw new RestError('item not available', 404);
+        throw new RestError(Messages.NOT_AVAILABLE, 404);
       }
       const product = await this.productsUseCase.getProductByIdUseCase(proId);
       if (!product) {
-        throw new RestError('item not available', 404);
+        throw new RestError(Messages.NOT_AVAILABLE, 404);
       }
       const { page, pageSize } = req.query;
       const configPage = Number(page) || 1;
@@ -39,7 +40,7 @@ export class GuestController {
     try {
       const { id } = req.params;
       if (!id) {
-        throw new RestError('items not available', 404);
+        throw new RestError(Messages.NOT_AVAILABLE, 404);
       }
       const item = await this.itemsUseCase.getItemsByIdUseCase(id);
       return new SendRespone({ data: item }).send(res);

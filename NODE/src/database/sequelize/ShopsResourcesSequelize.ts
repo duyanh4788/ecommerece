@@ -7,6 +7,7 @@ import { IntegerValue, ShopsResourcesInterface } from '../../interface/ShopsReso
 import { ShopsResourcesModel } from '../model/ShopsResourcesModel';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 import { redisController } from '../../redis/RedisController';
+import { Messages } from '../../common/messages';
 
 export class ShopsResourcesSequelize implements IShopsResourcesRepository {
   async findByShopId(shopId: string): Promise<ShopsResourcesInterface> {
@@ -52,7 +53,7 @@ export class ShopsResourcesSequelize implements IShopsResourcesRepository {
 
   async decretIncre(shopId: string, value: any, type: string, num: number, subscriptionId: string, transactionDb?: Transaction): Promise<void> {
     const resource = await ShopsResourcesModel.findOne({ where: { shopId: deCryptFakeId(shopId) } });
-    if (!resource) throw new RestError('resource not available', 404);
+    if (!resource) throw new RestError(Messages.NOT_AVAILABLE, 404);
     if (type === IntegerValue.DECR) {
       await resource.decrement(value, { by: num, transaction: transactionDb });
     }

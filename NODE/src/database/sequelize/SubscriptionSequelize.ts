@@ -10,6 +10,7 @@ import { ShopsResourcesModel } from '../model/ShopsResourcesModel';
 import { ShopsModel } from '../model/ShopsModel';
 import { redisController } from '../../redis/RedisController';
 import { RedisSubscription } from '../../redis/subscription/RedisSubscription';
+import { Messages } from '../../common/messages';
 
 export class SubscriptionSequelize implements ISubscriptionRepository {
   private INCLUDES: any[] = [
@@ -111,7 +112,7 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
       include: this.INCLUDES
     });
     if (!find) {
-      throw new RestError('subscription not available!', 404);
+      throw new RestError(Messages.NOT_AVAILABLE, 404);
     }
     find.status = SubscriptionStatus.WAITING_SYNC;
     await find.save();

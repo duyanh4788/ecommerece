@@ -8,21 +8,22 @@ import { ramdomAuthCode } from '../utils/ramdomAuthCode';
 import { checkTimerAuthenticator } from '../utils/timer';
 import { Transaction } from 'sequelize';
 import { TokenUserInterface } from '../interface/TokenUserInterface';
+import { Messages } from '../common/messages';
 
 export class UserUseCase {
   constructor(private userRepository: IUserRepository, private tokenUsersRepository: ITokenUsersRepository, private authenticatesCodesRepository: IAuthenticatesCodesRepository) {}
 
   async userSigninUseCase(email: string, password: string) {
     let user: UserAttributes = await this.userRepository.findByEmail(email);
-    if (!user) throw new RestError('account not found!', 404);
-    if (!user.activate) throw new RestError('account is disabled!', 404);
+    if (!user) throw new RestError(Messages.ACC_NOT_FOUND, 404);
+    if (!user.activate) throw new RestError(Messages.ACC_DISABLED, 404);
     const isPassWord = compareSyncPasswordInput(password, user.password);
-    if (!isPassWord) throw new RestError('Password is wrong!', 400);
+    if (!isPassWord) throw new RestError(Messages.PASS_WRONG, 400);
     const { id: userId } = user;
     const keyStoresModel = await this.tokenUsersRepository.findByUserId(userId);
     if (keyStoresModel && keyStoresModel.refreshTokens.length >= 5) {
       await this.tokenUsersRepository.deleteTokenUserByUserId(userId);
-      throw new RestError('you have login 5 devices, please relogin!', 400);
+      throw new RestError(Messages.LOGIN_LIMIT, 400);
     }
     if (keyStoresModel) {
       const tokenPayload = encryptTokenPasswordOutput(user, keyStoresModel);
@@ -36,7 +37,7 @@ export class UserUseCase {
     }
     const { privateKey, publicKey } = genarateKeyPairSync();
     if (!privateKey || !privateKey) {
-      throw new RestError('sign in failed, please relogin!', 404);
+      throw new RestError(Messages.LOGIN_FAILED, 404);
     }
     const tokenPayload = encryptTokenPasswordOutput(user, { privateKey, publicKey });
     const payload: TokenUserInterface = {
@@ -54,7 +55,7 @@ export class UserUseCase {
     const { fullName, email, phone, password } = reqBody;
     const findEmail = await this.userRepository.findByEmail(email);
     if (findEmail) {
-      throw new RestError('email has exits!', 404);
+      throw new RestError(Messages.EMAIL_EXT, 404);
     }
     return await this.userRepository.createUser(fullName, email, hashTokenPasswordInput(password), phone, UserRole.USER);
   }
@@ -66,10 +67,10 @@ export class UserUseCase {
   async getUserByIdUseCase(userId: string) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new RestError('user not found!', 404);
+      throw new RestError(Messages.ACC_NOT_FOUND, 404);
     }
     if (!user.activate) {
-      throw new RestError('user is disabled!', 404);
+      throw new RestError(Messages.ACC_DISABLED, 404);
     }
     delete user.password;
     return user;
@@ -78,10 +79,10 @@ export class UserUseCase {
   async getUserByEmailUseCase(email: string) {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
-      throw new RestError('user not found!', 404);
+      throw new RestError(Messages.ACC_NOT_FOUND, 404);
     }
     if (!user.activate) {
-      throw new RestError('user is disabled!', 404);
+      throw new RestError(Messages.ACC_DISABLED, 404);
     }
     delete user.password;
     return user;
@@ -90,7 +91,7 @@ export class UserUseCase {
   async forgotPasswordUseCase(userId: string) {
     const find = await this.authenticatesCodesRepository.findByUserId(userId);
     if (find) {
-      throw new RestError('we have send authenticator code to email, please checked to email or resend order code!', 404);
+      throw new RestError(Messages.HAS_SEND_AUTH_CODE, 404);
     }
     const authCodes = await this.authenticatesCodesRepository.createAuthCode(userId, ramdomAuthCode(6));
     return authCodes;
@@ -99,11 +100,11 @@ export class UserUseCase {
   async resendForgotPasswordUseCase(userId: string) {
     const find = await this.authenticatesCodesRepository.findByUserId(userId);
     if (!find) {
-      throw new RestError('you can not order reset password!', 404);
+      throw new RestError(Messages.RESEND_FORGOT_PASS_ERR, 404);
     }
     const checkTimes = checkTimerAuthenticator(find.dateTimeCreate);
     if (!checkTimes) {
-      throw new RestError('we have send authenticator code to email, please checked to email or try again after 1 hour!', 404);
+      throw new RestError(Messages.HAS_SEND_OR_TRY_AUTH_CODE, 404);
     }
     const authCode = await this.authenticatesCodesRepository.createAuthCode(userId, ramdomAuthCode(6));
     return authCode;

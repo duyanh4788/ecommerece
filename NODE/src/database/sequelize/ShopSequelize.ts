@@ -12,6 +12,7 @@ import { removeFile } from '../../utils/removeFile';
 import { redisController } from '../../redis/RedisController';
 import { ShopProductsModel } from '../model/ShopProductsModel';
 import { ProductsModel } from '../model/ProductsModel';
+import { Messages, handleMesagePublish, handleMsgWithItemResource } from '../../common/messages';
 
 export class ShopSequelize implements IShopRepository {
   private INCLUDES: any[] = [
@@ -36,16 +37,16 @@ export class ShopSequelize implements IShopRepository {
   async updated(reqBody: ShopInterface, userId: string): Promise<void> {
     const { id, nameShop, productIds, banners, sliders } = reqBody;
     const shop = await ShopsModel.findByPk(deCryptFakeId(id));
-    if (!shop) throw new RestError('shop not availabe!', 404);
-    if (!shop.status) throw new RestError('shop is not active subscription!', 404);
-    if (shop.userId !== deCryptFakeId(userId)) throw new RestError('shop not availabe!', 404);
+    if (!shop) throw new RestError(Messages.NOT_AVAILABLE, 404);
+    if (!shop.status) throw new RestError(Messages.SHOP_NONE_SUBS, 404);
+    if (shop.userId !== deCryptFakeId(userId)) throw new RestError(Messages.NOT_AVAILABLE, 404);
     if (nameShop) {
       shop.nameShop = nameShop;
     }
     if (productIds || productIds.length) {
       const numberPros = productIds.filter((item) => item.status);
       if (numberPros.length > shop.numberProduct) {
-        throw new RestError(`You can only update product with ${shop.numberProduct} number`, 404);
+        throw new RestError(handleMsgWithItemResource(shop.numberProduct));
       }
     }
     if (banners) {
@@ -76,15 +77,15 @@ export class ShopSequelize implements IShopRepository {
     await redisController.publisher(MainkeysRedis.SHOP_ID, {
       userId: enCryptFakeId(shop.userId),
       shopId: enCryptFakeId(shop.id),
-      messages: this.handleMesagePublish(true, Reasons.INVOICES, shop.nameShop)
+      messages: handleMesagePublish(true, Reasons.INVOICES, shop.nameShop)
     });
     return;
   }
 
   async deleted(id: string, userId: string): Promise<void> {
     const shop = await ShopsModel.findByPk(deCryptFakeId(id));
-    if (!shop) throw new RestError('shop not availabe!', 404);
-    if (shop.userId !== deCryptFakeId(userId)) throw new RestError('shop not availabe!', 404);
+    if (!shop) throw new RestError(Messages.NOT_AVAILABLE, 404);
+    if (shop.userId !== deCryptFakeId(userId)) throw new RestError(Messages.NOT_AVAILABLE, 404);
     if (shop.sliders && shop.sliders.length) {
       shop.sliders.forEach((item) => removeFile(item));
     }
@@ -122,7 +123,7 @@ export class ShopSequelize implements IShopRepository {
     if (!shopRedis) {
       const shop = await ShopsModel.findByPk(deCryptFakeId(shopId), { include: this.INCLUDES });
       if (!shop || (!roleId && shop.userId !== deCryptFakeId(userId)) || (roleId && roleId !== UserRole.ADMIN && shop.userId !== deCryptFakeId(userId))) {
-        throw new RestError('shop is not available!', 404);
+        throw new RestError(Messages.NOT_AVAILABLE, 404);
       }
       if (!shop.shopProducts || !shop.shopProducts.length) {
         shopRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(shop) });
@@ -149,7 +150,7 @@ export class ShopSequelize implements IShopRepository {
     await redisController.publisher(MainkeysRedis.SHOP_ID, {
       userId: enCryptFakeId(shop.userId),
       shopId: enCryptFakeId(shop.id),
-      messages: this.handleMesagePublish(status, reasons, shop.nameShop)
+      messages: handleMesagePublish(status, reasons, shop.nameShop)
     });
     return;
   }
@@ -158,18 +159,6 @@ export class ShopSequelize implements IShopRepository {
     await redisController.delRedis(`${MainkeysRedis.SHOPS_USERID}${userId}`);
     if (shopId) {
       await redisController.delRedis(`${MainkeysRedis.SHOP_ID}${shopId}`);
-    }
-  }
-
-  private handleMesagePublish(status: boolean, reasons: string, nameShop: string) {
-    if (status) {
-      if (reasons === Reasons.SUBSCRIPTION) return `Shop ${nameShop} has been active`;
-      if (reasons === Reasons.INVOICES) return `Shop ${nameShop} has been invoices for check on page and email`;
-      if (reasons === Reasons.ADMIN) return `Shop ${nameShop} has been Admin active`;
-    }
-    if (!status) {
-      if (reasons === Reasons.SUBSCRIPTION) return `Shop ${nameShop} has been disable`;
-      if (reasons === Reasons.ADMIN) return `Shop ${nameShop} has been Admin disable`;
     }
   }
 

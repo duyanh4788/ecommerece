@@ -1,6 +1,8 @@
 import rp from 'request-promise';
 import { RestError } from '../error/error';
 import { envConfig } from '../../config/envConfig';
+import { Messages } from '../../common/messages';
+import { PaymentProcessor } from '../../common/variable';
 
 export class PaypalService {
   accessToken: string;
@@ -51,7 +53,7 @@ export class PaypalService {
       const res = await rp(options);
       return res;
     } catch (e) {
-      throw new RestError('can not get information subsciption', 404);
+      throw new RestError(Messages.GET_BILL_ERR, 404);
     }
   }
 
@@ -63,18 +65,7 @@ export class PaypalService {
         subscriber: {
           email_address: emailAddress
         },
-        application_context: {
-          brand_name: 'Ecommerce AnhVu',
-          locale: 'en-US',
-          shipping_preference: 'SET_PROVIDED_ADDRESS',
-          user_action: 'SUBSCRIBE_NOW',
-          payment_method: {
-            payer_selected: 'PAYPAL',
-            payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
-          },
-          return_url: PaypalService.RESPONSE_PAYPAL_SUCCESS,
-          cancel_url: PaypalService.RESPONSE_PAYPAL_CANCEL
-        }
+        application_context: this.applicationContext()
       };
       const options = {
         method: 'POST',
@@ -92,7 +83,7 @@ export class PaypalService {
         confirmationLink: res.links.find((link) => link.rel === 'approve').href
       };
     } catch (error) {
-      throw new RestError('system subscriber bussy, please try again or contact admin!', 404);
+      throw new RestError(Messages.SYS_PAYPAL_BUSY, 404);
     }
   }
 
@@ -111,7 +102,7 @@ export class PaypalService {
       };
       return await rp(options);
     } catch (error) {
-      throw new RestError('You cannot canceled this subscription', 404);
+      throw new RestError(Messages.CANCEL_SUB_ERR, 404);
     }
   }
 
@@ -130,7 +121,7 @@ export class PaypalService {
       };
       return await rp(options);
     } catch (error) {
-      throw new RestError('You cannot suspended this subscription', 404);
+      throw new RestError(Messages.SUSPEND_SUB_ERR, 404);
     }
   }
 
@@ -149,7 +140,7 @@ export class PaypalService {
       };
       return await rp(options);
     } catch (error) {
-      throw new RestError('You cannot activated this subscription', 404);
+      throw new RestError(Messages.ACTIVE_SUB_ERR, 404);
     }
   }
 
@@ -168,7 +159,7 @@ export class PaypalService {
       const response = await rp(options);
       return response;
     } catch (e) {
-      throw new RestError('System bussy, please try again or contact admin', 404);
+      throw new RestError(Messages.SYS_PAYPAL_BUSY, 404);
     }
   }
 
@@ -179,18 +170,7 @@ export class PaypalService {
         subscriber: {
           email_address: emailAddress
         },
-        application_context: {
-          brand_name: 'Ecommerce AnhVu',
-          locale: 'en-US',
-          shipping_preference: 'SET_PROVIDED_ADDRESS',
-          user_action: 'SUBSCRIBE_NOW',
-          payment_method: {
-            payer_selected: 'PAYPAL',
-            payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
-          },
-          return_url: PaypalService.RESPONSE_PAYPAL_SUCCESS,
-          cancel_url: PaypalService.RESPONSE_PAYPAL_CANCEL
-        }
+        application_context: this.applicationContext()
       };
       await this.getAccessToken();
       const options = {
@@ -208,7 +188,7 @@ export class PaypalService {
         confirmationLink: res.links.find((link) => link.rel === 'approve').href
       };
     } catch (e) {
-      throw new RestError('System bussy, please try again or contact admin', 404);
+      throw new RestError(Messages.SYS_PAYPAL_BUSY, 404);
     }
   }
 
@@ -268,5 +248,20 @@ export class PaypalService {
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  private applicationContext() {
+    return {
+      brand_name: 'Ecommerce AnhVu',
+      locale: 'en-US',
+      shipping_preference: 'SET_PROVIDED_ADDRESS',
+      user_action: 'SUBSCRIBE_NOW',
+      payment_method: {
+        payer_selected: PaymentProcessor.PAYPAL,
+        payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
+      },
+      return_url: PaypalService.RESPONSE_PAYPAL_SUCCESS,
+      cancel_url: PaypalService.RESPONSE_PAYPAL_CANCEL
+    };
   }
 }

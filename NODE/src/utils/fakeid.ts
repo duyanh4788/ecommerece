@@ -1,4 +1,5 @@
-import { SECRETKEY_FAKEID } from '../common/common.constants';
+import { Messages } from '../common/messages';
+import { SECRETKEY_FAKEID } from '../common/variable';
 import { RestError } from '../services/error/error';
 
 export const enCryptFakeId = (value: number) => {
@@ -24,6 +25,6 @@ export const deCryptFakeId = (id: string) => {
     const decryptedValue = parseInt(decryptedBuffer.toString(), 10);
     return decryptedValue;
   } catch (error) {
-    throw new RestError('id not available!', 404);
+    throw new RestError(Messages.NOT_AVAILABLE, 404);
   }
 };

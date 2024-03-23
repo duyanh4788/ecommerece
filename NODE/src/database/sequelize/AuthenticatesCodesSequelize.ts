@@ -7,6 +7,7 @@ import { AuthenticatesCodesModel } from '../model/AuthenticatesCodesModel';
 import { RestError } from '../../services/error/error';
 import { redisController } from '../../redis/RedisController';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { Messages } from '../../common/messages';
 
 export class AuthenticatesCodesSequelize implements IAuthenticatesCodesRepository {
   async createAuthCode(userId: string, authCode: string, transactionDb?: Transaction): Promise<AuthenticatesCodesInterface> {
@@ -46,7 +47,7 @@ export class AuthenticatesCodesSequelize implements IAuthenticatesCodesRepositor
 
   async deleteAuthCodeByUserId(userId: string, authCode: string, transactionDb: Transaction): Promise<void> {
     const auths = await AuthenticatesCodesModel.findOne({ where: { userId: deCryptFakeId(userId) } });
-    if (!auths || auths.authCode !== authCode) throw new RestError('code invalid!', 404);
+    if (!auths || auths.authCode !== authCode) throw new RestError(Messages.CODE_INVALID, 404);
     await auths.destroy({ transaction: transactionDb });
     await redisController.delRedis(`${MainkeysRedis.AUTH_CODE}${authCode}`);
     await redisController.delRedis(`${MainkeysRedis.AUTH_USERID}${userId}`);

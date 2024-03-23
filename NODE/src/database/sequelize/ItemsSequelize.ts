@@ -13,6 +13,7 @@ import { EntityFunituresModel } from '../model/EAV/EntityFunituresModel';
 import { parseEntityValues } from '../../utils/parseEntityValues';
 import { removeFile } from '../../utils/removeFile';
 import { ShopsModel } from '../model/ShopsModel';
+import { Messages } from '../../common/messages';
 
 export class ItemsSequelize implements IItemsRepository {
   private INCLUED = [{ model: EntityClothersModel }, { model: EntityCosmesticsModel }, { model: EntityElectronicsModel }, { model: EntityFunituresModel }];
@@ -80,7 +81,7 @@ export class ItemsSequelize implements IItemsRepository {
     const { id, nameItem, itemThumb, description, brandName, origin, prices, quantityStock } = payload;
     const item = await ItemsModel.findByPk(deCryptFakeId(id));
     if (!item) {
-      throw new RestError('item not available', 404);
+      throw new RestError(Messages.NOT_AVAILABLE, 404);
     }
     item.nameItem = nameItem ?? item.nameItem;
     item.itemThumb = itemThumb ?? item.itemThumb;
@@ -106,12 +107,12 @@ export class ItemsSequelize implements IItemsRepository {
   async deletedItems(id: string, transactionDB?: Transaction): Promise<void> {
     const item = await ItemsModel.findByPk(deCryptFakeId(id));
     if (!item) {
-      throw new RestError('item not available', 404);
+      throw new RestError(Messages.NOT_AVAILABLE, 404);
     }
     await item.destroy({ transaction: transactionDB });
     const entiry = await EntityValuesModel.findOne({ where: { itemId: item.id } });
     if (!entiry) {
-      throw new RestError('item not available', 404);
+      throw new RestError(Messages.NOT_AVAILABLE, 404);
     }
     if (item.itemThumb && item.itemThumb.length) {
       item.itemThumb.forEach((item) => removeFile(item));

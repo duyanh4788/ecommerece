@@ -8,7 +8,7 @@ import fs from 'fs';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import { RequestLimitMiddleware } from '../middlewares/requestlimit/RequestLimitMiddleware';
-import { SECRETKEY_SESSION } from '../common/common.constants';
+import { SECRETKEY_SESSION } from '../common/variable';
 import { envConfig } from '../config/envConfig';
 
 const sessionOptions: SessionOptions = {

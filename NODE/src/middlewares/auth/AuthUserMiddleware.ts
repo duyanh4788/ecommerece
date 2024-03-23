@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { TypeOfValue, isCheckedTypeValues } from '../../utils/validate';
 import { SendRespone } from '../../services/success/success';
+import { Messages } from '../../common/messages';
+import { StatusRes } from '../../common/variable';
 
 export class AuthUserMiddleware {
   constructor() {}
@@ -14,16 +16,16 @@ export class AuthUserMiddleware {
       (phone && !isCheckedTypeValues(phone, TypeOfValue.NUMBER))
     ) {
       return new SendRespone({
-        status: 'error',
+        status: StatusRes.ERROR,
         code: 404,
-        message: 'Please input full information!'
+        message: Messages.PAYLOAD_AVAILABLE
       }).send(res);
     }
     if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
       return new SendRespone({
-        status: 'error',
+        status: StatusRes.ERROR,
         code: 404,
-        message: 'Please input correct type email!'
+        message: Messages.PAYLOAD_AVAILABLE
       }).send(res);
     }
     next();
@@ -32,7 +34,7 @@ export class AuthUserMiddleware {
   public async validateSignIn(req: Request, res: Response, next: NextFunction) {
     const { email, password } = req.body;
     if (!isCheckedTypeValues(email, TypeOfValue.STRING) || !isCheckedTypeValues(password, TypeOfValue.STRING)) {
-      return new SendRespone({ status: 'error', code: 404, message: 'Please input full information!' }).send(res);
+      return new SendRespone({ status: StatusRes.ERROR, code: 404, message: Messages.PAYLOAD_AVAILABLE }).send(res);
     }
     next();
   }
@@ -46,7 +48,7 @@ export class AuthUserMiddleware {
       (avatar && !isCheckedTypeValues(avatar, TypeOfValue.STRING)) ||
       (password && !isCheckedTypeValues(password, TypeOfValue.STRING))
     ) {
-      return new SendRespone({ status: 'error', code: 404, message: 'Please input full information!' }).send(res);
+      return new SendRespone({ status: StatusRes.ERROR, code: 404, message: Messages.PAYLOAD_AVAILABLE }).send(res);
     }
     next();
   }

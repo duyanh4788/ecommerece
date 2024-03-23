@@ -1,3 +1,4 @@
+import { Messages, handleMsgEmptyWithField, handleMsgNotAvalidWithField } from '../../common/messages';
 import { ProductsSequelize } from '../../database/sequelize/ProductsSequelize';
 import { ShopSequelize } from '../../database/sequelize/ShopSequelize';
 import { ShopsResourcesSequelize } from '../../database/sequelize/ShopsResourcesSequelize';
@@ -17,88 +18,88 @@ export class ItemRequest {
 
   async validateObject(userId: string, items: ItemsInterface, payloadEntity: PayloadEntity, typeCheck: boolean): Promise<[ItemsInterface, PayloadEntity]> {
     if (!isCheckedTypeValues(items, TypeOfValue.OBJECT) || !isCheckedTypeValues(payloadEntity, TypeOfValue.OBJECT)) {
-      throw new RestError('payload not available', 404);
+      throw new RestError(Messages.PAYLOAD_AVAILABLE, 404);
     }
     const { id, shopId, productId, nameItem, itemThumb, description, prices, quantityStock, brandName, origin } = items;
     if (id && !isCheckedTypeValues(id, TypeOfValue.STRING)) {
-      throw new RestError('Payload not available', 404);
+      throw new RestError(Messages.PAYLOAD_AVAILABLE, 404);
     }
 
     if (!isCheckedTypeValues(shopId, TypeOfValue.STRING)) {
-      throw new RestError('Shop not available', 404);
+      throw new RestError(Messages.NOT_AVAILABLE, 404);
     }
 
     if (!isCheckedTypeValues(productId, TypeOfValue.STRING)) {
-      throw new RestError('Product not available', 404);
+      throw new RestError(Messages.NOT_AVAILABLE, 404);
     }
 
     if (payloadEntity.id && !isCheckedTypeValues(payloadEntity.id, TypeOfValue.STRING)) {
-      throw new RestError('item not available 1', 404);
+      throw new RestError(Messages.NOT_AVAILABLE, 404);
     }
 
     if (payloadEntity.entityId && !isCheckedTypeValues(payloadEntity.entityId, TypeOfValue.STRING)) {
-      throw new RestError('item not available', 404);
+      throw new RestError(Messages.NOT_AVAILABLE, 404);
     }
 
     if (nameItem && !isCheckedTypeValues(nameItem, TypeOfValue.STRING)) {
-      throw new RestError('Name not Empty', 404);
+      throw new RestError(handleMsgEmptyWithField('name item'), 404);
     }
 
     if (itemThumb && !isCheckedTypeValues(itemThumb, TypeOfValue.ARRAY, false)) {
-      throw new RestError('Images thumb not Empty', 404);
+      throw new RestError(handleMsgEmptyWithField('Images thumb'), 404);
     }
 
     if (description && !isCheckedTypeValues(description, TypeOfValue.STRING)) {
-      throw new RestError('Description not Empty', 404);
+      throw new RestError(handleMsgEmptyWithField('Description'), 404);
     }
 
     if (prices && !isCheckedTypeValues(prices, TypeOfValue.NUMBER)) {
-      throw new RestError('Prices not Empty', 404);
+      throw new RestError(handleMsgEmptyWithField('Prices'), 404);
     }
 
     if (prices && prices > 10000) {
-      throw new RestError('Prices not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Prices'), 404);
     }
 
     if (quantityStock && !isCheckedTypeValues(quantityStock, TypeOfValue.NUMBER)) {
-      throw new RestError('Number sotck not Empty', 404);
+      throw new RestError(handleMsgEmptyWithField('Number sotck'), 404);
     }
 
     if (quantityStock && quantityStock > 10000) {
-      throw new RestError('Number sotck not available', 404);
+      throw new RestError(Messages.NOT_AVAILABLE, 404);
     }
 
     if (brandName && !isCheckedTypeValues(brandName, TypeOfValue.STRING)) {
-      throw new RestError('Brand Name not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Brand Name'), 404);
     }
 
     if (origin && !isCheckedTypeValues(origin, TypeOfValue.STRING)) {
-      throw new RestError('Origin Name not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Origin Name'), 404);
     }
     const shops = await this.shopRepository.getShopById(shopId, userId);
     if (!shops || shops.userId !== userId) {
-      throw new RestError('shop is not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Shop'), 404);
     }
     const subs = await this.subscriptionRepository.findByShopId(shopId);
     if (!subs || subs.status !== SubscriptionStatus.ACTIVE) {
-      throw new RestError('shop is not subscription', 404);
+      throw new RestError(Messages.SHOP_NONE_SUBS, 404);
     }
     if (typeCheck) {
       const shopResource = await this.shopsResourcesRepository.findByShopId(shopId);
       if (!shopResource) {
-        throw new RestError('shop is not subscription', 404);
+        throw new RestError(Messages.SHOP_NONE_SUBS, 404);
       }
       if (shopResource.numberItem <= 0) {
-        throw new RestError('Item is zero, please upgrade subscription or waiting next payment!', 404);
+        throw new RestError(Messages.ITEM_RESOURCE_END, 404);
       }
     }
     const isCheckProduct = shops.products.find((item) => item.id === productId);
     if (!isCheckProduct) {
-      throw new RestError('Product not registed', 404);
+      throw new RestError(Messages.PROD_NONE_REG, 404);
     }
     const findProduct = await this.productsRepository.getProductById(productId);
     if (!findProduct) {
-      throw new RestError('Product not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Product'), 404);
     }
     const typeProduct = findProduct.nameProduct.toUpperCase();
 
@@ -130,27 +131,27 @@ export class ItemRequest {
     const { color, storage, screenSize, weight, technology, warranty } = payloadEntity as EntityElectronicsInterface;
 
     if (color && !isCheckedTypeValues(color, TypeOfValue.STRING)) {
-      throw new RestError('Color not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Color'), 404);
     }
 
     if (storage && !isCheckedTypeValues(storage, TypeOfValue.STRING)) {
-      throw new RestError('Storage not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Storage'), 404);
     }
 
     if (screenSize && !isCheckedTypeValues(screenSize, TypeOfValue.STRING)) {
-      throw new RestError('Screen size not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Screen'), 404);
     }
 
     if (weight && !isCheckedTypeValues(weight, TypeOfValue.STRING)) {
-      throw new RestError('Weight not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Weight'), 404);
     }
 
     if (technology && !isCheckedTypeValues(technology, TypeOfValue.STRING)) {
-      throw new RestError('Technology not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Technology'), 404);
     }
 
     if (warranty && !isCheckedTypeValues(warranty, TypeOfValue.BOOLEAN)) {
-      throw new RestError('Warranty not empty', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Warranty'), 404);
     }
   }
 
@@ -158,19 +159,19 @@ export class ItemRequest {
     const { color, material, size, styleList } = payloadEntity as EntityClothesIntersface;
 
     if (color && !isCheckedTypeValues(color, TypeOfValue.STRING)) {
-      throw new RestError('Color not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Color'), 404);
     }
 
     if (material && !isCheckedTypeValues(material, TypeOfValue.STRING)) {
-      throw new RestError('Material not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Material'), 404);
     }
 
     if (size && !isCheckedTypeValues(size, TypeOfValue.STRING)) {
-      throw new RestError('Size not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Size'), 404);
     }
 
     if (styleList && !isCheckedTypeValues(styleList, TypeOfValue.STRING)) {
-      throw new RestError('Style list not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Style'), 404);
     }
   }
 
@@ -178,19 +179,19 @@ export class ItemRequest {
     const { volume, weight, activesIngredients, expiry } = payloadEntity as EntityCosmeticsInterface;
 
     if (volume && !isCheckedTypeValues(volume, TypeOfValue.STRING)) {
-      throw new RestError('Volume not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Volume'), 404);
     }
 
     if (weight && !isCheckedTypeValues(weight, TypeOfValue.STRING)) {
-      throw new RestError('Weight not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Weight'), 404);
     }
 
     if (activesIngredients && !isCheckedTypeValues(activesIngredients, TypeOfValue.STRING)) {
-      throw new RestError('Actives ingredients not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Actives'), 404);
     }
 
     if (expiry && !isCheckedTypeValues(expiry, TypeOfValue.STRING)) {
-      throw new RestError('Expiry list not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Expiry'), 404);
     }
   }
 
@@ -198,23 +199,23 @@ export class ItemRequest {
     const { size, material, manufactury, funtion, warranty } = payloadEntity as EntityFunituresInterface;
 
     if (size && !isCheckedTypeValues(size, TypeOfValue.STRING)) {
-      throw new RestError('Size not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Size'), 404);
     }
 
     if (material && !isCheckedTypeValues(material, TypeOfValue.STRING)) {
-      throw new RestError('Material not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Material'), 404);
     }
 
     if (manufactury && !isCheckedTypeValues(manufactury, TypeOfValue.STRING)) {
-      throw new RestError('Manufactury not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Manufactury'), 404);
     }
 
     if (funtion && !isCheckedTypeValues(funtion, TypeOfValue.STRING)) {
-      throw new RestError('Funtion not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Funtion'), 404);
     }
 
     if (warranty && !isCheckedTypeValues(warranty, TypeOfValue.BOOLEAN)) {
-      throw new RestError('Warranty not available', 404);
+      throw new RestError(handleMsgNotAvalidWithField('Warranty'), 404);
     }
   }
 }

@@ -7,6 +7,7 @@ import { ItemsModel } from '../model/ItemsModel';
 import { ItemsInterface } from '../../interface/ItemsInterface';
 import { redisController } from '../../redis/RedisController';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { Messages } from '../../common/messages';
 
 export class ProductsSequelize implements IProductsRepository {
   private ATTRIBUTES: string[] = ['id', 'nameProduct', 'avatar'];
@@ -18,7 +19,7 @@ export class ProductsSequelize implements IProductsRepository {
   async updated(reqBody: ProductsInterface): Promise<void> {
     const { id, nameProduct, status, avatar } = reqBody;
     const find = await ProductsModel.findByPk(deCryptFakeId(id));
-    if (!find) throw new RestError('product not availabe!', 404);
+    if (!find) throw new RestError(Messages.NOT_AVAILABLE, 404);
     if (nameProduct) {
       find.nameProduct = nameProduct;
     }

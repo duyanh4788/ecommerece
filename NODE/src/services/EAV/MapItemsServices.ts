@@ -1,6 +1,7 @@
 import { Model, ModelCtor } from 'sequelize';
 import { ItemsType, MapItemsType } from '../../interface/ItemsInterface';
 import { RestError } from '../error/error';
+import { Messages } from '../../common/messages';
 
 export class MapItemsServices {
   private mapServices: Map<string, any>;
@@ -23,7 +24,7 @@ export class MapItemsServices {
 
   private hasType(type: ItemsType) {
     if (!this.mapServices.has(type)) {
-      throw new RestError('Unsupported items', 404);
+      throw new RestError(Messages.MAP_ITEMS_ERR, 404);
     }
   }
 }

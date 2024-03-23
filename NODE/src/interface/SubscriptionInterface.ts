@@ -103,13 +103,3 @@ export interface RequestEmail {
   amountBreakdown: any;
   emailUser: string;
 }
-
-export const MsgErrSubscription = {
-  ALLREADY_ACTIVE: 'User is already ACTIVE!',
-  NONE_SUBSCRIPTION: 'you can not subscription!',
-  SUBSCRIPTION_SUSPENDED: 'Your payment for at least one previous billing cycle failed, please check your Paypal account!',
-  CHANGE_SUBSCRIPTION: 'You can not change subscription, please contact admin!',
-  PLAN_DUPLICATE: 'Please chose orther plan!',
-  PLEASE_UPDATE_BILLING: 'Please refresh this page to get the latest Subscription!',
-  PLEASE_WAITING_SYNC: 'Please waiting system sync with Paypal!'
-};

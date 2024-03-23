@@ -4,11 +4,12 @@ import { RestError } from '../services/error/error';
 import { TypeOfValue, isCheckedTypeValues } from '../utils/validate';
 import { removeFile } from '../utils/removeFile';
 import { envConfig } from '../config/envConfig';
+import { Messages } from '../common/messages';
 export class Uploadcontroller {
   public uploadFile = async (req: Request, res: Response) => {
     try {
       if (!req.files.length) {
-        throw new RestError('upload failed.', 404);
+        throw new RestError(Messages.UPLOAD_FAILD, 404);
       }
       const fileList = req.files as Express.Multer.File[];
       let url: string[] = [];
@@ -22,7 +23,7 @@ export class Uploadcontroller {
           }
         })
       );
-      return new SendRespone({ data: url, message: 'upload successfullly.' }).send(res);
+      return new SendRespone({ data: url, message: Messages.UPLOAD_OK }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
@@ -32,14 +33,14 @@ export class Uploadcontroller {
     try {
       const { idImage } = req.body;
       if (!idImage || !idImage.length) {
-        throw new RestError('invalid request!', 404);
+        throw new RestError(Messages.IN_REQ, 404);
       }
       if (isCheckedTypeValues(idImage, TypeOfValue.ARRAY)) {
         idImage.forEach((item) => removeFile(item));
       } else if (isCheckedTypeValues(idImage, TypeOfValue.STRING)) {
         removeFile(idImage);
       }
-      return new SendRespone({ message: 'remove successfullly.' }).send(res);
+      return new SendRespone({ message: Messages.DEL_FILE_OK }).send(res);
     } catch (error) {
       return RestError.manageServerError(res, error, false);
     }
