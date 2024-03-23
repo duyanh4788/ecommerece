@@ -4,7 +4,7 @@ export enum MainkeysRedis {
   AUTH_CODE = 'auth_code:',
   USER_ID = 'user:',
   // ***IMPORTANT*** //
-  SHOPS_BY_USERID = 'shops_by_userid:',
+  SHOPS_BY_ID = 'shop_by_id:',
   SUBS_USERID = 'subs_userid:',
   SUBS_BY_SHOP = 'sub_by_shop:',
   SUBS_ID = 'subs_subid:',

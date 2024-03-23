@@ -71,39 +71,50 @@ class RedisController {
       clearTimeout(this.connectTimeOut);
     }
   }
-
+  // SET
   async getRedis(keyValue: string) {
     const result = await this.client.get(keyValue);
     return JSON.parse(result as any);
   }
-
   async setRedis({ keyValue, value }: RedisModel) {
     await this.client.set(keyValue, JSON.stringify(value));
     const result = await this.client.get(keyValue);
     return JSON.parse(result as any);
   }
-
   async delRedis(keyValue: string) {
     return await this.client.del(keyValue);
   }
-
+  // HSET
   async getAllHasRedis(hasKey: string) {
     const result = await this.client.hGetAll(hasKey);
     if (!Object.keys(result).length) return;
     return Object.values(result).map((item) => JSON.parse(item));
   }
-
   async getHasRedis({ hasKey, key }: RedisCache) {
     const result = await this.client.hGet(hasKey, key);
     return JSON.parse(result as any);
   }
-
   async setHasRedis({ hasKey, key, values }: RedisCache) {
     return await this.client.hSet(hasKey, key, JSON.stringify(values));
   }
-
   async delHashRedis({ hasKey, key }: RedisCache) {
     return await this.client.hDel(hasKey, key);
+  }
+  // SETS
+  async saddMembersRedis(keyValue: string, value: any) {
+    if (!value) return;
+    return await this.client.sAdd(keyValue, value);
+  }
+  async sMembersRedis(keyValue: string): Promise<any[]> {
+    return await this.client.sMembers(keyValue);
+  }
+  async sRemMembersRedis(keyValue: string, value: any) {
+    if (!value) return;
+    return await this.client.sRem(keyValue, value);
+  }
+  async sisMembersRedis(keyValue: string, id: any) {
+    if (!id) return;
+    return await this.client.sIsMember(keyValue, id);
   }
 
   async setNXRedis({ keyValue, value }: RedisModel) {
@@ -111,35 +122,17 @@ class RedisController {
     const result = await this.client.get(keyValue);
     return JSON.parse(result as any);
   }
-
   async setExpire(keyValue: string, timer: number) {
     await this.client.expire(keyValue, timer);
     return;
   }
-
   async checkExistsKey(keyValue: string) {
     const result = await this.client.exists(keyValue);
     return JSON.parse(result as any);
   }
-
   async setIncreaseRedis(keyValue: any, value: any) {
     const result = await this.client.incrBy(keyValue, value);
     return JSON.parse(result as any);
-  }
-
-  async saddMembers(keyValue: any, value: any) {
-    if (!value.id) return;
-    return await this.client.sAdd(keyValue, value.id);
-  }
-
-  async sRemMembers(keyValue: any, value: any) {
-    if (!value.id) return;
-    return await this.client.sRem(keyValue, value.id);
-  }
-
-  async sisMembers(keyValue: any, id: any) {
-    if (!id) return;
-    return await this.client.sIsMember(keyValue, id);
   }
 
   async publisher(channelName: string, value: any) {

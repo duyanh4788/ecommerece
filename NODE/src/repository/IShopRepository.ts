@@ -8,7 +8,7 @@ export interface IShopRepository {
 
   updatedSliders(sliders: string[], id: string, userId: string): Promise<void>;
 
-  updatedNumberResourceSubs(payload: ShopInterface, transactionDB: Transaction): Promise<void>;
+  updatedNumberProductItem(payload: ShopInterface, transactionDB: Transaction): Promise<void>;
 
   deleted(id: string, userId: string): Promise<void>;
 

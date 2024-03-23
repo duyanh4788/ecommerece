@@ -10,7 +10,6 @@ import { capitalizeFirstLetter } from '../utils/accents';
 import { IShopRepository } from '../repository/IShopRepository';
 import { Reasons, ShopInterface } from '../interface/ShopInterface';
 import { IShopsResourcesRepository } from '../repository/IShopsResourcesRepository';
-import { ShopsResourcesInterface } from '../interface/ShopsResourcesInterface';
 import { IPaypalBillingPlanRepository } from '../repository/IPaypalBillingPlanRepository';
 import { IUserRepository } from '../repository/IUserRepository';
 import { Messages } from '../common/messages';
@@ -193,13 +192,12 @@ export class SubscriptionUseCase {
       if (subscription.eventType === EventType.CHANGED) {
         payload = { ...payload, numberProduct: plan.numberProduct };
       }
-      await this.createSubscriptionResource(payload, transactionDB);
       await this.updatedNumberResourceShop(payload, transactionDB);
-      await this.createInvoiceToSendEmail(billingAgreement, transactionPaypal, userInfor, invoicesCreated, subscription.shops.nameShop);
+      await this.sendInvoiceToEmail(billingAgreement, transactionPaypal, userInfor, invoicesCreated, subscription.shops.nameShop);
     }
   }
 
-  private async createInvoiceToSendEmail(billingAgreement: any, transactionPaypal: any, userInfor: UserAttributes, invoices: Invoices, nameShop: string) {
+  private async sendInvoiceToEmail(billingAgreement: any, transactionPaypal: any, userInfor: UserAttributes, invoices: Invoices, nameShop: string) {
     const taxRate = invoices.gst > 0 ? '10%' : '0';
     const addressLine1 =
       billingAgreement.subscriber && billingAgreement.subscriber.shipping_address && billingAgreement.subscriber.shipping_address.address
@@ -254,9 +252,9 @@ export class SubscriptionUseCase {
             shopId: subscription.shopId,
             userId: subscription.userId,
             numberProduct: plan.numberProduct,
-            numberItem: plan.numberItem
+            numberItem: plan.numberItem,
+            status: SubscriptionStatus.ACTIVE
           };
-          await this.createSubscriptionResource(payload, transactionDB);
           await this.updatedNumberResourceShop(payload, transactionDB);
         }
       }
@@ -287,11 +285,8 @@ export class SubscriptionUseCase {
     return;
   }
 
-  private async createSubscriptionResource(payload: ShopsResourcesInterface, transactionDB: Transaction) {
-    await this.shopsResourcesRepository.create(payload, transactionDB);
-  }
-
   private async updatedNumberResourceShop(payload: ShopInterface, transactionDB: Transaction) {
-    await this.shopRepository.updatedNumberResourceSubs(payload, transactionDB);
+    await this.shopsResourcesRepository.create(payload, transactionDB);
+    await this.shopRepository.updatedNumberProductItem(payload, transactionDB);
   }
 }

@@ -24,7 +24,7 @@ export class WebSocket {
 
   public async sendMessageConsumber(message: string, channel: string) {
     const response = JSON.parse(message);
-    const isMember = await redisController.sisMembers(MainkeysRedis.SOCKET_BY_USER, response.userId);
+    const isMember = await redisController.sisMembersRedis(MainkeysRedis.SOCKET_BY_USER, response.userId);
     if (!isMember) return;
     const socket = this.userSocketMap[response.userId];
     if (!socket) return;
@@ -53,9 +53,9 @@ export class WebSocket {
   private async addMemberConnections(connections: Connections) {
     switch (connections.type) {
       case TYPE_CONNECTION_SOCKET.SHOP:
-        return await redisController.saddMembers(MainkeysRedis.SOCKET_BY_SHOP, connections);
+        return await redisController.saddMembersRedis(MainkeysRedis.SOCKET_BY_SHOP, connections.id);
       case TYPE_CONNECTION_SOCKET.USER:
-        return await redisController.saddMembers(MainkeysRedis.SOCKET_BY_USER, connections);
+        return await redisController.saddMembersRedis(MainkeysRedis.SOCKET_BY_USER, connections.id);
       default:
         break;
     }
@@ -64,10 +64,9 @@ export class WebSocket {
   private async dellMemberConnections(connections: Connections) {
     switch (connections.type) {
       case TYPE_CONNECTION_SOCKET.SHOP:
-        return await redisController.sRemMembers(MainkeysRedis.SOCKET_BY_SHOP, connections);
+        return await redisController.sRemMembersRedis(MainkeysRedis.SOCKET_BY_SHOP, connections.id);
       case TYPE_CONNECTION_SOCKET.USER:
-        await redisController.delRedis(`${MainkeysRedis.SOCKET_BY_USER}${connections.id}`);
-        return await redisController.sRemMembers(MainkeysRedis.SOCKET_BY_USER, connections);
+        return await redisController.sRemMembersRedis(MainkeysRedis.SOCKET_BY_USER, connections.id);
       default:
         break;
     }
