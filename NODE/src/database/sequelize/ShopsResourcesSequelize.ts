@@ -1,7 +1,6 @@
 import { Transaction } from 'sequelize';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
 import { RestError } from '../../services/error/error';
-import { RedisSubscription } from '../../redis/subscription/RedisSubscription';
 import { IShopsResourcesRepository } from '../../repository/IShopsResourcesRepository';
 import { IntegerValue, ShopsResourcesInterface } from '../../interface/ShopsResourcesInterface';
 import { ShopsResourcesModel } from '../model/ShopsResourcesModel';
@@ -32,7 +31,7 @@ export class ShopsResourcesSequelize implements IShopsResourcesRepository {
     return shopResourceRedis;
   }
 
-  async create(reqBody: ShopsResourcesInterface, subscriptionId: string, transactionDB?: Transaction): Promise<ShopsResourcesInterface> {
+  async create(reqBody: ShopsResourcesInterface, transactionDB?: Transaction): Promise<ShopsResourcesInterface> {
     const { shopId, numberProduct, numberItem } = reqBody;
     const [resource, created] = await ShopsResourcesModel.findOrCreate({
       where: { shopId: deCryptFakeId(shopId) },
@@ -47,11 +46,11 @@ export class ShopsResourcesSequelize implements IShopsResourcesRepository {
       }
       await resource.save({ transaction: transactionDB });
     }
-    await this.handleDelRedis(resource.id, shopId, subscriptionId);
+    await this.handleSetRedis(resource);
     return this.transformModelToEntity(resource);
   }
 
-  async decretIncre(shopId: string, value: any, type: string, num: number, subscriptionId: string, transactionDb?: Transaction): Promise<void> {
+  async decretIncre(shopId: string, value: any, type: string, num: number, transactionDb?: Transaction): Promise<void> {
     const resource = await ShopsResourcesModel.findOne({ where: { shopId: deCryptFakeId(shopId) } });
     if (!resource) throw new RestError(Messages.NOT_AVAILABLE, 404);
     if (type === IntegerValue.DECR) {
@@ -60,13 +59,14 @@ export class ShopsResourcesSequelize implements IShopsResourcesRepository {
     if (type === IntegerValue.INCR) {
       await resource.increment(value, { by: num, transaction: transactionDb });
     }
-    await this.handleDelRedis(resource.id, shopId, subscriptionId);
+    await this.handleSetRedis(resource);
     return;
   }
 
-  private async handleDelRedis(id: number, shopId: string, subscriptionId: string) {
-    await RedisSubscription.delSubscriptionRedis(shopId, subscriptionId);
-    await RedisSubscription.delResourceRedis(shopId, id);
+  private async handleSetRedis(shopsResources: ShopsResourcesModel) {
+    const entityShopResource = this.transformModelToEntity(shopsResources);
+    await redisController.setRedis({ keyValue: `${MainkeysRedis.SHOP_RESOURCE_SHOPID}${entityShopResource.shopId}`, value: entityShopResource });
+    await redisController.setRedis({ keyValue: `${MainkeysRedis.SHOP_RESOURCE_ID}${entityShopResource.id}`, value: entityShopResource });
   }
 
   /**

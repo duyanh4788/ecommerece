@@ -5,25 +5,26 @@ import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
 import { InvoicesModel } from '../model/InvoicesModel';
 import { redisController } from '../../redis/RedisController';
 import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { Reasons } from '../../interface/ShopInterface';
+import { handleMesagePublish } from '../../common/messages';
 
 export class InvoicesSequelize implements IInvoicesRepository {
   async findAllInvoices(): Promise<Invoices[]> {
-    let invRedis = await redisController.getRedis(MainkeysRedis.ADMIN_INV);
-    if (!invRedis) {
-      const invoicesModels = await InvoicesModel.findAll();
-      if (!invoicesModels.length) return [];
-      invRedis = await redisController.setRedis({ keyValue: MainkeysRedis.ADMIN_INV, value: invoicesModels.map((item) => this.transformModelToEntity(item)) });
-    }
-    return invRedis;
+    const invoicesModels = await InvoicesModel.findAll();
+    return invoicesModels.map((item) => this.transformModelToEntity(item));
   }
 
   async findByShopId(shopId: string): Promise<Invoices[]> {
-    const key = `${MainkeysRedis.INVS_ID}${shopId}`;
-    let invsRedis = await redisController.getRedis(key);
+    const hasKey = `${MainkeysRedis.INVOICES_BY_SHOP}${shopId}`;
+    let invsRedis = await redisController.getAllHasRedis(hasKey);
     if (!invsRedis) {
       const invoicesModels = await InvoicesModel.findAll({ where: { shopId: deCryptFakeId(shopId) } });
       if (!invoicesModels.length) return [];
-      invsRedis = await redisController.setRedis({ keyValue: key, value: invoicesModels.map((item) => this.transformModelToEntity(item)) });
+      invsRedis = invoicesModels.map(async (item) => {
+        const newItem = this.transformModelToEntity(item);
+        await redisController.setHasRedis({ hasKey, key: newItem.id, values: item });
+        return item;
+      });
     }
     return invsRedis;
   }
@@ -33,13 +34,21 @@ export class InvoicesSequelize implements IInvoicesRepository {
     return this.transformModelToEntity(invoice);
   }
 
-  async create(reqBody: Invoices, transactionDB?: Transaction): Promise<Invoices> {
+  async create(reqBody: Invoices, nameShop: string, transactionDB?: Transaction): Promise<Invoices> {
     const { shopId, userId, paidAt, amount, currency, gst, renewsDate, totalAmount, invoiceFrom, invoiceTo, planType, paymentProcessorId, paymentProcessor } = reqBody;
     const invoice = await InvoicesModel.create(
       { shopId: deCryptFakeId(shopId), userId: deCryptFakeId(userId), paidAt, amount, currency, gst, renewsDate, totalAmount, invoiceFrom, invoiceTo, planType, paymentProcessorId, paymentProcessor },
       { transaction: transactionDB }
     );
-    return this.transformModelToEntity(invoice);
+    const hasKey = `${MainkeysRedis.INVOICES_BY_SHOP}${shopId}`;
+    const entityInv = this.transformModelToEntity(invoice);
+    await redisController.setHasRedis({ hasKey, key: entityInv.id, values: entityInv });
+    await redisController.publisher(MainkeysRedis.CHANNLE_SHOP, {
+      userId,
+      shopId,
+      messages: handleMesagePublish(true, Reasons.INVOICES, nameShop)
+    });
+    return entityInv;
   }
 
   /**

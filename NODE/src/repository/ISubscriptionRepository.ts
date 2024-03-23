@@ -6,8 +6,6 @@ export interface ISubscriptionRepository {
 
   findByShopId(shopId: string): Promise<Subscription>;
 
-  findByUserId(userId: string): Promise<Subscription[]>;
-
   findBySubscriptionId(subscriptionId: string): Promise<Subscription>;
 
   createOrUpdate(reqBody: Subscription, transactionDB: Transaction): Promise<Subscription>;

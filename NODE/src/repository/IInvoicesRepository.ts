@@ -8,5 +8,5 @@ export interface IInvoicesRepository {
 
   findByPaymentProcessorId(paymentProcessorId: string): Promise<Invoices>;
 
-  create(reqBody: Invoices, transactionDB?: Transaction): Promise<Invoices>;
+  create(reqBody: Invoices, nameShop: string, transactionDB?: Transaction): Promise<Invoices>;
 }

@@ -20,7 +20,7 @@ export class ItemsUseCase {
   }
 
   async createdItemsUseCase(payload: ItemsInterface, payloadEntity: PayloadEntity, transactionDB?: Transaction) {
-    await this.shopsResourcesRepository.decretIncre(payload.shopId, TypeDecInc.NUMBER_ITEM, IntegerValue.DECR, 1, payload.subscriptionId, transactionDB);
+    await this.shopsResourcesRepository.decretIncre(payload.shopId, TypeDecInc.NUMBER_ITEM, IntegerValue.DECR, 1, transactionDB);
     return await this.itemsRepository.createdItems(payload, payloadEntity, transactionDB);
   }
 

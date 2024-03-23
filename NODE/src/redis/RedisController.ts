@@ -87,6 +87,12 @@ class RedisController {
     return await this.client.del(keyValue);
   }
 
+  async getAllHasRedis(hasKey: string) {
+    const result = await this.client.hGetAll(hasKey);
+    if (!Object.keys(result).length) return;
+    return Object.values(result).map((item) => JSON.parse(item));
+  }
+
   async getHasRedis({ hasKey, key }: RedisCache) {
     const result = await this.client.hGet(hasKey, key);
     return JSON.parse(result as any);
@@ -96,8 +102,8 @@ class RedisController {
     return await this.client.hSet(hasKey, key, JSON.stringify(values));
   }
 
-  async clearHashRedis(key: string) {
-    return await this.client.del(JSON.stringify(key));
+  async delHashRedis({ hasKey, key }: RedisCache) {
+    return await this.client.hDel(hasKey, key);
   }
 
   async setNXRedis({ keyValue, value }: RedisModel) {

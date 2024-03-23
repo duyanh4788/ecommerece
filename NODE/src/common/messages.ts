@@ -72,7 +72,7 @@ export const handleMsgWithItemResource = (field: number) => {
   return `You can only update the product with ${field} items.`;
 };
 
-export const handleMessagePublish = (status: boolean, reasons: string, nameShop: string) => {
+export const handleMesagePublish = (status: boolean, reasons: string, nameShop: string) => {
   if (status) {
     if (reasons === Reasons.SUBSCRIPTION) return `Shop ${nameShop} has been activated.`;
     if (reasons === Reasons.INVOICES) return `Shop ${nameShop} invoices have been checked on the page and emailed.`;

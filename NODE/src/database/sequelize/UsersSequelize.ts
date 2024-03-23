@@ -35,12 +35,15 @@ export class UserSequelize implements IUserRepository {
 
   async createUser(fullName: string, email: string, password: string, phone: string, roleId: UserRole, transactionDb?: Transaction): Promise<UserAttributes> {
     const user = await UsersModel.create({ fullName, email, password, phone, roleId }, transactionDb && { transaction: transactionDb });
+    await this.setUserRedis(user);
     return this.transformModelToEntity(user);
   }
 
   async updatePasswordByUserId(userId: string, newPassWord: string, email: string, transactionDb: Transaction): Promise<void> {
-    await UsersModel.update({ password: newPassWord }, { where: { id: deCryptFakeId(userId) }, transaction: transactionDb });
-    await redisController.delRedis(email);
+    const user = await UsersModel.findByPk(deCryptFakeId(userId));
+    user.password = newPassWord;
+    await user.save({ transaction: transactionDb });
+    await this.setUserRedis(user);
     return;
   }
 
@@ -64,9 +67,14 @@ export class UserSequelize implements IUserRepository {
     }
 
     await user.save();
-    await redisController.delRedis(user.email);
-    await redisController.delRedis(`${MainkeysRedis.USER_ID}${userId}`);
+    await this.setUserRedis(user);
     return;
+  }
+
+  private async setUserRedis(user: UsersModel) {
+    const userEntity = this.transformModelToEntity(user);
+    await redisController.setRedis({ keyValue: user.email, value: userEntity });
+    await redisController.setRedis({ keyValue: `${MainkeysRedis.USER_ID}${userEntity.id}`, value: userEntity });
   }
 
   /**

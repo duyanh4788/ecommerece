@@ -9,7 +9,6 @@ import { MainkeysRedis } from '../../interface/KeyRedisInterface';
 import { ShopsResourcesModel } from '../model/ShopsResourcesModel';
 import { ShopsModel } from '../model/ShopsModel';
 import { redisController } from '../../redis/RedisController';
-import { RedisSubscription } from '../../redis/subscription/RedisSubscription';
 import { Messages } from '../../common/messages';
 
 export class SubscriptionSequelize implements ISubscriptionRepository {
@@ -20,36 +19,19 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
   ];
 
   async findAll(): Promise<Subscription[]> {
-    let subsRedis = await redisController.getRedis(MainkeysRedis.ADMIN_SUBS);
-    if (!subsRedis) {
-      const subs = await SubscriptionModel.findAll();
-      if (!subs.length) return [];
-      subsRedis = await redisController.setRedis({ keyValue: MainkeysRedis.ADMIN_SUBS, value: subs });
-    }
-    return subsRedis;
+    const subs = await SubscriptionModel.findAll();
+    return subs.map((item) => this.transformModelToEntity(item));
   }
 
   async findByShopId(shopId: string): Promise<Subscription> {
-    const key = `${MainkeysRedis.SUBS_SHOPID}${shopId}`;
-    let subRedis = await redisController.getRedis(key);
+    const keyValue = `${MainkeysRedis.SUBS_BY_SHOP}${shopId}`;
+    let subRedis = await redisController.getRedis(keyValue);
     if (!subRedis) {
       const subModel = await SubscriptionModel.findByPk(deCryptFakeId(shopId), { include: this.INCLUDES });
       if (!subModel) return;
-      subRedis = await redisController.setRedis({ keyValue: key, value: this.transformModelToEntity(subModel) });
-    }
-    return subRedis;
-  }
-
-  async findByUserId(userId: string): Promise<Subscription[]> {
-    const key = `${MainkeysRedis.SUBS_USERID}${userId}`;
-    let subRedis = await redisController.getRedis(key);
-    if (!subRedis) {
-      const subModel = await SubscriptionModel.findAll({
-        where: { userId: deCryptFakeId(userId) },
-        include: this.INCLUDES
-      });
-      if (!subModel.length) return;
-      subRedis = await redisController.setRedis({ keyValue: key, value: subModel.map((item) => this.transformModelToEntity(item)) });
+      const entitySubscription = this.transformModelToEntity(subModel);
+      await redisController.setRedis({ keyValue, value: entitySubscription });
+      return entitySubscription;
     }
     return subRedis;
   }
@@ -102,7 +84,7 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
       }
     }
     const result = this.transformModelToEntity(subs);
-    await RedisSubscription.delSubscriptionRedis(result.shopId, result.subscriptionId, result.userId);
+    await this.setSubscriptionRedis(result);
     return result;
   }
 
@@ -117,8 +99,13 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
     find.status = SubscriptionStatus.WAITING_SYNC;
     await find.save();
     const result = this.transformModelToEntity(find);
-    await RedisSubscription.delSubscriptionRedis(result.shopId, result.subscriptionId, result.userId);
+    await this.setSubscriptionRedis(result);
     return;
+  }
+
+  private async setSubscriptionRedis(subscription: Subscription) {
+    await redisController.setRedis({ keyValue: `${MainkeysRedis.SUBS_BY_SHOP}${subscription.shopId}`, value: subscription });
+    await redisController.setRedis({ keyValue: `${MainkeysRedis.SUBS_ID}${subscription.subscriptionId}`, value: subscription });
   }
 
   /**

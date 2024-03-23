@@ -4,7 +4,7 @@ export const SECRETKEY_FAKEID = 'AVBE_j8_KjsKPnwenqxCC4eA';
 export enum TypeHeader {
   AUTHORIZATION = 'authorization',
   REFRESH_TOKEN = 'refreshtoken',
-  CLIENT_ID = 'Client_Id',
+  CLIENT_ID = 'client_id',
   JSON_TOKEN = 'JsonWebTokenError',
   JSON_EXP = 'TokenExpiredError'
 }

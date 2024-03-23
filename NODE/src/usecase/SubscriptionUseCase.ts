@@ -55,10 +55,6 @@ export class SubscriptionUseCase {
     return await this.subscriptionRepository.findBySubscriptionId(subscriptionId);
   }
 
-  async createdInvoicesdUseCase(reqBody: Invoices, transactionDB?: Transaction) {
-    return this.invoicesRepository.create(reqBody, transactionDB);
-  }
-
   async subscriberUseCase(tier: string, shopId: string, userId: string, transactionDB: Transaction) {
     const subscription = await this.subscriptionRepository.findByShopId(shopId);
     const user = await this.userRepository.findById(userId);
@@ -192,12 +188,12 @@ export class SubscriptionUseCase {
         invoiceStatus: transactionPaypal.status,
         subscriber: billingAgreement.subscriber
       };
-      const invoicesCreated = await this.invoicesRepository.create(invoice, transactionDB);
+      const invoicesCreated = await this.invoicesRepository.create(invoice, subscription.shops.nameShop, transactionDB);
       let payload: any = { shopId: subscription.shopId, userId: subscription.userId, numberItem: plan.numberItem };
       if (subscription.eventType === EventType.CHANGED) {
         payload = { ...payload, numberProduct: plan.numberProduct };
       }
-      await this.createUserResource(payload, subscription.subscriptionId, transactionDB);
+      await this.createSubscriptionResource(payload, transactionDB);
       await this.updatedNumberResourceShop(payload, transactionDB);
       await this.createInvoiceToSendEmail(billingAgreement, transactionPaypal, userInfor, invoicesCreated, subscription.shops.nameShop);
     }
@@ -260,7 +256,7 @@ export class SubscriptionUseCase {
             numberProduct: plan.numberProduct,
             numberItem: plan.numberItem
           };
-          await this.createUserResource(payload, subscription.subscriptionId, transactionDB);
+          await this.createSubscriptionResource(payload, transactionDB);
           await this.updatedNumberResourceShop(payload, transactionDB);
         }
       }
@@ -291,8 +287,8 @@ export class SubscriptionUseCase {
     return;
   }
 
-  private async createUserResource(payload: ShopsResourcesInterface, subscriptionId: string, transactionDB: Transaction) {
-    await this.shopsResourcesRepository.create(payload, subscriptionId, transactionDB);
+  private async createSubscriptionResource(payload: ShopsResourcesInterface, transactionDB: Transaction) {
+    await this.shopsResourcesRepository.create(payload, transactionDB);
   }
 
   private async updatedNumberResourceShop(payload: ShopInterface, transactionDB: Transaction) {

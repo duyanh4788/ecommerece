@@ -58,8 +58,8 @@ export class PaypalService {
   }
 
   async subscribeToBillingPlan(paypalPlanId: string, emailAddress: string): Promise<any> {
-    await this.getAccessToken();
     try {
+      await this.getAccessToken();
       const payload = {
         plan_id: paypalPlanId,
         subscriber: {
@@ -234,7 +234,7 @@ export class PaypalService {
     try {
       await this.getAccessToken();
       const options = {
-        method: MethodAPI.GET,
+        method: MethodAPI.POST,
         url: `${PaypalService.PAYPAL_ENDPOINT}/notifications/verify-webhook-signature`,
         json: true,
         body: payload,
