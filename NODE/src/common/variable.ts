@@ -17,3 +17,11 @@ export enum StatusRes {
 export enum PaymentProcessor {
   PAYPAL = 'PAYPAL'
 }
+
+export enum MethodAPI {
+  POST = 'POST',
+  PUT = 'PUT',
+  GET = 'GET',
+  PATCH = 'PATCH',
+  DELETE = 'DELETE'
+}

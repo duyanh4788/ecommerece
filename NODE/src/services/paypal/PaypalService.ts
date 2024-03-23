@@ -2,7 +2,7 @@ import rp from 'request-promise';
 import { RestError } from '../error/error';
 import { envConfig } from '../../config/envConfig';
 import { Messages } from '../../common/messages';
-import { PaymentProcessor } from '../../common/variable';
+import { MethodAPI, PaymentProcessor } from '../../common/variable';
 
 export class PaypalService {
   accessToken: string;
@@ -11,7 +11,7 @@ export class PaypalService {
   static TIME_BUFFER = 60000; // if token expires in 1 min, get new one to avoid unauthorised access
   static RESPONSE_PAYPAL_SUCCESS = envConfig.SERVER_URL + '/api/v1/subscriptions/response-success';
   static RESPONSE_PAYPAL_CANCEL = envConfig.FE_URL + '/home';
-  static PAYPAL_ENDPOINT = 'https://api-m.sandbox.paypal.com/v1';
+  static PAYPAL_ENDPOINT = envConfig.PAYPAL_ENDPOINT;
   constructor() {
     this.accessToken = null;
     this.expiresAt = new Date();
@@ -23,7 +23,7 @@ export class PaypalService {
       const secret = envConfig.PAYPAL_CLIENT_SECRET;
       const auth = `Basic ${Buffer.from(clientId + ':' + secret).toString('base64')}`;
       const options = {
-        method: 'POST',
+        method: MethodAPI.POST,
         url: `${PaypalService.PAYPAL_ENDPOINT}/oauth2/token`,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -41,7 +41,7 @@ export class PaypalService {
   async getBillingAgreement(billingAgreementId: string): Promise<any> {
     await this.getAccessToken();
     const options = {
-      method: 'GET',
+      method: MethodAPI.GET,
       url: `${PaypalService.PAYPAL_ENDPOINT}/billing/subscriptions/${billingAgreementId}`,
       headers: {
         'content-type': 'application/x-www-form-urlencoded',
@@ -68,7 +68,7 @@ export class PaypalService {
         application_context: this.applicationContext()
       };
       const options = {
-        method: 'POST',
+        method: MethodAPI.POST,
         url: `${PaypalService.PAYPAL_ENDPOINT}/billing/subscriptions`,
         headers: {
           'content-type': 'application/json',
@@ -91,7 +91,7 @@ export class PaypalService {
     try {
       await this.getAccessToken();
       const options = {
-        method: 'POST',
+        method: MethodAPI.POST,
         url: `${PaypalService.PAYPAL_ENDPOINT}/billing/subscriptions/${subscriptionId}/cancel`,
         headers: {
           'content-type': 'application/json',
@@ -110,7 +110,7 @@ export class PaypalService {
     try {
       await this.getAccessToken();
       const options = {
-        method: 'POST',
+        method: MethodAPI.POST,
         url: `${PaypalService.PAYPAL_ENDPOINT}/billing/subscriptions/${subscriptionId}/suspend`,
         headers: {
           'content-type': 'application/json',
@@ -129,7 +129,7 @@ export class PaypalService {
     try {
       await this.getAccessToken();
       const options = {
-        method: 'POST',
+        method: MethodAPI.POST,
         url: `${PaypalService.PAYPAL_ENDPOINT}/billing/subscriptions/${subscriptionId}/activate`,
         headers: {
           'content-type': 'application/json',
@@ -148,7 +148,7 @@ export class PaypalService {
     await this.getAccessToken();
     try {
       var options = {
-        method: 'GET',
+        method: MethodAPI.GET,
         url: `${PaypalService.PAYPAL_ENDPOINT}/billing/subscriptions/${paypalSubscriptionId}/transactions?start_time=${startTime.toISOString()}&end_time=${endTime.toISOString()}`,
         headers: {
           'content-type': 'application/x-www-form-urlencoded',
@@ -174,7 +174,7 @@ export class PaypalService {
       };
       await this.getAccessToken();
       const options = {
-        method: 'POST',
+        method: MethodAPI.POST,
         url: `${PaypalService.PAYPAL_ENDPOINT}/billing/subscriptions/${subscriptionId}/revise`,
         headers: {
           'content-type': 'application/json',
@@ -196,7 +196,7 @@ export class PaypalService {
     try {
       await this.getAccessToken();
       const options = {
-        method: 'GET',
+        method: MethodAPI.GET,
         url: `${PaypalService.PAYPAL_ENDPOINT}/notifications/webhooks/${webhook_id}`,
         headers: {
           'content-type': 'application/x-www-form-urlencoded',
@@ -215,7 +215,7 @@ export class PaypalService {
     try {
       await this.getAccessToken();
       const options = {
-        method: 'GET',
+        method: MethodAPI.GET,
         url: `${PaypalService.PAYPAL_ENDPOINT}/notifications/webhooks-events/${event_id}`,
         headers: {
           'content-type': 'application/x-www-form-urlencoded',
@@ -234,7 +234,7 @@ export class PaypalService {
     try {
       await this.getAccessToken();
       const options = {
-        method: 'POST',
+        method: MethodAPI.GET,
         url: `${PaypalService.PAYPAL_ENDPOINT}/notifications/verify-webhook-signature`,
         json: true,
         body: payload,
@@ -252,7 +252,7 @@ export class PaypalService {
 
   private applicationContext() {
     return {
-      brand_name: 'Ecommerce AnhVu',
+      brand_name: envConfig.APP_NAME,
       locale: 'en-US',
       shipping_preference: 'SET_PROVIDED_ADDRESS',
       user_action: 'SUBSCRIBE_NOW',

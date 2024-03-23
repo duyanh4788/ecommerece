@@ -1,4 +1,5 @@
 export const envConfig = {
+  APP_NAME: process.env.APP_NAME,
   APP_ENV: process.env.APP_ENV,
   APP_PORT: process.env.APP_PORT,
   SERVER_URL: process.env.SERVER_URL,
@@ -18,6 +19,7 @@ export const envConfig = {
   PAYPAL_WEBHOOK_ID: process.env.PAYPAL_WEBHOOK_ID,
   PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID,
   PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET,
+  PAYPAL_ENDPOINT: process.env.PAYPAL_ENDPOINT,
   // DBS
   DB_HOST: process.env.DB_HOST,
   DB_USERNAME: process.env.DB_USERNAME,
