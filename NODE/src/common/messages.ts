@@ -24,7 +24,7 @@ export enum Messages {
   SUSPEND_SUB_ERR = 'Failed to suspend this subscription.',
   ACTIVE_SUB_ERR = 'Failed to activate this subscription.',
   SHOP_NEED_SUBS = 'You need to subscribe to the previous shop before registering a new one. Please subscribe via PayPal.',
-  SHOP_HAS_SUBS = 'You need to subscribe to the previous shop before registering a new one. Please subscribe via PayPal.',
+  SHOP_HAS_SUBS = 'Oops! You have been subscribed on Paypal to this Shop, so you can not delete it.',
   ALREADY_ACTIVE = 'User is already active!',
   NONE_SUBSCRIPTION = 'Cannot subscribe!',
   SUBSCRIPTION_SUSPENDED = 'Your payment for at least one previous billing cycle failed. Please check your PayPal account.',
@@ -68,18 +68,18 @@ export const handleMsgNotValidWithField = (field: string) => {
   return `${field} is not available.`;
 };
 
-export const handleMsgWithItemResource = (field: number) => {
-  return `You can only update the product with ${field} items.`;
+export const handleMsgWithItemResource = (quanity: number) => {
+  return `You can only update the product with ${quanity} items.`;
 };
 
 export const handleMesagePublish = (status: boolean, reasons: string, nameShop: string) => {
   if (status) {
-    if (reasons === Reasons.SUBSCRIPTION) return `Shop ${nameShop} has been activated.`;
-    if (reasons === Reasons.INVOICES) return `Shop ${nameShop} invoices have been checked on the page and emailed.`;
-    if (reasons === Reasons.ADMIN) return `Shop ${nameShop} has been activated as an admin.`;
+    if (reasons === Reasons.SUBSCRIPTION) return `The Shop ${nameShop} has been activated.`;
+    if (reasons === Reasons.INVOICES) return `The Invoice for Shop ${nameShop} has been, please check on your page and email`;
+    if (reasons === Reasons.ADMIN) return `The Shop ${nameShop} has been activated by admin.`;
   }
   if (!status) {
-    if (reasons === Reasons.SUBSCRIPTION) return `Shop ${nameShop} has been disabled.`;
-    if (reasons === Reasons.ADMIN) return `Shop ${nameShop} has been disabled as an admin.`;
+    if (reasons === Reasons.SUBSCRIPTION) return `We're sory! The Shop ${nameShop} has been disabled.`;
+    if (reasons === Reasons.ADMIN) return `We're sory! The Shop ${nameShop} has been disabled as an admin.`;
   }
 };
