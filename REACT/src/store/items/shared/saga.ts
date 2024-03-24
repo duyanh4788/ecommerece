@@ -12,6 +12,7 @@ export function* createdItem(api, action) {
     const data = yield configResponse(resPonse);
     const newData = yield configListItems(TypeSaga.CREATED, data.data);
     const dataSuccess = { ...data, data: newData };
+    console.log(dataSuccess);
     yield put(actions.createdItemSuccess(dataSuccess));
   } catch (error) {
     yield put(actions.createdItemFail(configResponseError(error)));
@@ -107,7 +108,7 @@ export function* ItemSaga() {
 
 function* configListItems(type: string, data: ItemsInterface) {
   const listItems = yield select(state => state.item.listItems);
-  if (!listItems || !listItems.items?.length) return;
+  if (!listItems) return;
   if (type === TypeSaga.CREATED) {
     const result = [{ ...data, isAdd: true }, ...listItems.items];
     return { ...listItems, items: result, total: listItems.total + 1, typeSaga: TypeSaga.CREATED };

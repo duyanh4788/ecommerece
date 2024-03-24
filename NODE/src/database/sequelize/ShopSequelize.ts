@@ -56,8 +56,8 @@ export class ShopSequelize implements IShopRepository {
       shop.sliders = sliders;
     }
     await shop.save();
-    const hasKey = `${MainkeysRedis.SHOPS_BY_ID}${userId}`;
-    await redisController.delHashRedis({ hasKey, key: id });
+    const keyValue = `${MainkeysRedis.SHOPS_BY_ID}${id}`;
+    await redisController.delRedis(keyValue);
     return;
   }
 

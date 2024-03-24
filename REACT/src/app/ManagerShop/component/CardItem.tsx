@@ -59,6 +59,7 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
   const [items, setItems] = useState<ItemsInterface[]>([]);
   const [addItem, setAddItem] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<boolean>(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [itemCurrent, setItemCurrent] = useState<ItemsInterface | null>(null);
   const [alignment, setAlignment] = useState<string | null>(null);
   const [togge, setTogge] = useState<string>('ALL');
@@ -162,9 +163,13 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
     });
   }, [items, editItem]);
 
-  const handleTogge = (value: string) => {
-    if (togge === value || (togge === 'ALL' && value === '')) return;
+  const handleTogge = (value: string, idx?: number) => {
+    if (togge === value || (togge === 'ALL' && value === '')) {
+      setSelectedIndex(0);
+      return;
+    }
     setItems([]);
+    setSelectedIndex(idx || 0);
     dispatch(
       ItemSlice.actions.getListsItems({
         id: shopInfor?.id,
@@ -219,7 +224,7 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
                 <ToggleButton
                   key={idx}
                   value={item.id}
-                  onClick={e => handleTogge(item.nameProduct?.toUpperCase() as string)}
+                  onClick={e => handleTogge(item.nameProduct?.toUpperCase() as string, idx)}
                   sx={toge2}>
                   {item.nameProduct}
                 </ToggleButton>
@@ -261,6 +266,7 @@ export const CardItem = ({ shopInfor, resetDataRefItems }: Props) => {
         <CardAddUpdateItem
           handleResetAddUpdate={handleResetData}
           resetDataRefItems={resetDataRefItems}
+          productIndex={selectedIndex}
           modeDev={modeDev}
         />
       ) : null}
