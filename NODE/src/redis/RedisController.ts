@@ -1,8 +1,9 @@
 import * as redis from 'redis';
 import * as util from 'util';
 import { envConfig } from '../config/envConfig';
-import { MainkeysRedis } from '../interface/KeyRedisInterface';
+import { MainkeysRedis, PayloadPushlisher, PayloadSubcriber } from '../interface/KeyRedisInterface';
 import { webSocket } from '../server';
+import { handleMesagePublish } from '../common/messages';
 
 interface RedisCache {
   hasKey: string;
@@ -146,6 +147,18 @@ class RedisController {
     await subscriber.subscribe(channelName, (message: string, channel: string) => {
       webSocket.sendMessageConsumber(message, channel);
     });
+  }
+
+  async handlePublisherSocket({ userId, shopId, type, status, nameShop }: PayloadPushlisher) {
+    setTimeout(async () => {
+      const payloadSubcriber: PayloadSubcriber = {
+        userId,
+        shopId,
+        type,
+        messages: handleMesagePublish(status, type, nameShop)
+      };
+      await this.publisher(MainkeysRedis.CHANNLE_SHOP, payloadSubcriber);
+    }, 5000);
   }
 }
 export const redisController = new RedisController();

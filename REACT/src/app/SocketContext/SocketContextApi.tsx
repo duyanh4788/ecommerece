@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { useInjectSlicesAndSagas } from 'store/core/map/mapServices';
 import { Socket, io } from 'socket.io-client';
-import { SOCKET_COMMIT } from 'commom/socket_commit';
+import { TypePushlisher, ResponseNotify, SOCKET_COMMIT, TYPE_SOCKET } from 'commom/socket_commit';
 import { CONFIG_ENV } from 'utils/config';
 import * as _ from 'lodash';
 import { toast } from 'react-toastify';
@@ -31,8 +31,8 @@ export const SocketContextProvider = ({ children }) => {
         },
       });
 
-      const connectionUser = { type: 'USER', id: userInfor.userId };
-      const connectionShop = { type: 'SHOP', id: shopId };
+      const connectionUser = { type: TYPE_SOCKET.USER, id: userInfor.userId };
+      const connectionShop = { type: TYPE_SOCKET.SHOP, id: shopId };
 
       const handleBeforeUnload = () => {
         socket.current.emit(SOCKET_COMMIT.DISCONNECTED, connectionUser);
@@ -43,11 +43,9 @@ export const SocketContextProvider = ({ children }) => {
       socket.current.emit(SOCKET_COMMIT.JOIN_ROOM, connectionUser);
       socket.current.emit(SOCKET_COMMIT.JOIN_ROOM, connectionShop);
 
-      socket.current.on(SOCKET_COMMIT.SEND_MESSAGE_NOTIFY, (response: any) => {
+      socket.current.on(SOCKET_COMMIT.SEND_MESSAGE_NOTIFY, (response: ResponseNotify) => {
         if (!response || !response.messages || !response.shopId) return;
-        dispatch(ShopSlice.actions.getShopById(response.shopId));
-        dispatch(SubscriptionSlice.actions.shopGetSubscription(response.shopId));
-        dispatch(SubscriptionSlice.actions.shopGetInvoices(response.shopId));
+        handleCalAPIResponse(response);
         return toast.success(response.messages);
       });
       return () => {
@@ -57,6 +55,24 @@ export const SocketContextProvider = ({ children }) => {
       };
     }
   }, [PORT_SOCKET, userInfor]);
+
+  const handleCalAPIResponse = (response: ResponseNotify) => {
+    switch (response.type) {
+      case TypePushlisher.SUBSCRIPTION || TypePushlisher.ADMIN:
+        dispatch(ShopSlice.actions.getListsShop());
+        dispatch(ShopSlice.actions.getShopById(response.shopId));
+        dispatch(SubscriptionSlice.actions.shopGetSubscription(response.shopId));
+        break;
+      case TypePushlisher.INVOICES:
+        dispatch(SubscriptionSlice.actions.shopGetInvoices(response.shopId));
+        break;
+      case TypePushlisher.WAIT_SUBSCRIPTION:
+        dispatch(SubscriptionSlice.actions.shopGetSubscription(response.shopId));
+        break;
+      default:
+        break;
+    }
+  };
 
   return <SocketContext.Provider value={{}}>{children}</SocketContext.Provider>;
 };

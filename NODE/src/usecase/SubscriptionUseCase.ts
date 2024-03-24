@@ -8,12 +8,13 @@ import { RestError } from '../services/error/error';
 import { nodeMailerServices } from '../services/nodemailer/MailServices';
 import { capitalizeFirstLetter } from '../utils/accents';
 import { IShopRepository } from '../repository/IShopRepository';
-import { Reasons, ShopInterface } from '../interface/ShopInterface';
+import { ShopInterface } from '../interface/ShopInterface';
 import { IShopsResourcesRepository } from '../repository/IShopsResourcesRepository';
 import { IPaypalBillingPlanRepository } from '../repository/IPaypalBillingPlanRepository';
 import { IUserRepository } from '../repository/IUserRepository';
 import { Messages } from '../common/messages';
 import { PaymentProcessor } from '../common/variable';
+import { TypePushlisher } from '../interface/KeyRedisInterface';
 
 export class SubscriptionUseCase {
   constructor(
@@ -246,14 +247,14 @@ export class SubscriptionUseCase {
           isTrial: findTrial ? true : false
         };
         await this.subscriptionRepository.createOrUpdate(payloadSubs, transactionDB);
-        await this.shopRepository.updateStatusShopById(subscription.shopId, true, Reasons.SUBSCRIPTION, transactionDB);
+        await this.shopRepository.updateStatusShopById(subscription.shopId, true, TypePushlisher.SUBSCRIPTION, transactionDB);
         if (subscription.status === SubscriptionStatus.WAITING_SYNC && findTrial) {
           const payload: any = {
             shopId: subscription.shopId,
             userId: subscription.userId,
             numberProduct: plan.numberProduct,
             numberItem: plan.numberItem,
-            status: SubscriptionStatus.ACTIVE
+            status: true
           };
           await this.updatedNumberResourceShop(payload, transactionDB);
         }
@@ -272,7 +273,7 @@ export class SubscriptionUseCase {
         status: billingAgreement.status,
         isTrial: false
       };
-      await this.shopRepository.updateStatusShopById(subscription.shopId, false, Reasons.SUBSCRIPTION, transactionDB);
+      await this.shopRepository.updateStatusShopById(subscription.shopId, false, TypePushlisher.SUBSCRIPTION, transactionDB);
       await this.subscriptionRepository.createOrUpdate(payload, transactionDB);
       const userInfor = await this.userRepository.findById(subscription.userId);
       if (billingAgreement.status === SubscriptionStatus.CANCELLED) {

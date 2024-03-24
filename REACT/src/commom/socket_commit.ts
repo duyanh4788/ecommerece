@@ -23,3 +23,17 @@ export interface Connections {
   id: string;
   index: number;
 }
+
+export enum TypePushlisher {
+  SUBSCRIPTION = 'SUBSCRIPTION',
+  WAIT_SUBSCRIPTION = 'WAIT_SUBSCRIPTION',
+  INVOICES = 'INVOICES',
+  ADMIN = 'ADMIN',
+}
+
+export interface ResponseNotify {
+  userId: string;
+  shopId: string;
+  messages: string;
+  type: TypePushlisher;
+}

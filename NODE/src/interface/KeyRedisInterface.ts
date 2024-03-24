@@ -27,3 +27,26 @@ export enum MainkeysRedis {
   ADMIN_SHOP_ID = 'admin_shop_id:',
   ADMIN_SHOPS = 'admin_shops:'
 }
+
+export enum TypePushlisher {
+  SUBSCRIPTION = 'SUBSCRIPTION',
+  WAIT_SUBSCRIPTION = 'WAIT_SUBSCRIPTION',
+  INVOICES = 'INVOICES',
+  ADMIN = 'ADMIN'
+}
+
+export interface PayloadPushlisher {
+  userId: string;
+  shopId: string;
+  type: string;
+  status: boolean;
+  nameShop: string;
+  channel: string;
+}
+
+export interface PayloadSubcriber {
+  userId: string;
+  shopId: string;
+  type: string;
+  messages: string;
+}

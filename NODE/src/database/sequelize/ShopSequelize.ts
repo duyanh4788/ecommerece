@@ -5,7 +5,7 @@ import { ShopsModel } from '../model/ShopsModel';
 import { RestError } from '../../services/error/error';
 import { UsersModel } from '../model/UsersModel';
 import { UserRole } from '../../interface/UserInterface';
-import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { MainkeysRedis, PayloadPushlisher, TypePushlisher } from '../../interface/KeyRedisInterface';
 import { Transaction } from 'sequelize';
 import { SubscriptionModel } from '../model/SubscriptionModel';
 import { removeFile } from '../../utils/removeFile';
@@ -88,12 +88,17 @@ export class ShopSequelize implements IShopRepository {
     if (!shop) return;
     shop.status = status;
     await shop.save(transactionDB && { transaction: transactionDB });
-    const payloadMsg = {
+
+    const payloadPushlisher: PayloadPushlisher = {
       userId: enCryptFakeId(shop.userId),
       shopId,
-      messages: handleMesagePublish(status, reasons, shop.nameShop)
+      type: reasons,
+      status,
+      nameShop: shop.nameShop,
+      channel: MainkeysRedis.CHANNLE_SHOP
     };
-    await redisController.publisher(MainkeysRedis.CHANNLE_SHOP, payloadMsg);
+    await redisController.handlePublisherSocket(payloadPushlisher);
+
     await this.handleSetRedisShop(shop);
     return;
   }

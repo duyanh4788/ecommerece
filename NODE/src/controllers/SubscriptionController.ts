@@ -117,7 +117,7 @@ export class SubscriptionController {
       const searchParams = new URLSearchParams(url.search);
       const subscriptionId = searchParams.get('subscription_id');
       await this.subscriptionUseCase.responseSuccessUseCase(subscriptionId);
-      return new SendRespone({ data: envConfig.FE_URL + '/profile?notification=' + encodeURIComponent(Messages.WAIT_SYNC_PAYPAL) }).redirect(res);
+      return new SendRespone({ data: envConfig.FE_URL + '/profile' }).redirect(res);
     } catch (error) {
       return new SendRespone({ data: envConfig.FE_URL }).redirect(res);
     }

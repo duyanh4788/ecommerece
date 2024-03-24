@@ -13,27 +13,13 @@ import { Loading } from 'commom/loading';
 import { CardProfile } from '../component/CardProfile';
 import { CardListShops } from '../component/CardListShops';
 import { BG_MAIN_1 } from 'commom/common.contants';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 export const Profile = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
-  const navigate = useNavigate();
   const loadingAuth = useSelector(AuthSelector.selectLoading);
   const loadingShop = useSelector(ShopSelector.selectLoading);
   const resetDataRefProfile = useRef<boolean | null>(false);
   const resetDataRefListShop = useRef<boolean | null>(false);
-
-  useEffect(() => {
-    function initUrl(url) {
-      const { pathname, search } = url;
-      if (!search.includes('notification')) return;
-      const decode = decodeURIComponent(search).replaceAll('%20', ' ');
-      toast.success(decode.split('=')[1]);
-      navigate(pathname, { replace: true });
-    }
-    initUrl(location);
-  }, [location]);
 
   useEffect(() => {
     dispatch(ShopSlice.actions.getListsShop());

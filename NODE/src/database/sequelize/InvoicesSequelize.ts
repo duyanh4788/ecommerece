@@ -4,8 +4,7 @@ import { IInvoicesRepository } from '../../repository/IInvoicesRepository';
 import { deCryptFakeId, enCryptFakeId } from '../../utils/fakeid';
 import { InvoicesModel } from '../model/InvoicesModel';
 import { redisController } from '../../redis/RedisController';
-import { MainkeysRedis } from '../../interface/KeyRedisInterface';
-import { Reasons } from '../../interface/ShopInterface';
+import { MainkeysRedis, PayloadPushlisher, TypePushlisher } from '../../interface/KeyRedisInterface';
 import { handleMesagePublish } from '../../common/messages';
 
 export class InvoicesSequelize implements IInvoicesRepository {
@@ -43,11 +42,17 @@ export class InvoicesSequelize implements IInvoicesRepository {
     const hasKey = `${MainkeysRedis.INVOICES_BY_SHOP}${shopId}`;
     const entityInv = this.transformModelToEntity(invoice);
     await redisController.setHasRedis({ hasKey, key: entityInv.id, values: entityInv });
-    await redisController.publisher(MainkeysRedis.CHANNLE_SHOP, {
+
+    const payloadPushlisher: PayloadPushlisher = {
       userId,
       shopId,
-      messages: handleMesagePublish(true, Reasons.INVOICES, nameShop)
-    });
+      type: TypePushlisher.INVOICES,
+      status: true,
+      nameShop,
+      channel: MainkeysRedis.CHANNLE_SHOP
+    };
+    await redisController.handlePublisherSocket(payloadPushlisher);
+
     return entityInv;
   }
 

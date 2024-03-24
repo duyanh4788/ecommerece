@@ -1,4 +1,4 @@
-import { Reasons } from '../interface/ShopInterface';
+import { TypePushlisher } from '../interface/KeyRedisInterface';
 
 export enum Messages {
   // ERROR
@@ -72,14 +72,17 @@ export const handleMsgWithItemResource = (quanity: number) => {
   return `You can only update the product with ${quanity} items.`;
 };
 
-export const handleMesagePublish = (status: boolean, reasons: string, nameShop: string) => {
+export const handleMesagePublish = (status: boolean, typePushlisher: string, nameShop: string) => {
   if (status) {
-    if (reasons === Reasons.SUBSCRIPTION) return `The Shop ${nameShop} has been activated.`;
-    if (reasons === Reasons.INVOICES) return `The Invoice for Shop ${nameShop} has been, please check on your page and email`;
-    if (reasons === Reasons.ADMIN) return `The Shop ${nameShop} has been activated by admin.`;
+    if (typePushlisher === TypePushlisher.SUBSCRIPTION) return `The Shop ${nameShop} has been activated.`;
+    if (typePushlisher === TypePushlisher.WAIT_SUBSCRIPTION) return Messages.WAIT_SYNC_PAYPAL;
+    if (typePushlisher === TypePushlisher.INVOICES) return `The Invoice for Shop ${nameShop} has been, please check on your page and email`;
+    if (typePushlisher === TypePushlisher.ADMIN) return `The Shop ${nameShop} has been activated by admin.`;
+    return '';
   }
   if (!status) {
-    if (reasons === Reasons.SUBSCRIPTION) return `We're sory! The Shop ${nameShop} has been disabled.`;
-    if (reasons === Reasons.ADMIN) return `We're sory! The Shop ${nameShop} has been disabled as an admin.`;
+    if (typePushlisher === TypePushlisher.SUBSCRIPTION) return `We're sory! The Shop ${nameShop} has been disabled.`;
+    if (typePushlisher === TypePushlisher.ADMIN) return `We're sory! The Shop ${nameShop} has been disabled as an admin.`;
+    return '';
   }
 };

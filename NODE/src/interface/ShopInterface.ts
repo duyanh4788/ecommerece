@@ -20,9 +20,3 @@ export interface ShopInterface {
   status?: boolean;
   createdAt?: Date;
 }
-
-export enum Reasons {
-  SUBSCRIPTION = 'SUBSCRIPTION',
-  INVOICES = 'INVOICES',
-  ADMIN = 'ADMIN'
-}

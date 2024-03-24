@@ -5,11 +5,11 @@ import { ISubscriptionRepository } from '../../repository/ISubscriptionRepositor
 import { Subscription, SubscriptionStatus } from '../../interface/SubscriptionInterface';
 import { PaypalBillingPlansModel } from '../model/PaypalBillingPlansModel';
 import { RestError } from '../../services/error/error';
-import { MainkeysRedis } from '../../interface/KeyRedisInterface';
+import { MainkeysRedis, PayloadPushlisher, TypePushlisher } from '../../interface/KeyRedisInterface';
 import { ShopsResourcesModel } from '../model/ShopsResourcesModel';
 import { ShopsModel } from '../model/ShopsModel';
 import { redisController } from '../../redis/RedisController';
-import { Messages } from '../../common/messages';
+import { Messages, handleMesagePublish } from '../../common/messages';
 
 export class SubscriptionSequelize implements ISubscriptionRepository {
   private INCLUDES: any[] = [
@@ -89,16 +89,27 @@ export class SubscriptionSequelize implements ISubscriptionRepository {
   }
 
   async updateResponseSuccess(subscriptionId: string): Promise<void> {
-    const find = await SubscriptionModel.findOne({
+    const subscription = await SubscriptionModel.findOne({
       where: { subscriptionId },
       include: this.INCLUDES
     });
-    if (!find) {
+    if (!subscription) {
       throw new RestError(Messages.NOT_AVAILABLE, 404);
     }
-    find.status = SubscriptionStatus.WAITING_SYNC;
-    await find.save();
-    const result = this.transformModelToEntity(find);
+    subscription.status = SubscriptionStatus.WAITING_SYNC;
+    await subscription.save();
+
+    const payloadPushlisher: PayloadPushlisher = {
+      userId: enCryptFakeId(subscription.userId),
+      shopId: enCryptFakeId(subscription.shopId),
+      type: TypePushlisher.WAIT_SUBSCRIPTION,
+      status: true,
+      nameShop: null,
+      channel: MainkeysRedis.CHANNLE_SHOP
+    };
+    await redisController.handlePublisherSocket(payloadPushlisher);
+
+    const result = this.transformModelToEntity(subscription);
     await this.setSubscriptionRedis(result);
     return;
   }
