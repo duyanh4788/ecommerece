@@ -51,6 +51,7 @@ export const InvoiceTemplate = ({ invoice, userInfor }: Props) => {
 
           <View style={styles.otherInfoTitleCol}>
             <Text style={styles.paymentInfoTitle1}>Invoice number</Text>
+            <Text style={styles.paymentInfoTitle1}>Shop Name</Text>
             <Text style={styles.paymentInfoTitle1}>Invoice Issue Date</Text>
             <Text style={styles.paymentInfoTitle1}>Invoice Due Date</Text>
             <Text style={styles.paymentInfoTitle1}>Invoice status</Text>
@@ -60,6 +61,7 @@ export const InvoiceTemplate = ({ invoice, userInfor }: Props) => {
 
           <View style={styles.otherInfoContentCol}>
             <Text style={styles.contentText}>{invoice?.id}</Text>
+            <Text style={styles.contentText}>{invoice?.shops?.nameShop}</Text>
             <Text style={styles.contentText}>
               {AppHelper.formmatDateTime(invoice?.invoiceFrom)}
             </Text>
@@ -191,16 +193,6 @@ export const InvoiceTemplate = ({ invoice, userInfor }: Props) => {
                   ${invoice?.totalAmount} {invoice?.currency}
                 </Text>
               </View>
-            </View>
-
-            <View style={styles.secondContainer}>
-              <Text style={styles.title}>HOW TO PAY</Text>
-              <Text>
-                <Text style={{ ...styles.description, color: '#000000' }}>Pay with Paypal </Text>
-                <Text style={{ ...styles.description, color: '#2D2D2D' }}>
-                  Pay using Emmcorce app - setting - subscription - pay now
-                </Text>
-              </Text>
             </View>
             <View style={styles.footerContainer}>
               <View>

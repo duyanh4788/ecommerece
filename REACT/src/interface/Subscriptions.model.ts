@@ -1,3 +1,4 @@
+import { Shops } from './Shops.model';
 export interface Subscription {
   shopId?: string | number | any;
   userId?: string | number | any;
@@ -33,6 +34,7 @@ export interface ShopsResources {
 export interface Invoices {
   id?: string | number | any;
   userId?: string | number | any;
+  shops?: Shops;
   paidAt?: Date;
   amount?: number;
   currency?: string;
