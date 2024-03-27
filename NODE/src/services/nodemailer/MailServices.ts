@@ -455,7 +455,7 @@ export class NodeMailerServices implements INodeMailerServices {
   }
 
   private async sendMail(toEmail: string, subject: string, htmlContent: string) {
-    // if (isDevelopment) return;
+    if (isDevelopment) return;
     await this.nodemailerTransport.sendMail({
       from: 'System Ecommerce Notification <duyanh4788@gmail.com>',
       to: isDevelopment ? 'duyanh4788@gmail.com' : toEmail,

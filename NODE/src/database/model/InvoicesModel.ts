@@ -1,4 +1,4 @@
-import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, ForeignKey, AutoIncrement, DataType, Index } from 'sequelize-typescript';
+import { Model, Column, Table, CreatedAt, UpdatedAt, PrimaryKey, ForeignKey, AutoIncrement, DataType, Index, BelongsTo } from 'sequelize-typescript';
 import { UsersModel } from './UsersModel';
 import { ShopsModel } from './ShopsModel';
 
@@ -15,6 +15,8 @@ export class InvoicesModel extends Model<InvoicesModel> {
   @Column
   @ForeignKey(() => ShopsModel)
   public shopId: number;
+  @BelongsTo(() => ShopsModel)
+  shops: ShopsModel;
 
   @Index
   @Column

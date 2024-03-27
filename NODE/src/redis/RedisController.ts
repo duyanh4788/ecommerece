@@ -28,6 +28,7 @@ class RedisController {
   private REDIS_URL: string = envConfig.REDIS_URL as string;
   private client: redis.RedisClientType;
   private REDIS_TIMEOUT: number = 100000;
+  private PUSHLISHER_SOCKET_TIMEOUT: number = 5000;
   private connectTimeOut: NodeJS.Timeout;
 
   constructor() {
@@ -117,7 +118,23 @@ class RedisController {
     if (!id) return;
     return await this.client.sIsMember(keyValue, id);
   }
-
+  // LIST
+  async lpushMembersRedis(keyValue: string, value: any) {
+    if (!value) return;
+    return await this.client.lPush(keyValue, JSON.stringify(value));
+  }
+  async lrankMembersRedis(keyValue: string): Promise<any[]> {
+    const result = await this.client.lRange(keyValue, 0, -1);
+    return result.map((item) => JSON.parse(item));
+  }
+  async lRemMembersRedis(keyValue: string, value: any) {
+    if (!value) return;
+    return await this.client.lRem(keyValue, 0, value);
+  }
+  async lpopMembersRedis(keyValue: string) {
+    return await this.client.lPop(keyValue);
+  }
+  // OPTIONS
   async setNXRedis({ keyValue, value }: RedisModel) {
     await this.client.setNX(keyValue, JSON.stringify(value));
     const result = await this.client.get(keyValue);
@@ -135,11 +152,10 @@ class RedisController {
     const result = await this.client.incrBy(keyValue, value);
     return JSON.parse(result as any);
   }
-
+  // PUB/SUB
   async publisher(channelName: string, value: any) {
     await this.client.publish(channelName, JSON.stringify(value));
   }
-
   async subcriber(channelName: string) {
     const subscriber = this.client.duplicate();
     subscriber.on('error', (err) => console.error(err));
@@ -148,7 +164,6 @@ class RedisController {
       webSocket.sendMessageConsumber(message, channel);
     });
   }
-
   async handlePublisherSocket({ userId, shopId, type, status, nameShop }: PayloadPushlisher) {
     setTimeout(async () => {
       const payloadSubcriber: PayloadSubcriber = {
@@ -158,7 +173,7 @@ class RedisController {
         messages: handleMesagePublish(status, type, nameShop)
       };
       await this.publisher(MainkeysRedis.CHANNLE_SHOP, payloadSubcriber);
-    }, 5000);
+    }, this.PUSHLISHER_SOCKET_TIMEOUT);
   }
 }
 export const redisController = new RedisController();

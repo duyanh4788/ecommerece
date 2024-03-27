@@ -114,8 +114,8 @@ export class ShopSequelize implements IShopRepository {
       shop.banners.forEach((item) => removeFile(item));
     }
     await shop.destroy();
-    const hasKey = `${MainkeysRedis.SHOPS_BY_ID}${userId}`;
-    await redisController.delHashRedis({ hasKey: hasKey, key: id });
+    const keyValue = `${MainkeysRedis.SHOPS_BY_ID}${id}`;
+    await redisController.delRedis(keyValue);
     return;
   }
 
